@@ -1,0 +1,340 @@
+---
+title: "Quandmod-Quantitative Finance R tutorial Youtube"
+author: "Janis Corona"
+date: "1/20/2020"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+This is a youtube tutorial on quant finance from 'Quant Finance with R Part 1 intro and Data": [This tutorial link](https://www.youtube.com/watch?v=uwuPQUa2TjI).
+
+The [github repository](https://github.com/fdupuis659/Quant-Finance-with-R) for these tutorials are at: https://github.com/fdupuis659/Quant-Finance-with-R
+
+
+
+* $install.packages('quantmod')$ 
+* $install.packages('PerformanceAnalytics)$
+
+The above package, quantmod, is used for quantitative finance in R.
+The PerformanceAnalytics package is used to analyze the data using quantmod in R.
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+library(quantmod)
+library(PerformanceAnalytics)
+```
+
+
+* $?quantmod$
+* $?getSymbols$
+
+***
+
+This sets a minimum date to grab out of the AAPL finance data
+so that all dates will be after Feb 1, 2017.
+```{r, error=F, warning=F, message=F}
+
+dt <- '2017-2-1'
+
+aapl <- getSymbols.yahoo('AAPL', from = dt, auto.assign=F)
+```
+The above object is an 'xts' object or extensible time series object used in financial markets.
+
+
+```{r}
+head(aapl)
+```
+
+```{r}
+dim(aapl)
+row.names(aapl)[1:20]
+colnames(aapl)
+```
+
+
+The following are also xts objects.
+```{r}
+
+aaplClose <- aapl[,6]
+
+
+# use of the PerformanceAnalytics library loaded earlier
+appleReturns <- dailyReturn(aaplClose, type='log')
+
+appleReturns1 <- na.omit(dailyReturn(aaplClose, type='log'))
+```
+
+```{r}
+head(appleReturns)
+head(appleReturns1)
+
+```
+
+The NAs should have been removed but are being read in as zeros, from quantmod when getting the 'AAPL' xts object from the web.
+
+
+
+The following will chart a graph of the xts object, aapl.
+```{r, warning=F, message=F, erro=F}
+chartSeries(aapl)
+```
+
+
+
+
+*** 
+
+[Quant Finance with R Part 2: Portfolio Analysis](https://www.youtube.com/watch?v=2Y4HX0UUcrA): (https://www.youtube.com/watch?v=2Y4HX0UUcrA)  of 4 parts for this Quantitative Finance tutorial on Youtube from December 2018.
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+library(quantmod)
+library(PerformanceAnalytics)
+```
+
+Function that uses the closing price column to add the prices since a set date.
+```{r, message=FALSE, error=FALSE, warning=FALSE}
+tickers <- c('FB', 'AAPL','NFLX')
+
+weights <- c(0.25, 0.25, 0.25)
+
+portfolioPrices <- NULL
+
+for (ticker in tickers){
+  portfolioPrices <- cbind(portfolioPrices, getSymbols.yahoo(ticker,
+  from = '2016-01-03', periodicity='daily', auto.assign=FALSE)[,4])
+  
+}
+```
+
+Check NAs not in data.
+```{r}
+colSums(is.na(portfolioPrices))
+```
+
+S&P benchmark
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+benchmarkPrices <- getSymbols.yahoo('^GSPC', from='2016-01-03', periodicity='daily', auto.assign=FALSE)[,4]
+```
+
+
+Calculate daily change in each column.
+```{r}
+benchmarkReturns <- na.omit(ROC(benchmarkPrices))
+colSums(is.na(benchmarkReturns))
+```
+
+```{r}
+portfolioReturns <- na.omit(ROC(portfolioPrices))
+colSums(is.na(portfolioReturns))
+```
+
+
+```{r}
+portfolioReturn <- Return.portfolio(portfolioReturns)
+```
+
+To find out more on the Return.portfolio function, use:
+* $?Return.portfolio$
+
+
+***
+
+***
+
+Some side information about a few financial algorithms:
+
+* __CAPM__: formula for expected return with calculated risk on an asset or stock.
+* __ALPHA__: risk adjustment metric for performances compares to an index and shows how much better that index is beat by your benchmark.
+* __BETA__: measure of volatility with <1 => less risky and >1 => more risky.
+* __SHARPE RATIO__: risk metric for every standard deviation unit, how much return is achieved, gives risk & reward, and most widely used metric with finance managers.
+
+
+The number of trading days is 252 days a year.
+```{r}
+CAPM.beta(portfolioReturn, benchmarkReturns, 0.035/252)
+
+```
+
+```{r}
+CAPM.jensenAlpha(portfolioReturn, benchmarkReturns, 0.035/252)
+```
+
+
+```{r}
+SharpeRatio(portfolioReturn, 0.035/252)
+```
+
+```{r}
+table.AnnualizedReturns(portfolioReturn)
+```
+
+```{r}
+table.CalendarReturns(portfolioReturn)
+```
+
+***
+
+***
+[Quant Finance Part 3: Portfolio Optimization](https://www.youtube.com/watch?v=6Pi0fjARtUI): https://www.youtube.com/watch?v=6Pi0fjARtUI 
+
+Same libraries and code above used, but add in more tickers.
+```{r, message=FALSE, error=FALSE, warning=FALSE}
+tickers <- c('FB', 'AAPL','NFLX','AMZN','GOOGL','SQ','NVDA')
+
+weights <- c(0.25, 0.25, 0.25)
+
+portfolioPrices <- NULL
+
+for (ticker in tickers){
+  portfolioPrices <- cbind(portfolioPrices, getSymbols.yahoo(ticker,
+  from = '2016-01-03', periodicity='daily', auto.assign=FALSE)[,4])
+  
+}
+```
+
+
+S&P benchmark
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+benchmarkPrices <- getSymbols.yahoo('^GSPC', from='2016-01-03', periodicity='daily', auto.assign=FALSE)[,4]
+```
+
+
+Calculate daily change in each column.
+```{r}
+benchmarkReturns <- na.omit(ROC(benchmarkPrices))
+portfolioReturns <- na.omit(ROC(portfolioPrices))
+portfolioReturn <- Return.portfolio(portfolioReturns)
+
+```
+
+$install.packages('imputeTS')$
+$install.packages('PortfolioAnalytics')$
+
+```{r}
+library(dplyr)
+library(quantmod)
+library(PerformanceAnalytics)
+library(imputeTS)
+library(PortfolioAnalytics)
+```
+
+```{r}
+portf <- portfolio.spec(colnames(portfolioReturns))
+
+portf <- add.constraint(portf, type="weight_sum", min_sum=1, max_sum=1)
+portf <- add.constraint(portf, type="box", min=.10, max=.40)
+portf <- add.objective(portf, type="return", name="mean")
+portf <- add.objective(portf, type="risk", name="StdDev")
+
+
+```
+
+Need to install some more libraries to run the optimize.portfolio().
+
+* $install.packages('ROI')$
+* $install.packages('ROI.plugin.quadprog')$
+* $install.packages('ROI.plugin.glpk')$
+
+```{r}
+library(ROI)
+library(ROI.plugin.quadprog)
+library(ROI.plugin.glpk)
+
+```
+
+
+```{r}
+optPort <- optimize.portfolio(portfolioReturns, portf, optimize_method = "ROI", trace=TRUE)
+```
+
+```{r, fig.width=6, fig.height=6}
+chart.Weights(optPort)
+```
+
+```{r}
+ef <- extractEfficientFrontier(optPort, match.col = "StdDev", n.portfolios = 25,
+                         risk_aversion = NULL)
+```
+
+```{r, fig.width=8, fig.height=8}
+chart.EfficientFrontier(ef,
+                        match.col = "StdDev", n.portfolios = 25, xlim = NULL, ylim = NULL,
+                        cex.axis = 0.8, element.color = "darkgray", main = "Efficient Frontier",
+                        RAR.text = "SR", rf = 0, tangent.line = TRUE, cex.legend = 0.8,
+                        chart.assets = TRUE, labels.assets = TRUE, pch.assets = 21,
+                        cex.assets = 0.8)
+```
+
+
+***
+
+***
+
+[Quant Finance Part 4: Portfolio Optimization Backtest](https://www.youtube.com/watch?v=mBjdkAVdhgM): https://www.youtube.com/watch?v=mBjdkAVdhgM
+
+```{r, warning=FALSE, message=FALSE, error=FALSE}
+library(quantmod)
+library(PerformanceAnalytics)
+library(PortfolioAnalytics)
+```
+
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+tickers <- c("FB", "AAPL", "AMZN", "NFLX", "GOOGL", "SQ", "NVDA")
+
+portfolioPrices <- NULL
+for(ticker in tickers) {
+  portfolioPrices <- cbind(portfolioPrices,
+                           getSymbols.yahoo(ticker, from='2016-01-03', periodicity = 'daily', auto.assign=FALSE)[,4])
+}
+
+portfolioReturns <- na.omit(ROC(portfolioPrices))
+
+portf <- portfolio.spec(colnames(portfolioReturns))
+
+portf <- add.constraint(portf, type="weight_sum", min_sum=0.99, max_sum=1.01)
+portf <- add.constraint(portf, type="transaction_cost", ptc = 0.001)
+portf <- add.constraint(portf, type="box", min=.10, max=.40)
+portf <- add.objective(portf, type="return", name="mean")
+portf <- add.objective(portf, type="risk", name="StdDev", target=0.005)
+```
+
+```{r}
+rp <- random_portfolios(portf, 10000, "sample")
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+opt_rebal <- optimize.portfolio.rebalancing(portfolioReturns,
+                                           portf,
+                                           optimize_method="random",
+                                           rp=rp,
+                                           rebalance_on="months",
+                                           training_period=1,
+                                           rolling_window=10)
+```
+
+```{r}
+equal_weight <- rep(1 / ncol(portfolioReturns), ncol(portfolioReturns))
+benchmark <- Return.portfolio(portfolioReturns, weights = equal_weight)
+colnames(benchmark) <- "Benchmark Portfolio"
+```
+
+```{r, message=FALSE, error=FALSE, warning=FALSE}
+sp500prices <- getSymbols.yahoo("SPY", from='2016-01-03', periodicity = 'daily', auto.assign=FALSE)[,4]
+sp500Rets <- na.omit(ROC(sp500prices))
+sp500Rets <- as.xts(sp500Rets)
+```
+
+```{r}
+chart.Weights(opt_rebal, main="Rebalanced Weights Over Time")
+```
+
+```{r}
+rebal_weights <-extractWeights(opt_rebal)
+rebal_returns <- Return.portfolio(portfolioReturns, weights=rebal_weights)
+
+rets_df <- cbind(rebal_returns, benchmark, sp500Rets)
+
+charts.PerformanceSummary(rets_df, main="P/L Over Time")
+```
+
