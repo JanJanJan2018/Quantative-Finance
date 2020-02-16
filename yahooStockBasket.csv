@@ -1,0 +1,131 @@
+"stockInfo","stock","stockExchange"
+"Target Corporation (TGT)
+NYSE - NYSE Delayed Price. Currency in USD","TGT","NYSE"
+"Frontier Communications Corporation (FTR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","FTR","Nasdaq"
+"United Bankshares, Inc. (UBSI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","UBSI","Nasdaq"
+"The Home Depot, Inc. (HD)
+NYSE - NYSE Delayed Price. Currency in USD","HD","NYSE"
+"JPMorgan Chase & Co. (JPM)
+NYSE - NYSE Delayed Price. Currency in USD","JPM","NYSE"
+"Exxon Mobil Corporation (XOM)
+NYSE - NYSE Delayed Price. Currency in USD","XOM","NYSE"
+"Chevron Corporation (CVX)
+NYSE - NYSE Delayed Price. Currency in USD","CVX","NYSE"
+"Nissan Motor Co., Ltd. (NSANY)
+Other OTC - Other OTC Delayed Price. Currency in USD","NSANY","Other OTC"
+"Generex Biotechnology Corporation (GNBT)
+Other OTC - Other OTC Delayed Price. Currency in USD","GNBT","Other OTC"
+"MGM Resorts International (MGM)
+NYSE - NYSE Delayed Price. Currency in USD","MGM","NYSE"
+"Teva Pharmaceutical Industries Limited (TEVA)
+NYSE - NYSE Delayed Price. Currency in USD","TEVA","NYSE"
+"Host Hotels & Resorts, Inc. (HST)
+NYSE - NYSE Delayed Price. Currency in USD","HST","NYSE"
+"Fiat Chrysler Automobiles N.V. (FCAU)
+NYSE - NYSE Delayed Price. Currency in USD","FCAU","NYSE"
+"Wells Fargo & Company (WFC)
+NYSE - NYSE Delayed Price. Currency in USD","WFC","NYSE"
+"World Wrestling Entertainment, Inc. (WWE)
+NYSE - NYSE Delayed Price. Currency in USD","WWE","NYSE"
+"Inovio Pharmaceuticals, Inc. (INO)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","INO","Nasdaq"
+"Restaurant Brands International Inc. (QSR)
+NYSE - NYSE Delayed Price. Currency in USD","QSR","NYSE"
+"Groupon, Inc. (GRPN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","GRPN","Nasdaq"
+"Southern California Edison Company (SCE-PB)
+NYSE American - NYSE American Delayed Price. Currency in USD","SCE-PB","NYSE"
+"First Financial Bankshares, Inc. (FFIN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","FFIN","Nasdaq"
+"Alphabet Inc. (GOOG)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","GOOG","Nasdaq"
+"Waste Management, Inc. (WM)
+NYSE - NYSE Delayed Price. Currency in USD","WM","NYSE"
+"Oncolytics Biotech Inc. (ONCY)
+NasdaqCM - NasdaqCM Real Time Price. Currency in USD","ONCY","Nasdaq"
+"Sprint Corporation (S)
+NYSE - NYSE Delayed Price. Currency in USD","S","NYSE"
+"General Motors Company (GM)
+NYSE - NYSE Delayed Price. Currency in USD","GM","NYSE"
+"Ford Motor Company (F)
+NYSE - NYSE Delayed Price. Currency in USD","F","NYSE"
+"ASICS Corporation (ASCCY)
+Other OTC - Other OTC Delayed Price. Currency in USD","ASCCY","Other OTC"
+"Arrowhead Pharmaceuticals, Inc. (ARWR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","ARWR","Nasdaq"
+"Costco Wholesale Corporation (COST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","COST","Nasdaq"
+"American Airlines Group Inc. (AAL)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","AAL","Nasdaq"
+"Nordstrom, Inc. (JWN)
+NYSE - NYSE Delayed Price. Currency in USD","JWN","NYSE"
+"Chicken Soup for the Soul Entertainment, Inc. (CSSEP)
+NasdaqGM - NasdaqGM Real Time Price. Currency in USD","CSSEP","Nasdaq"
+"Nu Skin Enterprises, Inc. (NUS)
+NYSE - NYSE Delayed Price. Currency in USD","NUS","NYSE"
+"AMC Entertainment Holdings, Inc. (AMC)
+NYSE - NYSE Delayed Price. Currency in USD","AMC","NYSE"
+"adidas AG (ADDYY)
+Other OTC - Other OTC Delayed Price. Currency in USD","ADDYY","Other OTC"
+"Kohl's Corporation (KSS)
+NYSE - NYSE Delayed Price. Currency in USD","KSS","NYSE"
+"Microsoft Corporation (MSFT)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","MSFT","Nasdaq"
+"Southwest Airlines Co. (LUV)
+NYSE - NYSE Delayed Price. Currency in USD","LUV","NYSE"
+"Honda Motor Co., Ltd. (HMC)
+NYSE - NYSE Delayed Price. Currency in USD","HMC","NYSE"
+"PG&E Corporation (PCG)
+NYSE - NYSE Delayed Price. Currency in USD","PCG","NYSE"
+"Dollar Tree, Inc. (DLTR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","DLTR","Nasdaq"
+"Kingold Jewelry, Inc. (KGJI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","KGJI","Nasdaq"
+"NIKE, Inc. (NKE)
+NYSE - NYSE Delayed Price. Currency in USD","NKE","NYSE"
+"Amazon.com, Inc. (AMZN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","AMZN","Nasdaq"
+"Ross Stores, Inc. (ROST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","ROST","Nasdaq"
+"T-Mobile US, Inc. (TMUS)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","TMUS","Nasdaq"
+"Walmart Inc. (WMT)
+NYSE - NYSE Delayed Price. Currency in USD","WMT","NYSE"
+"The TJX Companies, Inc. (TJX)
+NYSE - NYSE Delayed Price. Currency in USD","TJX","NYSE"
+"Toyota Motor Corporation (TM)
+NYSE - NYSE Delayed Price. Currency in USD","TM","NYSE"
+"Puma Biotechnology, Inc. (PBYI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","PBYI","Nasdaq"
+"AT&T Inc. (T)
+NYSE - NYSE Delayed Price. Currency in USD","T","NYSE"
+"Johnson & Johnson (JNJ)
+NYSE - NYSE Delayed Price. Currency in USD","JNJ","NYSE"
+"Citigroup Inc. (C)
+NYSE - NYSE Delayed Price. Currency in USD","C","NYSE"
+"Enterprise Products Partners L.P. (EPD)
+NYSE - NYSE Delayed Price. Currency in USD","EPD","NYSE"
+"Verizon Communications Inc. (VZ)
+NYSE - NYSE Delayed Price. Currency in USD","VZ","NYSE"
+"H&R Block, Inc. (HRB)
+NYSE - NYSE Delayed Price. Currency in USD","HRB","NYSE"
+"Netflix, Inc. (NFLX)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","NFLX","Nasdaq"
+"Advance Auto Parts, Inc. (AAP)
+NYSE - NYSE Delayed Price. Currency in USD","AAP","NYSE"
+"Hooker Furniture Corporation (HOFT)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","HOFT","Nasdaq"
+"Signet Jewelers Limited (SIG)
+NYSE - NYSE Delayed Price. Currency in USD","SIG","NYSE"
+"SmileDirectClub, Inc. (SDC)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","SDC","Nasdaq"
+"Red Robin Gourmet Burgers, Inc. (RRGB)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","RRGB","Nasdaq"
+"Macy's, Inc. (M)
+NYSE - NYSE Delayed Price. Currency in USD","M","NYSE"
+"JetBlue Airways Corporation (JBLU)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","JBLU","Nasdaq"
+"Yelp Inc. (YELP)
+NYSE - NYSE Delayed Price. Currency in USD","YELP","NYSE"

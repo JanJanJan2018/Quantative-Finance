@@ -1,0 +1,510 @@
+---
+title: "Market Basket of Hand Picked Stocks"
+author: "Janis Corona"
+date: "2/15/2020"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+
+I used yahoo finance at finance.yahoo.com to grab a list of stocks I wanted to examine over time.
+```{r}
+HandStocks <- read.csv('yahooStockBasket.csv', header=TRUE, sep=',', 
+                       na.strings=c('',' '))
+allStocks <- as.character(HandStocks$stock)
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+
+tickers <- allStocks
+
+weights <- rep(1/length(tickers), length(tickers))
+
+All_portfolioPrices <- NULL
+
+for (ticker in tickers){
+  All_portfolioPrices <- cbind(All_portfolioPrices, getSymbols.yahoo(ticker,
+  from = '2007-01-03', 
+  periodicity='daily', auto.assign=FALSE)[,4:5])
+  
+}
+
+write.csv(All_portfolioPrices,'all_portfolio_prices.csv', row.names=TRUE)
+```
+
+Create the NYSE subset and the Nasdaq subset. There are also a few that are 'other OTC' labeled that I will exclude.
+```{r}
+NYSE <- subset(HandStocks, HandStocks$stockExchange=='NYSE')
+NASDAQ <- subset(HandStocks, HandStocks$stockExchange=='Nasdaq')
+
+```
+
+This is a youtube tutorial on quant finance from 'Quant Finance with R Part 1 intro and Data": [This tutorial link](https://www.youtube.com/watch?v=uwuPQUa2TjI).
+
+The [github repository](https://github.com/fdupuis659/Quant-Finance-with-R) for these tutorials are at: https://github.com/fdupuis659/Quant-Finance-with-R
+
+The changes made are that the NYSE and NASDAQ stocks read in above will be used.
+```{r}
+nyse <- as.character(NYSE$stock)
+nasdaq <- as.character(NASDAQ$stock)
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+library(quantmod)
+library(PerformanceAnalytics)
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+
+tickers <- nyse
+
+weights <- rep(1/length(tickers), length(tickers))
+
+NYSE_portfolioPrices <- NULL
+
+for (ticker in tickers){
+  NYSE_portfolioPrices <- cbind(NYSE_portfolioPrices, getSymbols.yahoo(ticker,
+  from = '2007-01-03', 
+  periodicity='daily', auto.assign=FALSE)[,4])
+  
+}
+
+
+```
+
+Check NAs not in data.
+```{r}
+colSums(is.na(NYSE_portfolioPrices))
+```
+
+There are some stocks with missing values and this is probably due to so far back the dates are pulled from 2007. Lets make a separate data set for those and remove them from this one. FCAU, QSR, SCE.PB, GM, AMC, and Yelp have many NAs.
+```{r}
+NYSE_portfolioPrices_2007 <- NYSE_portfolioPrices[,-c(9,12,13,16,20,38)]
+colSums(is.na(NYSE_portfolioPrices_2007))
+```
+
+
+```{r}
+NYSE_portfolioPrices_2015 <- NYSE_portfolioPrices[complete.cases(NYSE_portfolioPrices),]
+
+```
+
+So we have all data for NYSE portfolio prices since 2007 that excluded some stock not available in our list, and data on all the stocks in the list since December 2014.Lets do the same for the NASDAQ stocks.
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+
+tickers2 <- nasdaq
+
+weights <- rep(1/length(tickers2), length(tickers2))
+
+NASDAQ_portfolioPrices <- NULL
+
+for (ticker in tickers2){
+  NASDAQ_portfolioPrices <- cbind(NASDAQ_portfolioPrices, getSymbols.yahoo(ticker,
+  from = '2007-01-03', periodicity='daily', auto.assign=FALSE)[,4])
+  
+}
+
+
+```
+
+Check NAs not in data.
+```{r}
+colSums(is.na(NASDAQ_portfolioPrices))
+```
+
+There are also some stocks with missing values for NASDAQ pulled from 2007. Lets make a separate data set for those and remove them from this one. GRPN, CSSEP, TMUS, PBYI, and SDC are the stock with many NA values. 
+```{r}
+NASDAQ_portfolioPrices_2007 <- NASDAQ_portfolioPrices[,-c(4,11,17,18,21)]
+colSums(is.na(NASDAQ_portfolioPrices_2007))
+```
+
+
+```{r}
+NASDAQ_portfolioPrices_2019 <- NASDAQ_portfolioPrices[complete.cases(NASDAQ_portfolioPrices),]
+
+```
+
+So we have all data for NYSE portfolio prices since 2007 that excluded some stock not available in our list, and data on all the stocks in the list since September 2019 as that was the earliest date that all stocks had available data.
+
+S&P benchmark
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+benchmarkPrices <- getSymbols.yahoo('^GSPC', from='2007-01-03', periodicity='daily', auto.assign=FALSE)[,4]
+```
+
+Calculate daily change in each column.
+```{r}
+benchmarkReturns <- na.omit(ROC(benchmarkPrices))
+colSums(is.na(benchmarkReturns))
+```
+
+```{r}
+NYSE_2007_portfolioReturns <- na.omit(ROC(NYSE_portfolioPrices_2007))
+colSums(is.na(NYSE_2007_portfolioReturns))
+```
+```{r}
+NYSE_2015_portfolioReturns <- na.omit(ROC(NYSE_portfolioPrices_2015))
+colSums(is.na(NYSE_2015_portfolioReturns))
+
+
+```
+
+```{r}
+NASDAQ_2007_portfolioReturns <- na.omit(ROC(NASDAQ_portfolioPrices_2007))
+colSums(is.na(NASDAQ_2007_portfolioReturns))
+
+
+```
+
+
+```{r}
+NASDAQ_2019_portfolioReturns <- na.omit(ROC(NASDAQ_portfolioPrices_2019))
+colSums(is.na(NASDAQ_2019_portfolioReturns))
+
+
+```
+
+
+```{r}
+
+NYSE_2007_portfolioReturn <- Return.portfolio(NYSE_2007_portfolioReturns)
+NYSE_2015_portfolioReturn <- Return.portfolio(NYSE_2015_portfolioReturns)
+NASDAQ_2007_portfolioReturn <- Return.portfolio(NASDAQ_2007_portfolioReturns)
+NASDAQ_2019_portfolioReturn <- Return.portfolio(NASDAQ_2019_portfolioReturns)
+```
+
+To find out more on the Return.portfolio function, use:
+* $?Return.portfolio$
+
+
+***
+
+***
+
+Some side information about a few financial algorithms:
+
+* __CAPM__: formula for expected return with calculated risk on an asset or stock.
+* __ALPHA__: risk adjustment metric for performances compares to an index and shows how much better that index is beat by your benchmark.
+* __BETA__: measure of volatility with <1 => less risky and >1 => more risky.
+* __SHARPE RATIO__: risk metric for every standard deviation unit, how much return is achieved, gives risk & reward, and most widely used metric with finance managers.
+
+***
+
+This section shows portfolio returns on the NYSE since 2007 stocks.
+
+The number of trading days is 252 days a year.
+```{r}
+CAPM.beta(NYSE_2007_portfolioReturn, benchmarkReturns, 0.035/252)
+
+```
+```{r}
+CAPM.jensenAlpha(NYSE_2007_portfolioReturn, benchmarkReturns, 0.035/252)
+```
+
+```{r}
+SharpeRatio(NYSE_2007_portfolioReturn, 0.035/252)
+```
+
+```{r}
+table.AnnualizedReturns(NYSE_2007_portfolioReturn)
+```
+
+
+```{r}
+table.CalendarReturns(NYSE_2007_portfolioReturn)
+```
+
+
+***
+
+This section shows the NYSE 2015 stock portfolio return.
+```{r}
+CAPM.beta(NYSE_2015_portfolioReturn, benchmarkReturns, 0.035/252)
+
+```
+
+```{r}
+CAPM.jensenAlpha(NYSE_2015_portfolioReturn, benchmarkReturns, 0.035/252)
+```
+
+```{r}
+SharpeRatio(NYSE_2015_portfolioReturn, 0.035/252)
+```
+
+```{r}
+table.AnnualizedReturns(NYSE_2015_portfolioReturn)
+```
+
+
+```{r}
+table.CalendarReturns(NYSE_2015_portfolioReturn)
+```
+
+
+***
+
+The next section shows the NASDAQ portfolio return for 2007.
+```{r}
+CAPM.beta(NASDAQ_2007_portfolioReturn, benchmarkReturns, 0.035/252)
+
+```
+```{r}
+CAPM.jensenAlpha(NASDAQ_2007_portfolioReturn, benchmarkReturns, 0.035/252)
+```
+
+```{r}
+SharpeRatio(NASDAQ_2007_portfolioReturn, 0.035/252)
+```
+
+```{r}
+table.AnnualizedReturns(NASDAQ_2007_portfolioReturn)
+```
+
+
+```{r}
+table.CalendarReturns(NASDAQ_2007_portfolioReturn)
+```
+
+
+***
+
+The next section shows the NASDAQ portfolio return for 2019.
+```{r}
+CAPM.beta(NASDAQ_2019_portfolioReturn, benchmarkReturns, 0.035/252)
+
+```
+```{r}
+CAPM.jensenAlpha(NASDAQ_2019_portfolioReturn, benchmarkReturns, 0.035/252)
+```
+
+```{r}
+SharpeRatio(NASDAQ_2019_portfolioReturn, 0.035/252)
+```
+
+```{r}
+table.AnnualizedReturns(NASDAQ_2019_portfolioReturn)
+```
+
+
+```{r}
+table.CalendarReturns(NASDAQ_2019_portfolioReturn)
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(quantmod)
+library(PerformanceAnalytics)
+library(imputeTS)
+library(PortfolioAnalytics)
+library(ROI)
+library(ROI.plugin.quadprog)
+library(ROI.plugin.glpk)
+
+
+```
+
+Calculate daily change in each column.
+```{r}
+benchmarkReturns <- na.omit(ROC(benchmarkPrices))
+```
+
+- NYSE_2007_portfolioReturn 
+- NYSE_2015_portfolioReturn 
+- NASDAQ_2007_portfolioReturn 
+- NASDAQ_2019_portfolioReturn 
+
+***
+NYSE_2007_portfolioReturn:
+
+```{r}
+portNYSE_2007 <- portfolio.spec(colnames(NYSE_2007_portfolioReturns))
+
+portNYSE_2007 <- add.constraint(portNYSE_2007, type="weight_sum", min_sum=1, max_sum=1)
+portNYSE_2007 <- add.constraint(portNYSE_2007, type="box") #, min=.10, max=.40)
+portNYSE_2007 <- add.objective(portNYSE_2007, type="return", name="mean")
+portNYSE_2007 <- add.objective(portNYSE_2007, type="risk", name="StdDev")
+
+
+```
+
+
+```{r}
+
+optPort <- optimize.portfolio(NYSE_2007_portfolioReturns, portNYSE_2007,
+                              optimize_method = "ROI", trace=TRUE)
+
+```
+
+
+```{r, fig.width=6, fig.height=6}
+chart.Weights(optPort)
+```
+
+
+
+```{r}
+ef <- extractEfficientFrontier(optPort, match.col = "StdDev", n.portfolios = 25,
+                         risk_aversion = NULL)
+```
+
+```{r, fig.width=8, fig.height=8}
+chart.EfficientFrontier(ef,
+                        match.col = "StdDev", n.portfolios = 25, xlim = NULL, ylim = NULL,
+                        cex.axis = 0.8, element.color = "darkgray", main = "Efficient Frontier",
+                        RAR.text = "SR", rf = 0, tangent.line = TRUE, cex.legend = 0.8,
+                        chart.assets = TRUE, labels.assets = TRUE, pch.assets = 21,
+                        cex.assets = 0.8)
+```
+
+
+```{r}
+rp <- random_portfolios(portNYSE_2007, 10000, "sample")
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+opt_rebal <- optimize.portfolio.rebalancing(NYSE_2007_portfolioReturns,
+                                           portNYSE_2007,
+                                           optimize_method="random",
+                                           rp=rp,
+                                           rebalance_on="months",
+                                           training_period=1,
+                                           rolling_window=10)
+```
+
+
+```{r}
+equal_weight <- rep(1 / ncol(NYSE_2007_portfolioReturns),
+                    ncol(NYSE_2007_portfolioReturns))
+
+benchmark <- Return.portfolio(NYSE_2007_portfolioReturns, 
+                              weights = equal_weight)
+
+colnames(benchmark) <- "Benchmark Portfolio"
+```
+
+```{r, message=FALSE, error=FALSE, warning=FALSE}
+sp500prices <- getSymbols.yahoo("SPY", from='2007-01-03', periodicity = 'daily', auto.assign=FALSE)[,4]
+sp500Rets <- na.omit(ROC(sp500prices))
+sp500Rets <- as.xts(sp500Rets)
+```
+
+
+```{r}
+chart.Weights(opt_rebal, main="Rebalanced Weights Over Time")
+```
+
+```{r}
+rebal_weights <-extractWeights(opt_rebal)
+
+rebal_returns <- Return.portfolio(NYSE_2007_portfolioReturns, 
+                                  weights=rebal_weights)
+
+rets_df <- cbind(rebal_returns, benchmark, sp500Rets)
+
+charts.PerformanceSummary(rets_df, main="NYSE* Profit & Loss Over Time")
+```
+
+***
+As you can see above for the NYSE hand selected stocks analyzed with this tutorial, that the benchmark portfolio was better than this portfolio but not as good as the S&P 500 stocks. We will see how the NASDAQ stock compare. Because these NYSE stocks were below zero for cumulative returns from 2007 until 2020 where they just broke even or had a slight positive cumulative return.
+
+***
+NASDAQ_2007_portfolioReturn
+
+```{r}
+portNASDAQ_2007 <- portfolio.spec(colnames(NASDAQ_2007_portfolioReturns))
+
+portNASDAQ_2007 <- add.constraint(portNASDAQ_2007, type="weight_sum", min_sum=1, max_sum=1)
+portNASDAQ_2007 <- add.constraint(portNASDAQ_2007, type="box") #, min=.10, max=.40)
+portNASDAQ_2007 <- add.objective(portNASDAQ_2007, type="return", name="mean")
+portNASDAQ_2007 <- add.objective(portNASDAQ_2007, type="risk", name="StdDev")
+
+
+```
+
+
+```{r}
+
+optPort <- optimize.portfolio(NASDAQ_2007_portfolioReturns, portNASDAQ_2007,
+                              optimize_method = "ROI", trace=TRUE)
+
+```
+
+
+```{r, fig.width=6, fig.height=6}
+chart.Weights(optPort)
+```
+
+
+
+```{r}
+ef <- extractEfficientFrontier(optPort, match.col = "StdDev", n.portfolios = 25,
+                         risk_aversion = NULL)
+```
+
+```{r, fig.width=8, fig.height=8}
+chart.EfficientFrontier(ef,
+                        match.col = "StdDev", n.portfolios = 25, xlim = NULL, ylim = NULL,
+                        cex.axis = 0.8, element.color = "darkgray", main = "Efficient Frontier",
+                        RAR.text = "SR", rf = 0, tangent.line = TRUE, cex.legend = 0.8,
+                        chart.assets = TRUE, labels.assets = TRUE, pch.assets = 21,
+                        cex.assets = 0.8)
+```
+
+
+```{r}
+rp <- random_portfolios(portNASDAQ_2007, 10000, "sample")
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+opt_rebal <- optimize.portfolio.rebalancing(NASDAQ_2007_portfolioReturns,
+                                           portNASDAQ_2007,
+                                           optimize_method="random",
+                                           rp=rp,
+                                           rebalance_on="months",
+                                           training_period=1,
+                                           rolling_window=10)
+```
+
+
+```{r}
+equal_weight <- rep(1 / ncol(NASDAQ_2007_portfolioReturns),
+                    ncol(NASDAQ_2007_portfolioReturns))
+
+benchmark <- Return.portfolio(NASDAQ_2007_portfolioReturns, 
+                              weights = equal_weight)
+
+colnames(benchmark) <- "Benchmark Portfolio"
+```
+
+```{r, message=FALSE, error=FALSE, warning=FALSE}
+sp500prices <- getSymbols.yahoo("SPY", from='2007-01-03', periodicity = 'daily', auto.assign=FALSE)[,4]
+sp500Rets <- na.omit(ROC(sp500prices))
+sp500Rets <- as.xts(sp500Rets)
+```
+
+
+```{r}
+chart.Weights(opt_rebal, main="Rebalanced Weights Over Time")
+```
+
+```{r}
+rebal_weights <-extractWeights(opt_rebal)
+
+rebal_returns <- Return.portfolio(NASDAQ_2007_portfolioReturns, 
+                                  weights=rebal_weights)
+
+rets_df <- cbind(rebal_returns, benchmark, sp500Rets)
+
+charts.PerformanceSummary(rets_df, main="Profit & Loss Over Time")
+```
+
+
+***
+ 
+Looking at the above, the portfolio returns for the NASDAQ hand selected stock were far below the benchmark portfolio and the S&P 500 close as well as below zero cumulative return from 2009 to 2019. This makes it a terrible portfolio of stocks, but could be modified later by analyzing individual stocks, and points in time, and returns on investment (ROI) for different historical time frames of importance. 
+
+The NYSE portfolio was better than the NASDAQ stocks by just breaking even since the start at 2007 to 2020.
