@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: "2/17/2020"
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 ```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
@@ -36,7 +36,11 @@ Remove NAs from the data. The colSums(is.na(Close)) isn't returning the columns 
 ```{r}
 
 Close_noNAs <- Close[,-c(9,13,17,18,25,27,32,34,46,50,61,65)]
+Volume_noNAs <- Volume[,-c(9,13,17,18,25,27,32,34,46,50,61,65)]
+
 Close_noNAs$SCE.PB.Close <- as.numeric(Close_noNAs$SCE.PB.Close)
+Volume_noNAs$SCE.PB.Volume <- as.numeric(Volume_noNAs$SCE.PB.Volume)
+
 ```
 
 Add in a value of the portfolio column for each day's closing price of all stock that don't have NAs.
@@ -54,7 +58,7 @@ colnames(zero) <- 'previousDayValue'
 prevDay <- rbind(zero,dayVal)
 Close_noNAs$prevDay <- prevDay[1:3303,1]
 dailyChange <- as.data.frame(Close_noNAs$DailyValue-Close_noNAs$prevDay)
-colnames(dailyChange) <- 'dailyChange'
+colnames(dailyChange) <- 'dailyValueChange'
 
 Close1 <- cbind(Close_noNAs,dailyChange)
 ```
@@ -111,8 +115,70 @@ gatherMonths$MonthYear <- as.factor(gatherMonths$MonthYear)
 ```{r}
 UE2 <- gatherMonths[,3:4]
 Close2 <- merge(Close1, UE2, by.x='MonthYear', by.y='MonthYear')
+row.names(Close2) <- row.names(Close1)
 ```
+
 
 ```{r}
 write.csv(Close2, 'ROI_UE_2007_2020.csv', row.names=FALSE)
 ```
+
+
+Lets add in the volume of trades per day from the Volume_noNAs data set. But lets add in some fields for total portfolio trades per day, 
+```{r}
+Volume1 <- Volume_noNAs
+Volume1$DailyVolume <- rowSums(Volume1, na.rm=TRUE)
+
+dayVol <- as.data.frame(Volume1$DailyVolume)
+colnames(dayVol) <- 'previousDayVolume'
+zero <- as.data.frame(as.numeric(dayVol$previousDayVolume[1]))
+colnames(zero) <- 'previousDayVolume'
+prevDay1 <- rbind(zero,dayVol)
+Volume1$prevDayVolume <- prevDay1[1:3303,1]
+
+dailyVolumeChange <- as.data.frame(Volume1$DailyVolume-Volume1$prevDayVolume)
+colnames(dailyVolumeChange) <- 'dailyVolumeChange'
+
+Volume2 <- cbind(Volume1,dailyVolumeChange)
+Volume2$VolumeRatioDaily2Initial <- Volume2$DailyVolume/Volume2$prevDayVolume[1]
+
+```
+
+
+```{r}
+stocks <- cbind(Close2, Volume2)
+
+Stocks <- stocks[,c(2:54,64:116,1,55:63,117:120)]
+colnames(Stocks)
+```
+
+Add a value of stock daily to the initial value as a ratio.
+```{r}
+Stocks$ValueRatioDaily2Initial <- Stocks$DailyValue/Stocks$DailyValue[1]
+
+```
+
+Add a field that multiplies the daily value and daily volume ratios compared to the initial value and volume by the unemployment rate.
+```{r}
+Stocks$DailyRatios_X_UE <- Stocks$ValueRatioDaily2Initial*Stocks$VolumeRatioDaily2Initial*Stocks$UE_monthlyRate
+
+```
+
+Add an exponential calculation field based on the unemployment rate for rate, and using numeric day of the month for t, and k as the month.
+```{r}
+dayOfMonth <- day(Stocks$Date)
+ue1 <- Stocks$UE_monthlyRate
+
+Stocks$poisson <- (exp(-(ue1))*(ue1)^dayOfMonth)/(factorial(dayOfMonth))
+```
+
+
+```{r}
+
+write.csv(Stocks, 'StocksStats.csv', row.names=TRUE)
+
+```
+
+
+
+

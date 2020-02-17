@@ -392,7 +392,10 @@ colnames(Close)</code></pre>
 ## [61] &quot;SDC.Close&quot;    &quot;RRGB.Close&quot;   &quot;M.Close&quot;      &quot;JBLU.Close&quot;   &quot;YELP.Close&quot;</code></pre>
 <p>Remove NAs from the data. The colSums(is.na(Close)) isn’t returning the columns with NAs, so this must be done manually.</p>
 <pre class="r"><code>Close_noNAs &lt;- Close[,-c(9,13,17,18,25,27,32,34,46,50,61,65)]
-Close_noNAs$SCE.PB.Close &lt;- as.numeric(Close_noNAs$SCE.PB.Close)</code></pre>
+Volume_noNAs &lt;- Volume[,-c(9,13,17,18,25,27,32,34,46,50,61,65)]
+
+Close_noNAs$SCE.PB.Close &lt;- as.numeric(Close_noNAs$SCE.PB.Close)
+Volume_noNAs$SCE.PB.Volume &lt;- as.numeric(Volume_noNAs$SCE.PB.Volume)</code></pre>
 <p>Add in a value of the portfolio column for each day’s closing price of all stock that don’t have NAs.</p>
 <pre class="r"><code>Close_noNAs$DailyValue &lt;- rowSums(Close_noNAs,na.rm=TRUE)</code></pre>
 <p>Add in a daily change column of the portfolio closing prices.</p>
@@ -403,7 +406,7 @@ colnames(zero) &lt;- &#39;previousDayValue&#39;
 prevDay &lt;- rbind(zero,dayVal)
 Close_noNAs$prevDay &lt;- prevDay[1:3303,1]
 dailyChange &lt;- as.data.frame(Close_noNAs$DailyValue-Close_noNAs$prevDay)
-colnames(dailyChange) &lt;- &#39;dailyChange&#39;
+colnames(dailyChange) &lt;- &#39;dailyValueChange&#39;
 
 Close1 &lt;- cbind(Close_noNAs,dailyChange)</code></pre>
 <p>Add a column that gives the return in dollars on initial dollars invested.</p>
@@ -431,8 +434,99 @@ UE &lt;- ue[,-14]#remove the empty &#39;Annual&#39; column</code></pre>
 gatherMonths$MonthYear &lt;- paste(gatherMonths$UE_Month, gatherMonths$Year, sep=&#39;-&#39;)
 gatherMonths$MonthYear &lt;- as.factor(gatherMonths$MonthYear)</code></pre>
 <pre class="r"><code>UE2 &lt;- gatherMonths[,3:4]
-Close2 &lt;- merge(Close1, UE2, by.x=&#39;MonthYear&#39;, by.y=&#39;MonthYear&#39;)</code></pre>
+Close2 &lt;- merge(Close1, UE2, by.x=&#39;MonthYear&#39;, by.y=&#39;MonthYear&#39;)
+row.names(Close2) &lt;- row.names(Close1)</code></pre>
 <pre class="r"><code>write.csv(Close2, &#39;ROI_UE_2007_2020.csv&#39;, row.names=FALSE)</code></pre>
+<p>Lets add in the volume of trades per day from the Volume_noNAs data set. But lets add in some fields for total portfolio trades per day,</p>
+<pre class="r"><code>Volume1 &lt;- Volume_noNAs
+Volume1$DailyVolume &lt;- rowSums(Volume1, na.rm=TRUE)
+
+dayVol &lt;- as.data.frame(Volume1$DailyVolume)
+colnames(dayVol) &lt;- &#39;previousDayVolume&#39;
+zero &lt;- as.data.frame(as.numeric(dayVol$previousDayVolume[1]))
+colnames(zero) &lt;- &#39;previousDayVolume&#39;
+prevDay1 &lt;- rbind(zero,dayVol)
+Volume1$prevDayVolume &lt;- prevDay1[1:3303,1]
+
+dailyVolumeChange &lt;- as.data.frame(Volume1$DailyVolume-Volume1$prevDayVolume)
+colnames(dailyVolumeChange) &lt;- &#39;dailyVolumeChange&#39;
+
+Volume2 &lt;- cbind(Volume1,dailyVolumeChange)
+Volume2$VolumeRatioDaily2Initial &lt;- Volume2$DailyVolume/Volume2$prevDayVolume[1]</code></pre>
+<pre class="r"><code>stocks &lt;- cbind(Close2, Volume2)
+
+Stocks &lt;- stocks[,c(2:54,64:116,1,55:63,117:120)]
+colnames(Stocks)</code></pre>
+<pre><code>##   [1] &quot;TGT.Close&quot;                &quot;FTR.Close&quot;               
+##   [3] &quot;UBSI.Close&quot;               &quot;HD.Close&quot;                
+##   [5] &quot;JPM.Close&quot;                &quot;XOM.Close&quot;               
+##   [7] &quot;CVX.Close&quot;                &quot;NSANY.Close&quot;             
+##   [9] &quot;MGM.Close&quot;                &quot;TEVA.Close&quot;              
+##  [11] &quot;HST.Close&quot;                &quot;WFC.Close&quot;               
+##  [13] &quot;WWE.Close&quot;                &quot;INO.Close&quot;               
+##  [15] &quot;SCE.PB.Close&quot;             &quot;FFIN.Close&quot;              
+##  [17] &quot;GOOG.Close&quot;               &quot;WM.Close&quot;                
+##  [19] &quot;ONCY.Close&quot;               &quot;S.Close&quot;                 
+##  [21] &quot;F.Close&quot;                  &quot;ARWR.Close&quot;              
+##  [23] &quot;COST.Close&quot;               &quot;AAL.Close&quot;               
+##  [25] &quot;JWN.Close&quot;                &quot;NUS.Close&quot;               
+##  [27] &quot;ADDYY.Close&quot;              &quot;KSS.Close&quot;               
+##  [29] &quot;MSFT.Close&quot;               &quot;LUV.Close&quot;               
+##  [31] &quot;HMC.Close&quot;                &quot;PCG.Close&quot;               
+##  [33] &quot;DLTR.Close&quot;               &quot;KGJI.Close&quot;              
+##  [35] &quot;NKE.Close&quot;                &quot;AMZN.Close&quot;              
+##  [37] &quot;ROST.Close&quot;               &quot;WMT.Close&quot;               
+##  [39] &quot;TJX.Close&quot;                &quot;TM.Close&quot;                
+##  [41] &quot;T.Close&quot;                  &quot;JNJ.Close&quot;               
+##  [43] &quot;C.Close&quot;                  &quot;EPD.Close&quot;               
+##  [45] &quot;VZ.Close&quot;                 &quot;HRB.Close&quot;               
+##  [47] &quot;NFLX.Close&quot;               &quot;AAP.Close&quot;               
+##  [49] &quot;HOFT.Close&quot;               &quot;SIG.Close&quot;               
+##  [51] &quot;RRGB.Close&quot;               &quot;M.Close&quot;                 
+##  [53] &quot;JBLU.Close&quot;               &quot;TGT.Volume&quot;              
+##  [55] &quot;FTR.Volume&quot;               &quot;UBSI.Volume&quot;             
+##  [57] &quot;HD.Volume&quot;                &quot;JPM.Volume&quot;              
+##  [59] &quot;XOM.Volume&quot;               &quot;CVX.Volume&quot;              
+##  [61] &quot;NSANY.Volume&quot;             &quot;MGM.Volume&quot;              
+##  [63] &quot;TEVA.Volume&quot;              &quot;HST.Volume&quot;              
+##  [65] &quot;WFC.Volume&quot;               &quot;WWE.Volume&quot;              
+##  [67] &quot;INO.Volume&quot;               &quot;SCE.PB.Volume&quot;           
+##  [69] &quot;FFIN.Volume&quot;              &quot;GOOG.Volume&quot;             
+##  [71] &quot;WM.Volume&quot;                &quot;ONCY.Volume&quot;             
+##  [73] &quot;S.Volume&quot;                 &quot;F.Volume&quot;                
+##  [75] &quot;ARWR.Volume&quot;              &quot;COST.Volume&quot;             
+##  [77] &quot;AAL.Volume&quot;               &quot;JWN.Volume&quot;              
+##  [79] &quot;NUS.Volume&quot;               &quot;ADDYY.Volume&quot;            
+##  [81] &quot;KSS.Volume&quot;               &quot;MSFT.Volume&quot;             
+##  [83] &quot;LUV.Volume&quot;               &quot;HMC.Volume&quot;              
+##  [85] &quot;PCG.Volume&quot;               &quot;DLTR.Volume&quot;             
+##  [87] &quot;KGJI.Volume&quot;              &quot;NKE.Volume&quot;              
+##  [89] &quot;AMZN.Volume&quot;              &quot;ROST.Volume&quot;             
+##  [91] &quot;WMT.Volume&quot;               &quot;TJX.Volume&quot;              
+##  [93] &quot;TM.Volume&quot;                &quot;T.Volume&quot;                
+##  [95] &quot;JNJ.Volume&quot;               &quot;C.Volume&quot;                
+##  [97] &quot;EPD.Volume&quot;               &quot;VZ.Volume&quot;               
+##  [99] &quot;HRB.Volume&quot;               &quot;NFLX.Volume&quot;             
+## [101] &quot;AAP.Volume&quot;               &quot;HOFT.Volume&quot;             
+## [103] &quot;SIG.Volume&quot;               &quot;RRGB.Volume&quot;             
+## [105] &quot;M.Volume&quot;                 &quot;JBLU.Volume&quot;             
+## [107] &quot;MonthYear&quot;                &quot;DailyValue&quot;              
+## [109] &quot;prevDay&quot;                  &quot;dailyValueChange&quot;        
+## [111] &quot;ROI_dollars&quot;              &quot;Date&quot;                    
+## [113] &quot;DayOfWeek&quot;                &quot;Month&quot;                   
+## [115] &quot;Year&quot;                     &quot;UE_monthlyRate&quot;          
+## [117] &quot;DailyVolume&quot;              &quot;prevDayVolume&quot;           
+## [119] &quot;dailyVolumeChange&quot;        &quot;VolumeRatioDaily2Initial&quot;</code></pre>
+<p>Add a value of stock daily to the initial value as a ratio.</p>
+<pre class="r"><code>Stocks$ValueRatioDaily2Initial &lt;- Stocks$DailyValue/Stocks$DailyValue[1]</code></pre>
+<p>Add a field that multiplies the daily value and daily volume ratios compared to the initial value and volume by the unemployment rate.</p>
+<pre class="r"><code>Stocks$DailyRatios_X_UE &lt;- Stocks$ValueRatioDaily2Initial*Stocks$VolumeRatioDaily2Initial*Stocks$UE_monthlyRate</code></pre>
+<p>Add an exponential calculation field based on the unemployment rate for rate, and using numeric day of the month for t, and k as the month.</p>
+<pre class="r"><code>dayOfMonth &lt;- day(Stocks$Date)
+ue1 &lt;- Stocks$UE_monthlyRate
+
+Stocks$poisson &lt;- (exp(-(ue1))*(ue1)^dayOfMonth)/(factorial(dayOfMonth))</code></pre>
+<pre class="r"><code>write.csv(Stocks, &#39;StocksStats.csv&#39;, row.names=TRUE)</code></pre>
 
 
 
