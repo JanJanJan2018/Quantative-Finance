@@ -10,6 +10,16 @@ output:
 
 
 I used yahoo finance at finance.yahoo.com to grab a list of stocks I wanted to examine over time.
+
+This is a youtube tutorial on quant finance from 'Quant Finance with R Part 1 intro and Data": [This tutorial link](https://www.youtube.com/watch?v=uwuPQUa2TjI).
+
+The [github repository](https://github.com/fdupuis659/Quant-Finance-with-R) for these tutorials are at: https://github.com/fdupuis659/Quant-Finance-with-R
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+library(quantmod)
+library(PerformanceAnalytics)
+```
+
 ```{r}
 HandStocks <- read.csv('yahooStockBasket.csv', header=TRUE, sep=',', 
                        na.strings=c('',' '))
@@ -31,7 +41,12 @@ for (ticker in tickers){
   
 }
 
-write.csv(All_portfolioPrices,'all_portfolio_prices.csv', row.names=TRUE)
+names <- as.data.frame(as.character(index(All_portfolioPrices)))
+colnames(names) <- 'Date'
+fix <- as.data.frame(All_portfolioPrices)
+all <- cbind(names,fix)
+write.csv(fix,'all_portfolio_prices.csv', row.names=TRUE)
+
 ```
 
 Create the NYSE subset and the Nasdaq subset. There are also a few that are 'other OTC' labeled that I will exclude.
@@ -41,19 +56,11 @@ NASDAQ <- subset(HandStocks, HandStocks$stockExchange=='Nasdaq')
 
 ```
 
-This is a youtube tutorial on quant finance from 'Quant Finance with R Part 1 intro and Data": [This tutorial link](https://www.youtube.com/watch?v=uwuPQUa2TjI).
-
-The [github repository](https://github.com/fdupuis659/Quant-Finance-with-R) for these tutorials are at: https://github.com/fdupuis659/Quant-Finance-with-R
 
 The changes made are that the NYSE and NASDAQ stocks read in above will be used.
 ```{r}
 nyse <- as.character(NYSE$stock)
 nasdaq <- as.character(NASDAQ$stock)
-```
-
-```{r, error=FALSE, message=FALSE, warning=FALSE}
-library(quantmod)
-library(PerformanceAnalytics)
 ```
 
 
@@ -323,7 +330,7 @@ NYSE_2007_portfolioReturn:
 ```{r}
 portNYSE_2007 <- portfolio.spec(colnames(NYSE_2007_portfolioReturns))
 
-portNYSE_2007 <- add.constraint(portNYSE_2007, type="weight_sum", min_sum=1, max_sum=1)
+portNYSE_2007 <- add.constraint(portNYSE_2007, type="weight_sum", min_sum=0.99, max_sum=1.01)
 portNYSE_2007 <- add.constraint(portNYSE_2007, type="box") #, min=.10, max=.40)
 portNYSE_2007 <- add.objective(portNYSE_2007, type="return", name="mean")
 portNYSE_2007 <- add.objective(portNYSE_2007, type="risk", name="StdDev")
@@ -417,7 +424,7 @@ NASDAQ_2007_portfolioReturn
 ```{r}
 portNASDAQ_2007 <- portfolio.spec(colnames(NASDAQ_2007_portfolioReturns))
 
-portNASDAQ_2007 <- add.constraint(portNASDAQ_2007, type="weight_sum", min_sum=1, max_sum=1)
+portNASDAQ_2007 <- add.constraint(portNASDAQ_2007, type="weight_sum", min_sum=0.99, max_sum=1.01)
 portNASDAQ_2007 <- add.constraint(portNASDAQ_2007, type="box") #, min=.10, max=.40)
 portNASDAQ_2007 <- add.objective(portNASDAQ_2007, type="return", name="mean")
 portNASDAQ_2007 <- add.objective(portNASDAQ_2007, type="risk", name="StdDev")
@@ -508,3 +515,23 @@ charts.PerformanceSummary(rets_df, main="Profit & Loss Over Time")
 Looking at the above, the portfolio returns for the NASDAQ hand selected stock were far below the benchmark portfolio and the S&P 500 close as well as below zero cumulative return from 2009 to 2019. This makes it a terrible portfolio of stocks, but could be modified later by analyzing individual stocks, and points in time, and returns on investment (ROI) for different historical time frames of importance. 
 
 The NYSE portfolio was better than the NASDAQ stocks by just breaking even since the start at 2007 to 2020.
+
+For more information, please visit this [link](https://www.youtube.com/watch?v=m5h2pYs4_m8), then email me your comments at janis@themassagenegotiator.com.
+
+What and who wrote that information at the link above. It is one of those references where so many questions come up, like what time period was it, what is the story behind the song, was it originally to mock somebody, but turned snazzy so that this main them could keep supplying the source's needs. Well, these thoughts and questions are unlimited, as are the reasons that people invest in the stocks they do. But it can be said with certainty, that when people invest in stocks they believe these companies are going to last a long time and generate a nice return on investment for them, unless some unforseeable event occurs, like a law suit, a settlement, a big company bulldozing the playing field and all those smaller businesses out of the way, recessions, stagantion, depressions, memorabilia when celebrities die, and so on.
+
+Email your thoughts to me at the above email. Here is the motivation for this data science project on finances. You just saw it above, as well as many other questions.
+
+We will be going over the data that we have pulled from finance.yahoo.com via the above script for various stocks that were picked by me and while driving and seeing businesses around my metropolis. 
+
+This is just another data science problem to wrap up some questions with some answers pulled from available resources, all_portfolio_prices.csv.
+
+- 1.) Tally up the ROI on each of these 65 stocks. make 65 ROI per day, and with the initial value of the stock. 
+
+- 2.) This data of 65 stocks now has the volume of trades per day and the closing price from 01-03-2007 through 02-15-2020. Of course some stock are missing, and these are a mix of NYSE and NASDAQ. With this information we should look for daily changes and the volume of the stock being traded. Examine whether there is a pattern in the number of trades per day, per stock, and the daily change per stock, and pin point those stocks that pass a certain threshold of their previous day closing price, like 10% of their value as an increase of decrease.
+
+- 3.) Pull data from the unemployment/employment rates of data from the Bureau of Labor Statistics or BLS and find out if this points to any clues in the date range of certain stocks being strong with little change and others being more volatile.
+
+- 4.) Get the top Yahoo trending stories in the finance department and run some text mining on the articles and the comments if available to compare to the changes that could be dramatic in the stock market on that day or week. 
+
+**updated 2/16/2020**

@@ -1,0 +1,118 @@
+---
+title: "ROI on Hand Picked Stocks 2007-2020"
+author: "Janis Corona"
+date: "2/17/2020"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
+library(lubridate)
+library(tidyr)
+```
+
+
+
+```{r}
+portfolio <- read.csv('all_portfolio_prices.csv', header=TRUE, na.strings=c('',' '),
+                      row.names=1)
+```
+
+
+```{r}
+portfolio$Date <- row.names(portfolio)
+```
+
+```{r}
+Vol <- grep('Volume', colnames(portfolio))
+close <- grep('Close',colnames(portfolio))
+Close <- portfolio[,close]
+Volume <- portfolio[,Vol]
+colnames(Close)
+```
+
+Remove NAs from the data. The colSums(is.na(Close)) isn't returning the columns with NAs, so this must be done manually.
+```{r}
+
+Close_noNAs <- Close[,-c(9,13,17,18,25,27,32,34,46,50,61,65)]
+Close_noNAs$SCE.PB.Close <- as.numeric(Close_noNAs$SCE.PB.Close)
+```
+
+Add in a value of the portfolio column for each day's closing price of all stock that don't have NAs.
+```{r}
+Close_noNAs$DailyValue <- rowSums(Close_noNAs,na.rm=TRUE)
+
+```
+
+Add in a daily change column of the portfolio closing prices.
+```{r}
+dayVal <- as.data.frame(Close_noNAs$DailyValue)
+colnames(dayVal) <- 'previousDayValue'
+zero <- as.data.frame(as.numeric(dayVal$previousDayValue[1]))
+colnames(zero) <- 'previousDayValue'
+prevDay <- rbind(zero,dayVal)
+Close_noNAs$prevDay <- prevDay[1:3303,1]
+dailyChange <- as.data.frame(Close_noNAs$DailyValue-Close_noNAs$prevDay)
+colnames(dailyChange) <- 'dailyChange'
+
+Close1 <- cbind(Close_noNAs,dailyChange)
+```
+
+Add a column that gives the return in dollars on initial dollars invested.
+```{r}
+Close1$ROI_dollars <- Close1$DailyValue-Close1$DailyValue[1]
+```
+
+Add some date fields to look at the values by date, day of the week, month, and year in analyzing this data.
+```{r}
+Close1$Date <- as.Date.character(row.names(Close1))
+```
+
+```{r}
+Close1$DayOfWeek <- weekdays(as.Date(Close1$Date))
+```
+
+```{r}
+month <- month(as.Date(Close1$Date))
+Month <- month.abb[month]
+Close1$Month <- Month
+```
+
+
+Add in the year of the Date column.
+```{r}
+Year <- year(as.Date(Close1$Date))
+
+Close1$Year <- Year
+
+Close1$MonthYear <- paste(Close1$Month, Close1$Year, sep='-')
+Close1$MonthYear <- as.factor(Close1$MonthYear)
+```
+
+
+
+Add in some [unemployment](https://data.bls.gov/pdq/SurveyOutputServlet) information as a column to see how the portfolio is doing by date.
+```{r}
+ue <- read.delim('BLS_unemploymentRates2007-2020.txt', sep=',',header=TRUE, 
+                 na.strings=c('',' '))
+UE <- ue[,-14]#remove the empty 'Annual' column
+```
+
+Use tidyr to gather the month fields with their respective unemployment rates per month.
+```{r}
+gatherMonths <- gather(UE, 'UE_Month', 'UE_monthlyRate',2:13)
+
+gatherMonths$MonthYear <- paste(gatherMonths$UE_Month, gatherMonths$Year, sep='-')
+gatherMonths$MonthYear <- as.factor(gatherMonths$MonthYear)
+```
+
+
+```{r}
+UE2 <- gatherMonths[,3:4]
+Close2 <- merge(Close1, UE2, by.x='MonthYear', by.y='MonthYear')
+```
+
+```{r}
+write.csv(Close2, 'ROI_UE_2007_2020.csv', row.names=FALSE)
+```

@@ -36,7 +36,7 @@ This sets a minimum date to grab out of the AAPL finance data
 so that all dates will be after Feb 1, 2017.
 ```{r, error=F, warning=F, message=F}
 
-dt <- '2017-2-1'
+dt <- '2011-2-1'
 
 aapl <- getSymbols.yahoo('AAPL', from = dt, auto.assign=F)
 ```
@@ -196,7 +196,7 @@ for (ticker in tickers){
 
 S&P benchmark
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
-benchmarkPrices <- getSymbols.yahoo('^GSPC', from='2016-01-03', periodicity='daily', auto.assign=FALSE)[,4]
+benchmarkPrices <- getSymbols.yahoo('^GSPC', from='2011-01-01', periodicity='daily', auto.assign=FALSE)[,4]
 ```
 
 
