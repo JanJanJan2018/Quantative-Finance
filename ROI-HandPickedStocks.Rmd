@@ -3,13 +3,14 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: "2/17/2020"
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 ```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
 library(lubridate)
 library(tidyr)
+library(ggplot2)
 ```
 
 
@@ -166,6 +167,7 @@ Stocks$DailyRatios_X_UE <- Stocks$ValueRatioDaily2Initial*Stocks$VolumeRatioDail
 
 Add an exponential calculation field based on the unemployment rate for rate, and using numeric day of the month for t, and k as the month.
 ```{r}
+Stocks$dayOfMonth <- day(Stocks$Date)
 dayOfMonth <- day(Stocks$Date)
 ue1 <- Stocks$UE_monthlyRate
 
@@ -390,6 +392,118 @@ StocksSTATS <- cbind(Stocks,stocks2)
 ```{r}
 write.csv(StocksSTATS, 'STOCKS_STATS.csv', row.names=TRUE)
 ```
+
+
+All the columns we now have are:
+```{r}
+colnames(StocksSTATS)
+
+```
+
+
+Lets us pick one stock, look at the stats we added for that stock and then pull out some googled articles of that stock as a company in the news since 2007 till today's date of Feb. 18, 2020 to compare the sentiments on the company with words that we will count the number of times the company is in the news, the comments by readers, zoom in on the dates of those articles, and see how the company behaved. Lets choose the highest ROI in dollars out of our stocks and compare it to the lowest ROI in dollars. Lets also use the poisson formula that chose the day of the month, because some people might want to buy stocks on pay day around the 1st or 15th for most, or also some on every Friday or every other Friday which would also use the day of the week.
+```{r}
+m <- StocksSTATS[3303, 124:176]
+t <- as.data.frame(t(m))
+colnames(t) <- row.names(m)
+t$StockROI <- row.names(t)
+
+Troi <- t[order(t$`2020-02-14`, decreasing=TRUE),]
+
+mostLeast <- rbind(head(Troi,3),tail(Troi,3))
+mostLeast
+
+```
+
+The above table shows the three highest returns on investment and the three lowest since Jan 3, 2007 to Feb 14, 2020. Lets use the lowest stock for now (C is Citigroup bank), because AMZN (Amazon) is always in the news and it would fluctuate a lot I would think, but we could look at the quartiles for each and get the news releases of each date where the stock was in that quartile range, look at the median ROI, the min and max too, and cross referencing with the other stat fields.
+```{r}
+amzn <- grep('AMZN', colnames(StocksSTATS))
+c <- grep('^C[.|_]', colnames(StocksSTATS))
+C_stock <- StocksSTATS[,c(c,107:124)]
+amzn_stock <- StocksSTATS[,c(amzn,107:124)]
+```
+
+Citigroup is our C_stock table and Amazon is our amzn_stock table. Lets look at the daily ratios of volume and ROI in dollars times the unemployment rate column and the day of the week and day of the year and poisson columns.
+```{r}
+ggplot(data = C_stock, aes(x=Year, y=C_ROI_dollars,group=DayOfWeek)) +
+  geom_line(aes(color=DayOfWeek))+
+  #geom_point()+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Citigroup 2007-2020')+
+  ylab('ROI dollars Values')
+
+
+```
+
+
+We can see from the plot above that buying Citigroup stock anywhere before 2010, was a bad idea. But we also see that the stock would have been good to buy around 2010-2016, as it overall increased its return on investment in dollars initially invested.
+
+Lets look at the years from 2016-2020 to see this plotted Citigroup stock.
+```{r}
+y2015plus <- subset(C_stock, C_stock$Year>2014)
+
+ggplot(data = y2015plus, aes(x=Year, y=C.Close,group=DayOfWeek)) +
+  geom_line(aes(color=DayOfWeek))+
+  #geom_point()+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Citigroup Stock Value in Dollars 2015-2020')+
+  ylab('Stock Value')
+```
+
+
+We see from the above plot that Citigroup was good to buy at the start of 2016 or 2019 if you want to see an increase all year long, but in 2017-2018 it decreased.Overall, if investing since 2016, the stock increased from the high $40 to the mid-high $70 range. This would be good to cross reference with unemployment rates and the news articles online text mined for public sentiment on Citigroup.
+
+
+Lets look at amazon for the same quick plotted analysis as done with Citigroup.
+```{r}
+ggplot(data = amzn_stock, aes(x=Year, y=AMZN_ROI_dollars,group=DayOfWeek)) +
+  geom_line(aes(color=DayOfWeek))+
+  #geom_point()+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('AMAZON 2007-2020')+
+  ylab('ROI dollars Values')
+
+
+```
+
+
+We can see from the plot above that buying AMAZON stock anywhere before 2010, was a great idea. But we also see that the stock would have been good to buy around 2010-2018 or 2019 but not in 2018, as it overall increased its return on investment in dollars initially invested.In 2018, you bought high and it decreased the entire year. This would be great to see what happened in 2018 with the value. So we will.
+
+Lets look at the years from 2018-2020 to see this plotted Citigroup stock.
+```{r}
+y2015plus <- subset(amzn_stock, amzn_stock$Year>2017)
+
+ggplot(data = y2015plus, aes(x=Year, y=AMZN.Close,group=DayOfWeek)) +
+  geom_line(aes(color=DayOfWeek))+
+  #geom_point()+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('AMAZON Stock Value in Dollars 2018-2020')+
+  ylab('Stock Value')
+```
+
+The chart above shows how the value in dollars and day of the week from 2018-2020 decreases in 2018 and increases in 2019. If you bought in 2018, you lost money the entire year, but you gained it back in 2019 plus some additional earnings.
+
+For fun, look at the poisson equation of the unemployment rate and the day of the month (1-31) of these two stocks. 
+
+Citigroup Poissson from years examined in dollar value of the stock.
+```{r}
+
+
+```
+
+
+```{r}
+
+```
+
 
 
 
