@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: "2/17/2020"
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 ```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
@@ -179,6 +179,217 @@ write.csv(Stocks, 'StocksStats.csv', row.names=TRUE)
 
 ```
 
+Make a daily ROI dollars column for each of the stocks in this set.
+```{r}
+stocks1 <- Stocks[,1:53]
+colnames(stocks1)
+```
+
+```{r}
+stocks1$TGT_ROI_dollars <- stocks1$TGT.Close-stocks1$TGT.Close[1]
+stocks1$FTR_ROI_dollars <- stocks1$FTR.Close-stocks1$FTR.Close[1]
+stocks1$UBSI_ROI_dollars <- stocks1$UBSI.Close-stocks1$UBSI.Close[1]
+stocks1$HD_ROI_dollars <- stocks1$HD.Close-stocks1$HD.Close[1]
+stocks1$JPM_ROI_dollars <- stocks1$JPM.Close-stocks1$JPM.Close[1]
+
+stocks1$XOM_ROI_dollars <- stocks1$XOM.Close-stocks1$XOM.Close[1]
+stocks1$CVX_ROI_dollars <- stocks1$CVX.Close-stocks1$CVX.Close[1]
+stocks1$NSANY_ROI_dollars <- stocks1$NSANY.Close-stocks1$NSANY.Close[1]
+stocks1$MGM_ROI_dollars <- stocks1$MGM.Close-stocks1$MGM.Close[1]
+stocks1$TEVA_ROI_dollars <- stocks1$TEVA.Close-stocks1$TEVA.Close[1]
+
+stocks1$HST_ROI_dollars <- stocks1$HST.Close-stocks1$HST.Close[1]
+stocks1$WFC_ROI_dollars <- stocks1$WFC.Close-stocks1$WFC.Close[1]
+stocks1$WWE_ROI_dollars <- stocks1$WWE.Close-stocks1$WWE.Close[1]
+stocks1$INO_ROI_dollars <- stocks1$INO.Close-stocks1$INO.Close[1]
+stocks1$SCE.PB_ROI_dollars <- stocks1$SCE.PB.Close-stocks1$SCE.PB.Close[1]
+
+stocks1$FFIN_ROI_dollars <- stocks1$FFIN.Close-stocks1$FFIN.Close[1]
+stocks1$GOOG_ROI_dollars <- stocks1$GOOG.Close-stocks1$GOOG.Close[1]
+stocks1$WM_ROI_dollars <- stocks1$WM.Close-stocks1$WM.Close[1]
+stocks1$ONCY_ROI_dollars <- stocks1$ONCY.Close-stocks1$ONCY.Close[1]
+stocks1$S_ROI_dollars <- stocks1$S.Close-stocks1$S.Close[1]
+
+stocks1$F_ROI_dollars <- stocks1$F.Close-stocks1$F.Close[1]
+stocks1$ARWR_ROI_dollars <- stocks1$ARWR.Close-stocks1$ARWR.Close[1]
+stocks1$COST_ROI_dollars <- stocks1$COST.Close-stocks1$COST.Close[1]
+stocks1$AAL_ROI_dollars <- stocks1$AAL.Close-stocks1$AAL.Close[1]
+stocks1$JWN_ROI_dollars <- stocks1$JWN.Close-stocks1$JWN.Close[1]
+
+stocks1$NUS_ROI_dollars <- stocks1$NUS.Close-stocks1$NUS.Close[1]
+stocks1$HMC_ROI_dollars <- stocks1$HMC.Close-stocks1$HMC.Close[1]
+stocks1$AMZN_ROI_dollars <- stocks1$AMZN.Close-stocks1$AMZN.Close[1]
+stocks1$T_ROI_dollars <- stocks1$T.Close-stocks1$T.Close[1]
+stocks1$HRB_ROI_dollars <- stocks1$HRB.Close-stocks1$HRB.Close[1]
+stocks1$RRGB_ROI_dollars <- stocks1$RRGB.Close-stocks1$RRGB.Close[1]
+
+stocks1$ADDYY_ROI_dollars <- stocks1$ADDYY.Close-stocks1$ADDYY.Close[1]
+stocks1$PCG_ROI_dollars <- stocks1$PCG.Close-stocks1$PCG.Close[1]
+stocks1$ROST_ROI_dollars <- stocks1$ROST.Close-stocks1$ROST.Close[1]
+stocks1$JNJ_ROI_dollars <- stocks1$JNJ.Close-stocks1$JNJ.Close[1]
+stocks1$NFLX_ROI_dollars <- stocks1$NFLX.Close-stocks1$NFLX.Close[1]
+stocks1$M_ROI_dollars <- stocks1$M.Close-stocks1$M.Close[1]
+
+stocks1$KSS_ROI_dollars <- stocks1$KSS.Close-stocks1$KSS.Close[1]
+stocks1$DLTR_ROI_dollars <- stocks1$DLTR.Close-stocks1$DLTR.Close[1]
+stocks1$WMT_ROI_dollars <- stocks1$WMT.Close-stocks1$WMT.Close[1]
+stocks1$C_ROI_dollars <- stocks1$C.Close-stocks1$C.Close[1]
+stocks1$AAP_ROI_dollars <- stocks1$AAP.Close-stocks1$AAP.Close[1]
+stocks1$JBLU_ROI_dollars <- stocks1$JBLU.Close-stocks1$JBLU.Close[1]
+
+stocks1$MSFT_ROI_dollars <- stocks1$MSFT.Close-stocks1$MSFT.Close[1]
+stocks1$KGJI_ROI_dollars <- stocks1$KGJI.Close-stocks1$KGJI.Close[1]
+stocks1$EPD_ROI_dollars <- stocks1$EPD.Close-stocks1$EPD.Close[1]
+stocks1$TJX_ROI_dollars <- stocks1$TJX.Close-stocks1$TJX.Close[1]
+stocks1$HOFT_ROI_dollars <- stocks1$HOFT.Close-stocks1$HOFT.Close[1]
+
+stocks1$LUV_ROI_dollars <- stocks1$LUV.Close-stocks1$LUV.Close[1]
+stocks1$NKE_ROI_dollars <- stocks1$NKE.Close-stocks1$NKE.Close[1]
+stocks1$TM_ROI_dollars <- stocks1$TM.Close-stocks1$TM.Close[1]
+stocks1$VZ_ROI_dollars <- stocks1$VZ.Close-stocks1$VZ.Close[1]
+stocks1$SIG_ROI_dollars <- stocks1$SIG.Close-stocks1$SIG.Close[1]
+
+
+```
+
+
+
+These are the values of the stock the previous day that will be subtracted from each day to get the daily change from the day before in dollars.
+```{r}
+
+TGTa <- c(0,stocks1$TGT.Close[1:3302])
+FTRa <- c(0, stocks1$FTR.Close[1:3302])
+UBSIa <- c(0,stocks1$UBSI.Close[1:3302])
+HDa <- c(0,stocks1$HD.Close[1:3302])
+JPMa <- c(0,stocks1$JPM.Close[1:3302])
+XOMa <- c(0,stocks1$XOM.Close[1:3302])
+CVXa <- c(0,stocks1$CVX.Close[1:3302])
+NSANYa <- c(0,stocks1$NSANY.Close[1:3302])
+MGMa <- c(0,stocks1$MGM.Close[1:3302])
+TEVAa <- c(0, stocks1$TEVA.Close[1:3302])
+HSTa <- c(0, stocks1$HST.Close[1:3302])
+WFCa <- c(0, stocks1$WFC.Close[1:3302])
+WWEa <- c(0, stocks1$WWE.Close[1:3302])
+INOa <- c(0,stocks1$INO.Close[1:3302])
+SCEa <- c(0,stocks1$SCE.PB.Close[1:3302])
+FFINa <- c(0,stocks1$FFIN.Close[1:3302])
+GOOGa <- c(0,stocks1$GOOG.Close[1:3302])
+WMa <- c(0,stocks1$WM.Close[1:3302])
+ONCYa <- c(0,stocks1$ONCY.Close[1:3302])
+Sa <- c(0,stocks1$S.Close[1:3302])
+Fa <- c(0,stocks1$F.Close[1:3302])
+ARWRa <- c(0,stocks1$ARWR.Close[1:3302])
+COSTa <- c(0,stocks1$COST.Close[1:3302])
+AALa <- c(0,stocks1$AAL.Close[1:3302])
+JWNa <- c(0,stocks1$JWN.Close[1:3302])
+NUSa <- c(0,stocks1$NUS.Close[1:3302])
+ADDYYa <- c(0,stocks1$ADDYY.Close[1:3302])
+KSSa <- c(0,stocks1$KSS.Close[1:3302])
+MSFTa <- c(0,stocks1$MSFT.Close[1:3302])
+LUVa <- c(0,stocks1$LUV.Close[1:3302])
+HMCa <- c(0,stocks1$HMC.Close[1:3302])
+PCGa <- c(0,stocks1$PCG.Close[1:3302])
+DLTRa <- c(0,stocks1$DLTR.Close[1:3302])
+KGJIa <- c(0,stocks1$KGJI.Close[1:3302])
+NKEa <- c(0,stocks1$NKE.Close[1:3302])
+AMZNa <- c(0,stocks1$AMZN.Close[1:3302])
+ROSTa <- c(0,stocks1$ROST.Close[1:3302])
+WMTa <- c(0,stocks1$WMT.Close[1:3302])
+TJXa <- c(0,stocks1$TJX.Close[1:3302])
+TMa <- c(0,stocks1$TM.Close[1:3302])
+Ta <- c(0,stocks1$T.Close[1:3302])
+JNJa <- c(0,stocks1$JNJ.Close[1:3302])
+Ca <- c(0,stocks1$C.Close[1:3302])
+EPDa <- c(0,stocks1$EPD.Close[1:3302])
+VZa <- c(0,stocks1$VZ.Close[1:3302])
+HRBa <- c(0,stocks1$HRB.Close[1:3302])
+NFLXa <- c(0,stocks1$NFLX.Close[1:3302])
+AAPa <- c(0,stocks1$AAP.Close[1:3302])
+HOFTa <- c(0,stocks1$HOFT.Close[1:3302])
+SIGa <- c(0,stocks1$SIG.Close[1:3302])
+RRGBa <- c(0,stocks1$RRGB.Close[1:3302])
+Ma <- c(0,stocks1$M.Close[1:3302])
+JBLUa <- c(0,stocks1$JBLU.Close[1:3302])
+
+```
+
+This creates the DailyChange per stock columns.
+```{r}
+stocks1$TGT_dailyChange <- stocks1$TGT.Close-TGTa
+stocks1$FTR_dailyChange <- stocks1$FTR.Close-FTRa
+stocks1$UBSI_dailyChange <- stocks1$UBSI.Close-UBSIa
+stocks1$HD_dailyChange <- stocks1$HD.Close-HDa
+stocks1$JPM_dailyChange <- stocks1$JPM.Close-JPMa
+
+stocks1$XOM_dailyChange <- stocks1$XOM.Close-XOMa
+stocks1$CVX_dailyChange <- stocks1$CVX.Close-CVXa
+stocks1$NSANY_dailyChange <- stocks1$NSANY.Close-NSANYa
+stocks1$MGM_dailyChange <- stocks1$MGM.Close-MGMa
+stocks1$TEVA_dailyChange <- stocks1$TEVA.Close-TEVAa
+
+stocks1$HST_dailyChange <- stocks1$HST.Close-HSTa
+stocks1$WFC_dailyChange <- stocks1$WFC.Close-WFCa
+stocks1$WWE_dailyChange <- stocks1$WWE.Close-WWEa
+stocks1$INO_dailyChange <- stocks1$INO.Close-INOa
+stocks1$SCE.PB_dailyChange <- stocks1$SCE.PB.Close-SCEa
+
+stocks1$FFIN_dailyChange <- stocks1$FFIN.Close-FFINa
+stocks1$GOOG_dailyChange <- stocks1$GOOG.Close-GOOGa
+stocks1$WM_dailyChange <- stocks1$WM.Close-WMa
+stocks1$ONCY_dailyChange <- stocks1$ONCY.Close-ONCYa
+stocks1$S_dailyChange <- stocks1$S.Close-Sa
+
+stocks1$F_dailyChange <- stocks1$F.Close-Fa
+stocks1$ARWR_dailyChange <- stocks1$ARWR.Close-ARWRa
+stocks1$COST_dailyChange <- stocks1$COST.Close-COSTa
+stocks1$AAL_dailyChange <- stocks1$AAL.Close-AALa
+stocks1$JWN_dailyChange <- stocks1$JWN.Close-JWNa
+
+stocks1$NUS_dailyChange <- stocks1$NUS.Close-NUSa
+stocks1$HMC_dailyChange <- stocks1$HMC.Close-HMCa
+stocks1$AMZN_dailyChange <- stocks1$AMZN.Close-AMZNa
+stocks1$T_dailyChange <- stocks1$T.Close-Ta
+stocks1$HRB_dailyChange <- stocks1$HRB.Close-HRBa
+stocks1$RRGB_dailyChange <- stocks1$RRGB.Close-RRGBa
+
+stocks1$ADDYY_dailyChange <- stocks1$ADDYY.Close-ADDYYa
+stocks1$PCG_dailyChange <- stocks1$PCG.Close-PCGa
+stocks1$ROST_dailyChange <- stocks1$ROST.Close-ROSTa
+stocks1$JNJ_dailyChange <- stocks1$JNJ.Close-JNJa
+stocks1$NFLX_dailyChange <- stocks1$NFLX.Close-NFLXa
+stocks1$M_dailyChange <- stocks1$M.Close-Ma
+
+stocks1$KSS_dailyChange <- stocks1$KSS.Close-KSSa
+stocks1$DLTR_dailyChange <- stocks1$DLTR.Close-DLTRa
+stocks1$WMT_dailyChange <- stocks1$WMT.Close-WMTa
+stocks1$C_dailyChange <- stocks1$C.Close-Ca
+stocks1$AAP_dailyChange <- stocks1$AAP.Close-AAPa
+stocks1$JBLU_dailyChange <- stocks1$JBLU.Close-JBLUa
+
+stocks1$MSFT_dailyChange <- stocks1$MSFT.Close-MSFTa
+stocks1$KGJI_dailyChange <- stocks1$KGJI.Close-KGJIa
+stocks1$EPD_dailyChange <- stocks1$EPD.Close-EPDa
+stocks1$TJX_dailyChange <- stocks1$TJX.Close-TJXa
+stocks1$HOFT_dailyChange <- stocks1$HOFT.Close-HOFTa
+
+stocks1$LUV_dailyChange <- stocks1$LUV.Close-LUVa
+stocks1$NKE_dailyChange <- stocks1$NKE.Close-NKEa
+stocks1$TM_dailyChange <- stocks1$TM.Close-TMa
+stocks1$VZ_dailyChange <- stocks1$VZ.Close-VZa
+stocks1$SIG_dailyChange <- stocks1$SIG.Close-SIGa
+
+```
+
+
+Combine the stocks1 stats of ROI and daily change in dollars per stock to the stocks stats data table.
+```{r}
+stocks2 <- stocks1[,-c(1:53)]
+StocksSTATS <- cbind(Stocks,stocks2)
+```
+
+```{r}
+write.csv(StocksSTATS, 'STOCKS_STATS.csv', row.names=TRUE)
+```
 
 
 

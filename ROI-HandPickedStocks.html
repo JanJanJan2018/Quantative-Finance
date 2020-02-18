@@ -527,6 +527,203 @@ ue1 &lt;- Stocks$UE_monthlyRate
 
 Stocks$poisson &lt;- (exp(-(ue1))*(ue1)^dayOfMonth)/(factorial(dayOfMonth))</code></pre>
 <pre class="r"><code>write.csv(Stocks, &#39;StocksStats.csv&#39;, row.names=TRUE)</code></pre>
+<p>Make a daily ROI dollars column for each of the stocks in this set.</p>
+<pre class="r"><code>stocks1 &lt;- Stocks[,1:53]
+colnames(stocks1)</code></pre>
+<pre><code>##  [1] &quot;TGT.Close&quot;    &quot;FTR.Close&quot;    &quot;UBSI.Close&quot;   &quot;HD.Close&quot;     &quot;JPM.Close&quot;   
+##  [6] &quot;XOM.Close&quot;    &quot;CVX.Close&quot;    &quot;NSANY.Close&quot;  &quot;MGM.Close&quot;    &quot;TEVA.Close&quot;  
+## [11] &quot;HST.Close&quot;    &quot;WFC.Close&quot;    &quot;WWE.Close&quot;    &quot;INO.Close&quot;    &quot;SCE.PB.Close&quot;
+## [16] &quot;FFIN.Close&quot;   &quot;GOOG.Close&quot;   &quot;WM.Close&quot;     &quot;ONCY.Close&quot;   &quot;S.Close&quot;     
+## [21] &quot;F.Close&quot;      &quot;ARWR.Close&quot;   &quot;COST.Close&quot;   &quot;AAL.Close&quot;    &quot;JWN.Close&quot;   
+## [26] &quot;NUS.Close&quot;    &quot;ADDYY.Close&quot;  &quot;KSS.Close&quot;    &quot;MSFT.Close&quot;   &quot;LUV.Close&quot;   
+## [31] &quot;HMC.Close&quot;    &quot;PCG.Close&quot;    &quot;DLTR.Close&quot;   &quot;KGJI.Close&quot;   &quot;NKE.Close&quot;   
+## [36] &quot;AMZN.Close&quot;   &quot;ROST.Close&quot;   &quot;WMT.Close&quot;    &quot;TJX.Close&quot;    &quot;TM.Close&quot;    
+## [41] &quot;T.Close&quot;      &quot;JNJ.Close&quot;    &quot;C.Close&quot;      &quot;EPD.Close&quot;    &quot;VZ.Close&quot;    
+## [46] &quot;HRB.Close&quot;    &quot;NFLX.Close&quot;   &quot;AAP.Close&quot;    &quot;HOFT.Close&quot;   &quot;SIG.Close&quot;   
+## [51] &quot;RRGB.Close&quot;   &quot;M.Close&quot;      &quot;JBLU.Close&quot;</code></pre>
+<pre class="r"><code>stocks1$TGT_ROI_dollars &lt;- stocks1$TGT.Close-stocks1$TGT.Close[1]
+stocks1$FTR_ROI_dollars &lt;- stocks1$FTR.Close-stocks1$FTR.Close[1]
+stocks1$UBSI_ROI_dollars &lt;- stocks1$UBSI.Close-stocks1$UBSI.Close[1]
+stocks1$HD_ROI_dollars &lt;- stocks1$HD.Close-stocks1$HD.Close[1]
+stocks1$JPM_ROI_dollars &lt;- stocks1$JPM.Close-stocks1$JPM.Close[1]
+
+stocks1$XOM_ROI_dollars &lt;- stocks1$XOM.Close-stocks1$XOM.Close[1]
+stocks1$CVX_ROI_dollars &lt;- stocks1$CVX.Close-stocks1$CVX.Close[1]
+stocks1$NSANY_ROI_dollars &lt;- stocks1$NSANY.Close-stocks1$NSANY.Close[1]
+stocks1$MGM_ROI_dollars &lt;- stocks1$MGM.Close-stocks1$MGM.Close[1]
+stocks1$TEVA_ROI_dollars &lt;- stocks1$TEVA.Close-stocks1$TEVA.Close[1]
+
+stocks1$HST_ROI_dollars &lt;- stocks1$HST.Close-stocks1$HST.Close[1]
+stocks1$WFC_ROI_dollars &lt;- stocks1$WFC.Close-stocks1$WFC.Close[1]
+stocks1$WWE_ROI_dollars &lt;- stocks1$WWE.Close-stocks1$WWE.Close[1]
+stocks1$INO_ROI_dollars &lt;- stocks1$INO.Close-stocks1$INO.Close[1]
+stocks1$SCE.PB_ROI_dollars &lt;- stocks1$SCE.PB.Close-stocks1$SCE.PB.Close[1]
+
+stocks1$FFIN_ROI_dollars &lt;- stocks1$FFIN.Close-stocks1$FFIN.Close[1]
+stocks1$GOOG_ROI_dollars &lt;- stocks1$GOOG.Close-stocks1$GOOG.Close[1]
+stocks1$WM_ROI_dollars &lt;- stocks1$WM.Close-stocks1$WM.Close[1]
+stocks1$ONCY_ROI_dollars &lt;- stocks1$ONCY.Close-stocks1$ONCY.Close[1]
+stocks1$S_ROI_dollars &lt;- stocks1$S.Close-stocks1$S.Close[1]
+
+stocks1$F_ROI_dollars &lt;- stocks1$F.Close-stocks1$F.Close[1]
+stocks1$ARWR_ROI_dollars &lt;- stocks1$ARWR.Close-stocks1$ARWR.Close[1]
+stocks1$COST_ROI_dollars &lt;- stocks1$COST.Close-stocks1$COST.Close[1]
+stocks1$AAL_ROI_dollars &lt;- stocks1$AAL.Close-stocks1$AAL.Close[1]
+stocks1$JWN_ROI_dollars &lt;- stocks1$JWN.Close-stocks1$JWN.Close[1]
+
+stocks1$NUS_ROI_dollars &lt;- stocks1$NUS.Close-stocks1$NUS.Close[1]
+stocks1$HMC_ROI_dollars &lt;- stocks1$HMC.Close-stocks1$HMC.Close[1]
+stocks1$AMZN_ROI_dollars &lt;- stocks1$AMZN.Close-stocks1$AMZN.Close[1]
+stocks1$T_ROI_dollars &lt;- stocks1$T.Close-stocks1$T.Close[1]
+stocks1$HRB_ROI_dollars &lt;- stocks1$HRB.Close-stocks1$HRB.Close[1]
+stocks1$RRGB_ROI_dollars &lt;- stocks1$RRGB.Close-stocks1$RRGB.Close[1]
+
+stocks1$ADDYY_ROI_dollars &lt;- stocks1$ADDYY.Close-stocks1$ADDYY.Close[1]
+stocks1$PCG_ROI_dollars &lt;- stocks1$PCG.Close-stocks1$PCG.Close[1]
+stocks1$ROST_ROI_dollars &lt;- stocks1$ROST.Close-stocks1$ROST.Close[1]
+stocks1$JNJ_ROI_dollars &lt;- stocks1$JNJ.Close-stocks1$JNJ.Close[1]
+stocks1$NFLX_ROI_dollars &lt;- stocks1$NFLX.Close-stocks1$NFLX.Close[1]
+stocks1$M_ROI_dollars &lt;- stocks1$M.Close-stocks1$M.Close[1]
+
+stocks1$KSS_ROI_dollars &lt;- stocks1$KSS.Close-stocks1$KSS.Close[1]
+stocks1$DLTR_ROI_dollars &lt;- stocks1$DLTR.Close-stocks1$DLTR.Close[1]
+stocks1$WMT_ROI_dollars &lt;- stocks1$WMT.Close-stocks1$WMT.Close[1]
+stocks1$C_ROI_dollars &lt;- stocks1$C.Close-stocks1$C.Close[1]
+stocks1$AAP_ROI_dollars &lt;- stocks1$AAP.Close-stocks1$AAP.Close[1]
+stocks1$JBLU_ROI_dollars &lt;- stocks1$JBLU.Close-stocks1$JBLU.Close[1]
+
+stocks1$MSFT_ROI_dollars &lt;- stocks1$MSFT.Close-stocks1$MSFT.Close[1]
+stocks1$KGJI_ROI_dollars &lt;- stocks1$KGJI.Close-stocks1$KGJI.Close[1]
+stocks1$EPD_ROI_dollars &lt;- stocks1$EPD.Close-stocks1$EPD.Close[1]
+stocks1$TJX_ROI_dollars &lt;- stocks1$TJX.Close-stocks1$TJX.Close[1]
+stocks1$HOFT_ROI_dollars &lt;- stocks1$HOFT.Close-stocks1$HOFT.Close[1]
+
+stocks1$LUV_ROI_dollars &lt;- stocks1$LUV.Close-stocks1$LUV.Close[1]
+stocks1$NKE_ROI_dollars &lt;- stocks1$NKE.Close-stocks1$NKE.Close[1]
+stocks1$TM_ROI_dollars &lt;- stocks1$TM.Close-stocks1$TM.Close[1]
+stocks1$VZ_ROI_dollars &lt;- stocks1$VZ.Close-stocks1$VZ.Close[1]
+stocks1$SIG_ROI_dollars &lt;- stocks1$SIG.Close-stocks1$SIG.Close[1]</code></pre>
+<p>These are the values of the stock the previous day that will be subtracted from each day to get the daily change from the day before in dollars.</p>
+<pre class="r"><code>TGTa &lt;- c(0,stocks1$TGT.Close[1:3302])
+FTRa &lt;- c(0, stocks1$FTR.Close[1:3302])
+UBSIa &lt;- c(0,stocks1$UBSI.Close[1:3302])
+HDa &lt;- c(0,stocks1$HD.Close[1:3302])
+JPMa &lt;- c(0,stocks1$JPM.Close[1:3302])
+XOMa &lt;- c(0,stocks1$XOM.Close[1:3302])
+CVXa &lt;- c(0,stocks1$CVX.Close[1:3302])
+NSANYa &lt;- c(0,stocks1$NSANY.Close[1:3302])
+MGMa &lt;- c(0,stocks1$MGM.Close[1:3302])
+TEVAa &lt;- c(0, stocks1$TEVA.Close[1:3302])
+HSTa &lt;- c(0, stocks1$HST.Close[1:3302])
+WFCa &lt;- c(0, stocks1$WFC.Close[1:3302])
+WWEa &lt;- c(0, stocks1$WWE.Close[1:3302])
+INOa &lt;- c(0,stocks1$INO.Close[1:3302])
+SCEa &lt;- c(0,stocks1$SCE.PB.Close[1:3302])
+FFINa &lt;- c(0,stocks1$FFIN.Close[1:3302])
+GOOGa &lt;- c(0,stocks1$GOOG.Close[1:3302])
+WMa &lt;- c(0,stocks1$WM.Close[1:3302])
+ONCYa &lt;- c(0,stocks1$ONCY.Close[1:3302])
+Sa &lt;- c(0,stocks1$S.Close[1:3302])
+Fa &lt;- c(0,stocks1$F.Close[1:3302])
+ARWRa &lt;- c(0,stocks1$ARWR.Close[1:3302])
+COSTa &lt;- c(0,stocks1$COST.Close[1:3302])
+AALa &lt;- c(0,stocks1$AAL.Close[1:3302])
+JWNa &lt;- c(0,stocks1$JWN.Close[1:3302])
+NUSa &lt;- c(0,stocks1$NUS.Close[1:3302])
+ADDYYa &lt;- c(0,stocks1$ADDYY.Close[1:3302])
+KSSa &lt;- c(0,stocks1$KSS.Close[1:3302])
+MSFTa &lt;- c(0,stocks1$MSFT.Close[1:3302])
+LUVa &lt;- c(0,stocks1$LUV.Close[1:3302])
+HMCa &lt;- c(0,stocks1$HMC.Close[1:3302])
+PCGa &lt;- c(0,stocks1$PCG.Close[1:3302])
+DLTRa &lt;- c(0,stocks1$DLTR.Close[1:3302])
+KGJIa &lt;- c(0,stocks1$KGJI.Close[1:3302])
+NKEa &lt;- c(0,stocks1$NKE.Close[1:3302])
+AMZNa &lt;- c(0,stocks1$AMZN.Close[1:3302])
+ROSTa &lt;- c(0,stocks1$ROST.Close[1:3302])
+WMTa &lt;- c(0,stocks1$WMT.Close[1:3302])
+TJXa &lt;- c(0,stocks1$TJX.Close[1:3302])
+TMa &lt;- c(0,stocks1$TM.Close[1:3302])
+Ta &lt;- c(0,stocks1$T.Close[1:3302])
+JNJa &lt;- c(0,stocks1$JNJ.Close[1:3302])
+Ca &lt;- c(0,stocks1$C.Close[1:3302])
+EPDa &lt;- c(0,stocks1$EPD.Close[1:3302])
+VZa &lt;- c(0,stocks1$VZ.Close[1:3302])
+HRBa &lt;- c(0,stocks1$HRB.Close[1:3302])
+NFLXa &lt;- c(0,stocks1$NFLX.Close[1:3302])
+AAPa &lt;- c(0,stocks1$AAP.Close[1:3302])
+HOFTa &lt;- c(0,stocks1$HOFT.Close[1:3302])
+SIGa &lt;- c(0,stocks1$SIG.Close[1:3302])
+RRGBa &lt;- c(0,stocks1$RRGB.Close[1:3302])
+Ma &lt;- c(0,stocks1$M.Close[1:3302])
+JBLUa &lt;- c(0,stocks1$JBLU.Close[1:3302])</code></pre>
+<p>This creates the DailyChange per stock columns.</p>
+<pre class="r"><code>stocks1$TGT_dailyChange &lt;- stocks1$TGT.Close-TGTa
+stocks1$FTR_dailyChange &lt;- stocks1$FTR.Close-FTRa
+stocks1$UBSI_dailyChange &lt;- stocks1$UBSI.Close-UBSIa
+stocks1$HD_dailyChange &lt;- stocks1$HD.Close-HDa
+stocks1$JPM_dailyChange &lt;- stocks1$JPM.Close-JPMa
+
+stocks1$XOM_dailyChange &lt;- stocks1$XOM.Close-XOMa
+stocks1$CVX_dailyChange &lt;- stocks1$CVX.Close-CVXa
+stocks1$NSANY_dailyChange &lt;- stocks1$NSANY.Close-NSANYa
+stocks1$MGM_dailyChange &lt;- stocks1$MGM.Close-MGMa
+stocks1$TEVA_dailyChange &lt;- stocks1$TEVA.Close-TEVAa
+
+stocks1$HST_dailyChange &lt;- stocks1$HST.Close-HSTa
+stocks1$WFC_dailyChange &lt;- stocks1$WFC.Close-WFCa
+stocks1$WWE_dailyChange &lt;- stocks1$WWE.Close-WWEa
+stocks1$INO_dailyChange &lt;- stocks1$INO.Close-INOa
+stocks1$SCE.PB_dailyChange &lt;- stocks1$SCE.PB.Close-SCEa
+
+stocks1$FFIN_dailyChange &lt;- stocks1$FFIN.Close-FFINa
+stocks1$GOOG_dailyChange &lt;- stocks1$GOOG.Close-GOOGa
+stocks1$WM_dailyChange &lt;- stocks1$WM.Close-WMa
+stocks1$ONCY_dailyChange &lt;- stocks1$ONCY.Close-ONCYa
+stocks1$S_dailyChange &lt;- stocks1$S.Close-Sa
+
+stocks1$F_dailyChange &lt;- stocks1$F.Close-Fa
+stocks1$ARWR_dailyChange &lt;- stocks1$ARWR.Close-ARWRa
+stocks1$COST_dailyChange &lt;- stocks1$COST.Close-COSTa
+stocks1$AAL_dailyChange &lt;- stocks1$AAL.Close-AALa
+stocks1$JWN_dailyChange &lt;- stocks1$JWN.Close-JWNa
+
+stocks1$NUS_dailyChange &lt;- stocks1$NUS.Close-NUSa
+stocks1$HMC_dailyChange &lt;- stocks1$HMC.Close-HMCa
+stocks1$AMZN_dailyChange &lt;- stocks1$AMZN.Close-AMZNa
+stocks1$T_dailyChange &lt;- stocks1$T.Close-Ta
+stocks1$HRB_dailyChange &lt;- stocks1$HRB.Close-HRBa
+stocks1$RRGB_dailyChange &lt;- stocks1$RRGB.Close-RRGBa
+
+stocks1$ADDYY_dailyChange &lt;- stocks1$ADDYY.Close-ADDYYa
+stocks1$PCG_dailyChange &lt;- stocks1$PCG.Close-PCGa
+stocks1$ROST_dailyChange &lt;- stocks1$ROST.Close-ROSTa
+stocks1$JNJ_dailyChange &lt;- stocks1$JNJ.Close-JNJa
+stocks1$NFLX_dailyChange &lt;- stocks1$NFLX.Close-NFLXa
+stocks1$M_dailyChange &lt;- stocks1$M.Close-Ma
+
+stocks1$KSS_dailyChange &lt;- stocks1$KSS.Close-KSSa
+stocks1$DLTR_dailyChange &lt;- stocks1$DLTR.Close-DLTRa
+stocks1$WMT_dailyChange &lt;- stocks1$WMT.Close-WMTa
+stocks1$C_dailyChange &lt;- stocks1$C.Close-Ca
+stocks1$AAP_dailyChange &lt;- stocks1$AAP.Close-AAPa
+stocks1$JBLU_dailyChange &lt;- stocks1$JBLU.Close-JBLUa
+
+stocks1$MSFT_dailyChange &lt;- stocks1$MSFT.Close-MSFTa
+stocks1$KGJI_dailyChange &lt;- stocks1$KGJI.Close-KGJIa
+stocks1$EPD_dailyChange &lt;- stocks1$EPD.Close-EPDa
+stocks1$TJX_dailyChange &lt;- stocks1$TJX.Close-TJXa
+stocks1$HOFT_dailyChange &lt;- stocks1$HOFT.Close-HOFTa
+
+stocks1$LUV_dailyChange &lt;- stocks1$LUV.Close-LUVa
+stocks1$NKE_dailyChange &lt;- stocks1$NKE.Close-NKEa
+stocks1$TM_dailyChange &lt;- stocks1$TM.Close-TMa
+stocks1$VZ_dailyChange &lt;- stocks1$VZ.Close-VZa
+stocks1$SIG_dailyChange &lt;- stocks1$SIG.Close-SIGa</code></pre>
+<p>Combine the stocks1 stats of ROI and daily change in dollars per stock to the stocks stats data table.</p>
+<pre class="r"><code>stocks2 &lt;- stocks1[,-c(1:53)]
+StocksSTATS &lt;- cbind(Stocks,stocks2)</code></pre>
+<pre class="r"><code>write.csv(StocksSTATS, &#39;STOCKS_STATS.csv&#39;, row.names=TRUE)</code></pre>
 
 
 
