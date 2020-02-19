@@ -171,7 +171,7 @@ Stocks$portfolio_DailyRatios_X_UE <-
 
 ```
 
-Add an exponential calculation field based on the unemployment rate for rate, and using t=1/12 for 12 months, and a binary value of 1 or 2 where the daily change is positive is assigned a 1 and a negative is a 2. This will make those values decreasing daily have a higher poisson and those values increasing a lower poisson value. This is a modified poisson used for probability of an outcome occuring with a constant rate. Added to rank daily changes based on unemployment rate of each month.
+Add an exponential calculation field based on the unemployment rate for rate, and using t=1/12 for 12 months, and a binary value of 1 or 2 where the daily change is positive is assigned a 1 and a negative is a 2. This will make those values decreasing daily have a lower poisson and those values increasing a higher poisson value. This is a modified poisson used for probability of an outcome occuring with a constant rate. Added to rank daily changes based on unemployment rate of each month.
 ```{r}
 Stocks <- Stocks[complete.cases(Stocks$UE_monthlyRate),]
 Stocks$dayOfMonth <- day(Stocks$Date)

@@ -527,7 +527,7 @@ colnames(Stocks)</code></pre>
 <p>Add a field that multiplies the daily value and daily volume ratios compared to the initial value and volume by the unemployment rate.</p>
 <pre class="r"><code>Stocks$portfolio_DailyRatios_X_UE &lt;-
   Stocks$portfolio_ValueRatioDaily2Initial*Stocks$portfolio_VolumeRatioDaily2Initial*Stocks$UE_monthlyRate</code></pre>
-<p>Add an exponential calculation field based on the unemployment rate for rate, and using t=1/12 for 12 months, and a binary value of 1 or 2 where the daily change is positive is assigned a 1 and a negative is a 2. This will make those values decreasing daily have a higher poisson and those values increasing a lower poisson value. This is a modified poisson used for probability of an outcome occuring with a constant rate. Added to rank daily changes based on unemployment rate of each month.</p>
+<p>Add an exponential calculation field based on the unemployment rate for rate, and using t=1/12 for 12 months, and a binary value of 1 or 2 where the daily change is positive is assigned a 1 and a negative is a 2. This will make those values decreasing daily have a lower poisson and those values increasing a higher poisson value. This is a modified poisson used for probability of an outcome occuring with a constant rate. Added to rank daily changes based on unemployment rate of each month.</p>
 <pre class="r"><code>Stocks &lt;- Stocks[complete.cases(Stocks$UE_monthlyRate),]
 Stocks$dayOfMonth &lt;- day(Stocks$Date)
 dayOfMonth &lt;- day(Stocks$Date)
