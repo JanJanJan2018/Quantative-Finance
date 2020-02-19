@@ -3,14 +3,15 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: "2/17/2020"
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 ```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
 library(lubridate)
 library(tidyr)
 library(ggplot2)
+library(dplyr)
 ```
 
 
@@ -116,7 +117,7 @@ gatherMonths$MonthYear <- as.factor(gatherMonths$MonthYear)
 ```{r}
 UE2 <- gatherMonths[,3:4]
 Close2 <- merge(Close1, UE2, by.x='MonthYear', by.y='MonthYear')
-row.names(Close2) <- row.names(Close1)
+row.names(Close2) <- Close2$Date
 ```
 
 
@@ -143,6 +144,7 @@ colnames(dailyVolumeChange) <- 'dailyVolumeChange'
 Volume2 <- cbind(Volume1,dailyVolumeChange)
 Volume2$VolumeRatioDaily2Initial <- Volume2$DailyVolume/Volume2$prevDayVolume[1]
 
+Volume2$Date <- as.Date(row.names(Volume2))
 ```
 
 
@@ -403,24 +405,25 @@ colnames(StocksSTATS)
 
 Lets us pick one stock, look at the stats we added for that stock and then pull out some googled articles of that stock as a company in the news since 2007 till today's date of Feb. 18, 2020 to compare the sentiments on the company with words that we will count the number of times the company is in the news, the comments by readers, zoom in on the dates of those articles, and see how the company behaved. Lets choose the highest ROI in dollars out of our stocks and compare it to the lowest ROI in dollars. Lets also use the poisson formula that chose the day of the month, because some people might want to buy stocks on pay day around the 1st or 15th for most, or also some on every Friday or every other Friday which would also use the day of the week.
 ```{r}
-m <- StocksSTATS[3303, 124:176]
+
+m <- StocksSTATS[order(StocksSTATS$Date, decreasing=FALSE)[3303], 124:176]
 t <- as.data.frame(t(m))
 colnames(t) <- row.names(m)
 t$StockROI <- row.names(t)
 
-Troi <- t[order(t$`2020-02-14`, decreasing=TRUE),]
+Troi <- t[order(t$'2020-02-14', decreasing=TRUE),]
 
 mostLeast <- rbind(head(Troi,3),tail(Troi,3))
+mostLeast <- na.omit(mostLeast)
 mostLeast
-
 ```
 
 The above table shows the three highest returns on investment and the three lowest since Jan 3, 2007 to Feb 14, 2020. Lets use the lowest stock for now (C is Citigroup bank), because AMZN (Amazon) is always in the news and it would fluctuate a lot I would think, but we could look at the quartiles for each and get the news releases of each date where the stock was in that quartile range, look at the median ROI, the min and max too, and cross referencing with the other stat fields.
 ```{r}
 amzn <- grep('AMZN', colnames(StocksSTATS))
 c <- grep('^C[.|_]', colnames(StocksSTATS))
-C_stock <- StocksSTATS[,c(c,107:124)]
-amzn_stock <- StocksSTATS[,c(amzn,107:124)]
+C_stock <- StocksSTATS[,c(c,107,112:116,123:124)]
+amzn_stock <- StocksSTATS[,c(amzn,107,112:116,123:124)]
 ```
 
 Citigroup is our C_stock table and Amazon is our amzn_stock table. Lets look at the daily ratios of volume and ROI in dollars times the unemployment rate column and the day of the week and day of the year and poisson columns.
@@ -491,18 +494,54 @@ ggplot(data = y2015plus, aes(x=Year, y=AMZN.Close,group=DayOfWeek)) +
 
 The chart above shows how the value in dollars and day of the week from 2018-2020 decreases in 2018 and increases in 2019. If you bought in 2018, you lost money the entire year, but you gained it back in 2019 plus some additional earnings.
 
-For fun, look at the poisson equation of the unemployment rate and the day of the month (1-31) of these two stocks. 
-
-Citigroup Poissson from years examined in dollar value of the stock.
+Lets group by the day of the month in this time series of the Citigroup stock and get the median value for the volumne of stocks traded for Citigroup by days 1-31 of the month.
 ```{r}
+v1 <- as.vector(colnames(C_stock)[2])
+poisson_Citi <- C_stock %>% group_by(dayOfMonth) %>% summarise_at(vars(v1), median,
+                                                                  na.rm=T)
+poisson_Citi <- as.data.frame(poisson_Citi)
+colnames(poisson_Citi)[2] <- 'Citi_Median_Volume'
+poisson_Citi <- poisson_Citi[order(poisson_Citi$Citi_Median_Volume, decreasing=T),]
+headTail_Citi_volume <- rbind(head(poisson_Citi,3), tail(poisson_Citi,3))
+headTail_Citi_volume
+```
 
+From the above table we see that the most volume of trades for Citigroup is at the middle and end of the month, and the lowest volume of trades are at the beginning of the new month and the third week of the month. 
+
+
+Lets look at the statistics of citigroup.
+```{r}
+summary(C_stock)
+```
+
+From the above summary statistics of Citigroup, we see the min, quantiles, median, mean, and max numeric values as well as length and class type for the non-numeric features of this data set.
+
+Some interesting insights into the above table are that considering an initial investment of 510 USD, the return on the initial investment in dollars is almost the entire amount invested but not quite. Definitely about 80% from the quantile and statistics on the ROI column. 
+
+The daily changes fluctuated from a loss of 298 USD in one day to a profit of 510 USD on another day. These are good indicators of where to look on these days, to see if the public sentiment on these dates for Citigroup would indicate more people getting rid of their Citi stock or buying up more of it.
+
+Also, the max and min volume of stock is much more and less respectively than the median volume of trades for this Citigroup stock. These dates for information would also be an interesting place to start to find a pattern with buying/selling stock and combining web scraped text from news articles and comments about Citigroup on those dates. 
+
+First, we should grab those points of interest in the data and create a table to compare these values. 
+```{r}
+C_stock_minmaxValueChanges <- subset(C_stock,
+                                     C_stock$C_dailyChange==min(C_stock$C_dailyChange) |
+                                       C_stock$C_dailyChange==max(C_stock$C_dailyChange) |
+                                       C_stock$C.Volume==min(C_stock$C.Volume) |
+                                       C_stock$C.Volume==max(C_stock$C.Volume))
+C_stock_minmaxValueChanges
 
 ```
 
+From the above information, Monday is the day of the week with the highest and lowest daily change, as well as the highest volume of trade. Tuesday is the day with the lowest volume of trade. The dates to pull an internet search of news articles about Citigroup to analyze public sentiment on Citi stock are: 
 
-```{r}
+- April 2, 2007
+- April 2, 2013
+- December 28, 2015
+- June 2, 2008
 
-```
+This should be interesting to see what type of articles are available on line with a google search of those dates and citigroup.
+
 
 
 
