@@ -58,7 +58,7 @@ colnames(dayVal) <- 'previousDayValue'
 zero <- as.data.frame(as.numeric(dayVal$previousDayValue[1]))
 colnames(zero) <- 'previousDayValue'
 prevDay <- rbind(zero,dayVal)
-Close_noNAs$prevDay <- prevDay[1:3303,1]
+Close_noNAs$prevDay <- prevDay[1:length(prevDay$previousDayValue)-1,1]
 dailyChange <- as.data.frame(Close_noNAs$DailyValue-Close_noNAs$prevDay)
 colnames(dailyChange) <- 'dailyValueChange'
 
@@ -118,6 +118,7 @@ gatherMonths$MonthYear <- as.factor(gatherMonths$MonthYear)
 UE2 <- gatherMonths[,3:4]
 Close2 <- merge(Close1, UE2, by.x='MonthYear', by.y='MonthYear')
 row.names(Close2) <- Close2$Date
+colnames(Close2)[55:58] <- paste('portfolio',colnames(Close2)[55:58], sep='_')
 ```
 
 
@@ -129,20 +130,21 @@ write.csv(Close2, 'ROI_UE_2007_2020.csv', row.names=FALSE)
 Lets add in the volume of trades per day from the Volume_noNAs data set. But lets add in some fields for total portfolio trades per day, 
 ```{r}
 Volume1 <- Volume_noNAs
-Volume1$DailyVolume <- rowSums(Volume1, na.rm=TRUE)
+Volume1$portfolio_DailyVolume <- rowSums(Volume1, na.rm=TRUE)
 
-dayVol <- as.data.frame(Volume1$DailyVolume)
-colnames(dayVol) <- 'previousDayVolume'
-zero <- as.data.frame(as.numeric(dayVol$previousDayVolume[1]))
-colnames(zero) <- 'previousDayVolume'
+dayVol <- as.data.frame(Volume1$portfolio_DailyVolume)
+colnames(dayVol) <- 'portfolio_previousDayVolume'
+zero <- as.data.frame(as.numeric(dayVol$portfolio_previousDayVolume[1]))
+colnames(zero) <- 'portfolio_previousDayVolume'
 prevDay1 <- rbind(zero,dayVol)
-Volume1$prevDayVolume <- prevDay1[1:3303,1]
+Volume1$portfolio_prevDayVolume <-
+  prevDay1[1:(length(prevDay1$portfolio_previousDayVolume)-1),1]
 
-dailyVolumeChange <- as.data.frame(Volume1$DailyVolume-Volume1$prevDayVolume)
-colnames(dailyVolumeChange) <- 'dailyVolumeChange'
+dailyVolumeChange <- as.data.frame(Volume1$portfolio_DailyVolume-Volume1$portfolio_prevDayVolume)
+colnames(dailyVolumeChange) <- 'portfolio_dailyVolumeChange'
 
 Volume2 <- cbind(Volume1,dailyVolumeChange)
-Volume2$VolumeRatioDaily2Initial <- Volume2$DailyVolume/Volume2$prevDayVolume[1]
+Volume2$portfolio_VolumeRatioDaily2Initial <- Volume2$portfolio_DailyVolume/Volume2$portfolio_prevDayVolume[1]
 
 Volume2$Date <- as.Date(row.names(Volume2))
 ```
@@ -157,23 +159,30 @@ colnames(Stocks)
 
 Add a value of stock daily to the initial value as a ratio.
 ```{r}
-Stocks$ValueRatioDaily2Initial <- Stocks$DailyValue/Stocks$DailyValue[1]
+Stocks$portfolio_ValueRatioDaily2Initial <-
+  Stocks$portfolio_DailyValue/Stocks$portfolio_DailyValue[1]
 
 ```
 
 Add a field that multiplies the daily value and daily volume ratios compared to the initial value and volume by the unemployment rate.
 ```{r}
-Stocks$DailyRatios_X_UE <- Stocks$ValueRatioDaily2Initial*Stocks$VolumeRatioDaily2Initial*Stocks$UE_monthlyRate
+Stocks$portfolio_DailyRatios_X_UE <-
+  Stocks$portfolio_ValueRatioDaily2Initial*Stocks$portfolio_VolumeRatioDaily2Initial*Stocks$UE_monthlyRate
 
 ```
 
-Add an exponential calculation field based on the unemployment rate for rate, and using numeric day of the month for t, and k as the month.
+Add an exponential calculation field based on the unemployment rate for rate, and using t=1/12 for 12 months, and a binary value of 1 or 2 where the daily change is positive is assigned a 1 and a negative is a 2. This will make those values decreasing daily have a higher poisson and those values increasing a lower poisson value. This is a modified poisson used for probability of an outcome occuring with a constant rate. Added to rank daily changes based on unemployment rate of each month.
 ```{r}
+Stocks <- Stocks[complete.cases(Stocks$UE_monthlyRate),]
 Stocks$dayOfMonth <- day(Stocks$Date)
 dayOfMonth <- day(Stocks$Date)
 ue1 <- Stocks$UE_monthlyRate
 
-Stocks$poisson <- (exp(-(ue1))*(ue1)^dayOfMonth)/(factorial(dayOfMonth))
+incrDecr <- ifelse(Stocks$portfolio_dailyValueChange>0,1,2)
+
+Stocks$portfolio_poisson <- round((exp(-(ue1*1/12))*(ue1*1/12)^incrDecr)/(factorial(incrDecr)),5)
+
+summary(Stocks$portfolio_poisson)
 ```
 
 
@@ -182,6 +191,7 @@ Stocks$poisson <- (exp(-(ue1))*(ue1)^dayOfMonth)/(factorial(dayOfMonth))
 write.csv(Stocks, 'StocksStats.csv', row.names=TRUE)
 
 ```
+
 
 Make a daily ROI dollars column for each of the stocks in this set.
 ```{r}
@@ -261,59 +271,59 @@ stocks1$SIG_ROI_dollars <- stocks1$SIG.Close-stocks1$SIG.Close[1]
 These are the values of the stock the previous day that will be subtracted from each day to get the daily change from the day before in dollars.
 ```{r}
 
-TGTa <- c(0,stocks1$TGT.Close[1:3302])
-FTRa <- c(0, stocks1$FTR.Close[1:3302])
-UBSIa <- c(0,stocks1$UBSI.Close[1:3302])
-HDa <- c(0,stocks1$HD.Close[1:3302])
-JPMa <- c(0,stocks1$JPM.Close[1:3302])
-XOMa <- c(0,stocks1$XOM.Close[1:3302])
-CVXa <- c(0,stocks1$CVX.Close[1:3302])
-NSANYa <- c(0,stocks1$NSANY.Close[1:3302])
-MGMa <- c(0,stocks1$MGM.Close[1:3302])
-TEVAa <- c(0, stocks1$TEVA.Close[1:3302])
-HSTa <- c(0, stocks1$HST.Close[1:3302])
-WFCa <- c(0, stocks1$WFC.Close[1:3302])
-WWEa <- c(0, stocks1$WWE.Close[1:3302])
-INOa <- c(0,stocks1$INO.Close[1:3302])
-SCEa <- c(0,stocks1$SCE.PB.Close[1:3302])
-FFINa <- c(0,stocks1$FFIN.Close[1:3302])
-GOOGa <- c(0,stocks1$GOOG.Close[1:3302])
-WMa <- c(0,stocks1$WM.Close[1:3302])
-ONCYa <- c(0,stocks1$ONCY.Close[1:3302])
-Sa <- c(0,stocks1$S.Close[1:3302])
-Fa <- c(0,stocks1$F.Close[1:3302])
-ARWRa <- c(0,stocks1$ARWR.Close[1:3302])
-COSTa <- c(0,stocks1$COST.Close[1:3302])
-AALa <- c(0,stocks1$AAL.Close[1:3302])
-JWNa <- c(0,stocks1$JWN.Close[1:3302])
-NUSa <- c(0,stocks1$NUS.Close[1:3302])
-ADDYYa <- c(0,stocks1$ADDYY.Close[1:3302])
-KSSa <- c(0,stocks1$KSS.Close[1:3302])
-MSFTa <- c(0,stocks1$MSFT.Close[1:3302])
-LUVa <- c(0,stocks1$LUV.Close[1:3302])
-HMCa <- c(0,stocks1$HMC.Close[1:3302])
-PCGa <- c(0,stocks1$PCG.Close[1:3302])
-DLTRa <- c(0,stocks1$DLTR.Close[1:3302])
-KGJIa <- c(0,stocks1$KGJI.Close[1:3302])
-NKEa <- c(0,stocks1$NKE.Close[1:3302])
-AMZNa <- c(0,stocks1$AMZN.Close[1:3302])
-ROSTa <- c(0,stocks1$ROST.Close[1:3302])
-WMTa <- c(0,stocks1$WMT.Close[1:3302])
-TJXa <- c(0,stocks1$TJX.Close[1:3302])
-TMa <- c(0,stocks1$TM.Close[1:3302])
-Ta <- c(0,stocks1$T.Close[1:3302])
-JNJa <- c(0,stocks1$JNJ.Close[1:3302])
-Ca <- c(0,stocks1$C.Close[1:3302])
-EPDa <- c(0,stocks1$EPD.Close[1:3302])
-VZa <- c(0,stocks1$VZ.Close[1:3302])
-HRBa <- c(0,stocks1$HRB.Close[1:3302])
-NFLXa <- c(0,stocks1$NFLX.Close[1:3302])
-AAPa <- c(0,stocks1$AAP.Close[1:3302])
-HOFTa <- c(0,stocks1$HOFT.Close[1:3302])
-SIGa <- c(0,stocks1$SIG.Close[1:3302])
-RRGBa <- c(0,stocks1$RRGB.Close[1:3302])
-Ma <- c(0,stocks1$M.Close[1:3302])
-JBLUa <- c(0,stocks1$JBLU.Close[1:3302])
+TGTa <- c(0,stocks1$TGT.Close[1:(length(stocks1$TGT.Close)-1)])
+FTRa <- c(0, stocks1$FTR.Close[1:(length(stocks1$TGT.Close)-1)])
+UBSIa <- c(0,stocks1$UBSI.Close[1:(length(stocks1$TGT.Close)-1)])
+HDa <- c(0,stocks1$HD.Close[1:(length(stocks1$TGT.Close)-1)])
+JPMa <- c(0,stocks1$JPM.Close[1:(length(stocks1$TGT.Close)-1)])
+XOMa <- c(0,stocks1$XOM.Close[1:(length(stocks1$TGT.Close)-1)])
+CVXa <- c(0,stocks1$CVX.Close[1:(length(stocks1$TGT.Close)-1)])
+NSANYa <- c(0,stocks1$NSANY.Close[1:(length(stocks1$TGT.Close)-1)])
+MGMa <- c(0,stocks1$MGM.Close[1:(length(stocks1$TGT.Close)-1)])
+TEVAa <- c(0, stocks1$TEVA.Close[1:(length(stocks1$TGT.Close)-1)])
+HSTa <- c(0, stocks1$HST.Close[1:(length(stocks1$TGT.Close)-1)])
+WFCa <- c(0, stocks1$WFC.Close[1:(length(stocks1$TGT.Close)-1)])
+WWEa <- c(0, stocks1$WWE.Close[1:(length(stocks1$TGT.Close)-1)])
+INOa <- c(0,stocks1$INO.Close[1:(length(stocks1$TGT.Close)-1)])
+SCEa <- c(0,stocks1$SCE.PB.Close[1:(length(stocks1$TGT.Close)-1)])
+FFINa <- c(0,stocks1$FFIN.Close[1:(length(stocks1$TGT.Close)-1)])
+GOOGa <- c(0,stocks1$GOOG.Close[1:(length(stocks1$TGT.Close)-1)])
+WMa <- c(0,stocks1$WM.Close[1:(length(stocks1$TGT.Close)-1)])
+ONCYa <- c(0,stocks1$ONCY.Close[1:(length(stocks1$TGT.Close)-1)])
+Sa <- c(0,stocks1$S.Close[1:(length(stocks1$TGT.Close)-1)])
+Fa <- c(0,stocks1$F.Close[1:(length(stocks1$TGT.Close)-1)])
+ARWRa <- c(0,stocks1$ARWR.Close[1:(length(stocks1$TGT.Close)-1)])
+COSTa <- c(0,stocks1$COST.Close[1:(length(stocks1$TGT.Close)-1)])
+AALa <- c(0,stocks1$AAL.Close[1:(length(stocks1$TGT.Close)-1)])
+JWNa <- c(0,stocks1$JWN.Close[1:(length(stocks1$TGT.Close)-1)])
+NUSa <- c(0,stocks1$NUS.Close[1:(length(stocks1$TGT.Close)-1)])
+ADDYYa <- c(0,stocks1$ADDYY.Close[1:(length(stocks1$TGT.Close)-1)])
+KSSa <- c(0,stocks1$KSS.Close[1:(length(stocks1$TGT.Close)-1)])
+MSFTa <- c(0,stocks1$MSFT.Close[1:(length(stocks1$TGT.Close)-1)])
+LUVa <- c(0,stocks1$LUV.Close[1:(length(stocks1$TGT.Close)-1)])
+HMCa <- c(0,stocks1$HMC.Close[1:(length(stocks1$TGT.Close)-1)])
+PCGa <- c(0,stocks1$PCG.Close[1:(length(stocks1$TGT.Close)-1)])
+DLTRa <- c(0,stocks1$DLTR.Close[1:(length(stocks1$TGT.Close)-1)])
+KGJIa <- c(0,stocks1$KGJI.Close[1:(length(stocks1$TGT.Close)-1)])
+NKEa <- c(0,stocks1$NKE.Close[1:(length(stocks1$TGT.Close)-1)])
+AMZNa <- c(0,stocks1$AMZN.Close[1:(length(stocks1$TGT.Close)-1)])
+ROSTa <- c(0,stocks1$ROST.Close[1:(length(stocks1$TGT.Close)-1)])
+WMTa <- c(0,stocks1$WMT.Close[1:(length(stocks1$TGT.Close)-1)])
+TJXa <- c(0,stocks1$TJX.Close[1:(length(stocks1$TGT.Close)-1)])
+TMa <- c(0,stocks1$TM.Close[1:(length(stocks1$TGT.Close)-1)])
+Ta <- c(0,stocks1$T.Close[1:(length(stocks1$TGT.Close)-1)])
+JNJa <- c(0,stocks1$JNJ.Close[1:(length(stocks1$TGT.Close)-1)])
+Ca <- c(0,stocks1$C.Close[1:(length(stocks1$TGT.Close)-1)])
+EPDa <- c(0,stocks1$EPD.Close[1:(length(stocks1$TGT.Close)-1)])
+VZa <- c(0,stocks1$VZ.Close[1:(length(stocks1$TGT.Close)-1)])
+HRBa <- c(0,stocks1$HRB.Close[1:(length(stocks1$TGT.Close)-1)])
+NFLXa <- c(0,stocks1$NFLX.Close[1:(length(stocks1$TGT.Close)-1)])
+AAPa <- c(0,stocks1$AAP.Close[1:(length(stocks1$TGT.Close)-1)])
+HOFTa <- c(0,stocks1$HOFT.Close[1:(length(stocks1$TGT.Close)-1)])
+SIGa <- c(0,stocks1$SIG.Close[1:(length(stocks1$TGT.Close)-1)])
+RRGBa <- c(0,stocks1$RRGB.Close[1:(length(stocks1$TGT.Close)-1)])
+Ma <- c(0,stocks1$M.Close[1:(length(stocks1$TGT.Close)-1)])
+JBLUa <- c(0,stocks1$JBLU.Close[1:(length(stocks1$TGT.Close)-1)])
 
 ```
 
@@ -391,46 +401,46 @@ stocks2 <- stocks1[,-c(1:53)]
 StocksSTATS <- cbind(Stocks,stocks2)
 ```
 
-```{r}
-write.csv(StocksSTATS, 'STOCKS_STATS.csv', row.names=TRUE)
-```
-
 
 All the columns we now have are:
 ```{r}
+StocksSTATS <- StocksSTATS[,c(1:106,125:230,107:124)]
 colnames(StocksSTATS)
 
 ```
 
 
-Lets us pick one stock, look at the stats we added for that stock and then pull out some googled articles of that stock as a company in the news since 2007 till today's date of Feb. 18, 2020 to compare the sentiments on the company with words that we will count the number of times the company is in the news, the comments by readers, zoom in on the dates of those articles, and see how the company behaved. Lets choose the highest ROI in dollars out of our stocks and compare it to the lowest ROI in dollars. Lets also use the poisson formula that chose the day of the month, because some people might want to buy stocks on pay day around the 1st or 15th for most, or also some on every Friday or every other Friday which would also use the day of the week.
+```{r}
+write.csv(StocksSTATS, 'STOCKS_STATS.csv', row.names=TRUE)
+```
+
+Lets us pick one stock, look at the stats we added for that stock and then pull out some googled articles of that stock as a company in the news since 2007 till today's date of Feb. 18, 2020 to compare the sentiments on the company with words that we will count the number of times the company is in the news, the comments by readers, zoom in on the dates of those articles, and see how the company behaved. Lets choose the highest ROI in dollars out of our stocks and compare it to the lowest ROI in dollars. 
 ```{r}
 
-m <- StocksSTATS[order(StocksSTATS$Date, decreasing=FALSE)[3303], 124:176]
+m <- StocksSTATS[order(StocksSTATS$Date, decreasing=FALSE)[length(StocksSTATS$Date)], 107:159]
 t <- as.data.frame(t(m))
 colnames(t) <- row.names(m)
 t$StockROI <- row.names(t)
 
-Troi <- t[order(t$'2020-02-14', decreasing=TRUE),]
+Troi <- t[order(t$'2020-01-31', decreasing=TRUE),]
 
 mostLeast <- rbind(head(Troi,3),tail(Troi,3))
 mostLeast <- na.omit(mostLeast)
 mostLeast
 ```
 
-The above table shows the three highest returns on investment and the three lowest since Jan 3, 2007 to Feb 14, 2020. Lets use the lowest stock for now (C is Citigroup bank), because AMZN (Amazon) is always in the news and it would fluctuate a lot I would think, but we could look at the quartiles for each and get the news releases of each date where the stock was in that quartile range, look at the median ROI, the min and max too, and cross referencing with the other stat fields.
+The above table shows the three highest returns on investment and the three lowest since Jan 3, 2007 to Jan 31, 2020. Lets use the lowest stock for now (C is Citigroup bank), because AMZN (Amazon) is always in the news and it would fluctuate a lot I would think, but we could look at the quartiles for each and get the news releases of each date where the stock was in that quartile range, look at the median ROI, the min and max too, and cross referencing with the other stat fields.
 ```{r}
 amzn <- grep('AMZN', colnames(StocksSTATS))
 c <- grep('^C[.|_]', colnames(StocksSTATS))
-C_stock <- StocksSTATS[,c(c,107,112:116,123:124)]
-amzn_stock <- StocksSTATS[,c(amzn,107,112:116,123:124)]
+C_stock <- StocksSTATS[,c(c,213:230)]
+amzn_stock <- StocksSTATS[,c(amzn,213:230)]
 ```
 
 Citigroup is our C_stock table and Amazon is our amzn_stock table. Lets look at the daily ratios of volume and ROI in dollars times the unemployment rate column and the day of the week and day of the year and poisson columns.
 ```{r}
 ggplot(data = C_stock, aes(x=Year, y=C_ROI_dollars,group=DayOfWeek)) +
   geom_line(aes(color=DayOfWeek))+
-  #geom_point()+
   scale_y_continuous()+
   scale_fill_brewer(palette="paired") +
   theme(legend.position="bottom")+
@@ -449,7 +459,6 @@ y2015plus <- subset(C_stock, C_stock$Year>2014)
 
 ggplot(data = y2015plus, aes(x=Year, y=C.Close,group=DayOfWeek)) +
   geom_line(aes(color=DayOfWeek))+
-  #geom_point()+
   scale_y_continuous()+
   scale_fill_brewer(palette="paired") +
   theme(legend.position="bottom")+
@@ -465,7 +474,6 @@ Lets look at amazon for the same quick plotted analysis as done with Citigroup.
 ```{r}
 ggplot(data = amzn_stock, aes(x=Year, y=AMZN_ROI_dollars,group=DayOfWeek)) +
   geom_line(aes(color=DayOfWeek))+
-  #geom_point()+
   scale_y_continuous()+
   scale_fill_brewer(palette="paired") +
   theme(legend.position="bottom")+
@@ -484,7 +492,6 @@ y2015plus <- subset(amzn_stock, amzn_stock$Year>2017)
 
 ggplot(data = y2015plus, aes(x=Year, y=AMZN.Close,group=DayOfWeek)) +
   geom_line(aes(color=DayOfWeek))+
-  #geom_point()+
   scale_y_continuous()+
   scale_fill_brewer(palette="paired") +
   theme(legend.position="bottom")+
@@ -497,12 +504,12 @@ The chart above shows how the value in dollars and day of the week from 2018-202
 Lets group by the day of the month in this time series of the Citigroup stock and get the median value for the volumne of stocks traded for Citigroup by days 1-31 of the month.
 ```{r}
 v1 <- as.vector(colnames(C_stock)[2])
-poisson_Citi <- C_stock %>% group_by(dayOfMonth) %>% summarise_at(vars(v1), median,
+Citi <- C_stock %>% group_by(dayOfMonth) %>% summarise_at(vars(v1), median,
                                                                   na.rm=T)
-poisson_Citi <- as.data.frame(poisson_Citi)
-colnames(poisson_Citi)[2] <- 'Citi_Median_Volume'
-poisson_Citi <- poisson_Citi[order(poisson_Citi$Citi_Median_Volume, decreasing=T),]
-headTail_Citi_volume <- rbind(head(poisson_Citi,3), tail(poisson_Citi,3))
+Citi <- as.data.frame(Citi)
+colnames(Citi)[2] <- 'Citi_Median_Volume'
+Citi <- Citi[order(Citi$Citi_Median_Volume, decreasing=T),]
+headTail_Citi_volume <- rbind(head(Citi,3), tail(Citi,3))
 headTail_Citi_volume
 ```
 
@@ -564,20 +571,20 @@ sdC <- sd(C_stock$C_dailyChange)
 out <- sdC*3
 sdC;out
 ```
-The standard error for the daily change in dollars is 32.05 USD and our threshold to find dates outside this normal range of daily change dollar values is 96.16 USD.
+The standard error for the daily change in dollars is 32.17 USD and our threshold to find dates outside this normal range of daily change dollar values is 96.51 USD.
 
 Lets add another column to this data set called threshold3 for those daily change values inside the threshold and those outside the threshold.
 ```{r}
-C_stock$Threshold3 <- ifelse(C_stock$C_dailyChange < sdC, 'inside','outside')
+C_stock$Threshold3 <- ifelse(C_stock$C_dailyChange < out, 'inside','outside')
 
 C_outer_SD <- subset(C_stock, C_stock$Threshold3=='outside')
 summary(C_outer_SD)
 ```
 
-We can see from the above statistics on the subset of Citigroup stock that are outside this threshold that there are 13 dates to select in the range of Jan 2007 through Sep 2008. So we will add those dates to our data set of text scraped news articles on Citigroup.
+We can see from the above statistics on the subset of Citigroup stock that are outside this threshold that there are 12 dates to select in the range of Jan 2007 through Sep 2008. So we will add those dates to our data set of text scraped news articles on Citigroup.
 
 ```{r}
-NLP_dates_Citi <- rbind(C_stock_minmaxValueChanges, C_outer_SD[,-13])
+NLP_dates_Citi <- rbind(C_stock_minmaxValueChanges, C_outer_SD[,-23])
 NLP_dates_Citi
 ```
 
@@ -729,7 +736,7 @@ ggplot(data = y4valMY, aes(x=Year, y=C.Close,group=Month)) +
   ylab('Mean Daily Value Dollars')
 ```
 
-The above line chart of the mean monthly dollar value of the Citigroup stock show that all months move the same direction of decreasing in 2015, increasing in 2016, except for in 2017 and 2018 where 3-6 months decreased and 6-9 months increased monthly mean values. The span of 2019 through 2020 can't be analyzed yet, but both months available for Jan and Feb increased since the year prior. Overall, since 2015 the value has increased from 50-60 USD to between 75-80 USD. This could make it a good stock to have in your portfolio as it has steadily been increasing since it's historical rough patches of the sub-prime mortgage loan accounts, the public bailout, and the lawsuit settlement payout. But nothing has been in the news about them to discourage investors from dropping this stock from their stock folder. 
+The above line chart of the mean monthly dollar value of the Citigroup stock show that all months move the same direction of decreasing in 2015, increasing in 2016, except for in 2017 and 2018 where 3-6 months decreased and 6-9 months increased monthly mean values. The span of 2019 through 2020 can't be analyzed yet, but January increased since the year prior. Overall, since 2015 the value has increased from 50-60 USD to between 75-80 USD. This could make it a good stock to have in your portfolio as it has steadily been increasing since it's historical rough patches of the sub-prime mortgage loan accounts, the public bailout, and the lawsuit settlement payout. But nothing has been in the news about them to discourage investors from dropping this stock from their stock folder. 
 
 
 
