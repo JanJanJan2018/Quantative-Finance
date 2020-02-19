@@ -542,6 +542,208 @@ From the above information, Monday is the day of the week with the highest and l
 
 This should be interesting to see what type of articles are available on line with a google search of those dates and citigroup.
 
+Lets see if there are any other outlier dates to examine by looking at the standard deviation of the daily change on Citigroup stock. We want to see if there are any days where the stock has a daily change more than or less than this amount times three then times two. Because most values will be within the standard deviation for the Gaussian curve.
+
+```{r}
+gg <- ggplot(C_stock, aes(x=C_dailyChange))
+gg <- gg + geom_histogram(binwidth=2, colour="black", 
+                          aes(y=..density.., fill=..count..))
+#gg <- gg + scale_fill_gradient("Count", low="#DCDCDC", high="#7C7C7C")
+gg <- gg + stat_function(fun=dnorm,
+                         color="red",
+                         args=list(mean=mean(C_stock$C_dailyChange), 
+                                  sd=sd(C_stock$C_dailyChange)))
+
+gg
+
+```
+
+
+```{r}
+sdC <- sd(C_stock$C_dailyChange)
+out <- sdC*3
+sdC;out
+```
+The standard error for the daily change in dollars is 32.05 USD and our threshold to find dates outside this normal range of daily change dollar values is 96.16 USD.
+
+Lets add another column to this data set called threshold3 for those daily change values inside the threshold and those outside the threshold.
+```{r}
+C_stock$Threshold3 <- ifelse(C_stock$C_dailyChange < sdC, 'inside','outside')
+
+C_outer_SD <- subset(C_stock, C_stock$Threshold3=='outside')
+summary(C_outer_SD)
+```
+
+We can see from the above statistics on the subset of Citigroup stock that are outside this threshold that there are 13 dates to select in the range of Jan 2007 through Sep 2008. So we will add those dates to our data set of text scraped news articles on Citigroup.
+
+```{r}
+NLP_dates_Citi <- rbind(C_stock_minmaxValueChanges, C_outer_SD[,-13])
+NLP_dates_Citi
+```
+
+I am going to pull the data from these dates with the Google Search for the specific date on Citigroup stock, put it in a table with the date, the article title, reference, article content, and the comments if available.
+
+Note: when searching the internet, there were limited articles and [most](https://www.nytimes.com/2008/11/23/business/23citi.html) were about Citi's involvement in the sub-prime mortgage crisis of 2007-2008, and a [bailout](https://www.reuters.com/article/us-citigroup/citigroup-gets-massive-government-bailout-idUSTRE4AJ45G20081124) of Citigroup by the US. For the month and years of the two dates not in or around 2007-2008, there are only two for April 2013 and December 2015. Where Citi settled a [lawsuit](https://www.reuters.com/article/us-citigroup-settlement/citigroup-settles-shareholder-cdo-lawsuit-for-590-million-idUSBRE87S0UA20120829) for covering up bad mortgage loans in August 2012 and a [person reported](https://ficoforums.myfico.com/t5/Credit-Card-Approvals/Citi-Simplicity-Approved-Woohoooooo/td-p/4388074) on a forum about FICO scores how he was approved for a 4600 USD credit card with Citi. There isn't enough data to rely on the web for NLP on Citigroup for these time frames. 
+
+We could pull based on the keywords: 'settlement', 'bail-out', 'sub-prime loans', but we would only get the obvious negative sentiment for these keywords. A New York Times article posted an article in Dec 2015 about the remodeling that Citigroup was doing to their offices, but the full article would have to be purchased. The fact that they spent money on remodeling could have some public sentiment of either they aren't distributing their profits to shareholders or they are making enough profits to  spend money on remodeling, which is also reported at the end of the year in 2015 to write off for that tax year. Although, I was told by an accountant that some corporations and small businesses have a different tax year and a quick search on Google returned the fiscal year is any consecutive 12-month business cycle that usually ends at the end of each quarter. 
+
+We can see that the volume of trades is highest in December 2015 from our dates, but we should compare this to which quantile this number is within for the volume of trades of Citi stock.
+```{r}
+summary(C_stock$C.Volume)
+
+```
+
+We already know that this is the date that the most trades in stock of Citi occured as it is the reason we added this date to our NLP data set of dates to pull information from the web for. The above will refresh the comparisons of the trade volume to this date. 
+
+It looks like public sentiment thinks Citi is going back to its old bail-out days of 2007-2008 and not a trust-worthy stock for their personal portfolios. But they are still around, and the fact that people that have a less than trust-worthy credit profile were given a credit card with a high value could indicate some people also consider that they are building a new demographic of people to invest in by earning the trust of those who have sub-par trust worthiness with credit. And, yet some other investors could also think this is a bad move to make as it depends on those same people realizing their mistakes and not making them again. Which really turns into the reason some stocks are volatile to begin with and possibly a reason to understand Game Theory, a class I dropped in my undergrad college. But nonetheless I am a data scientist with other coventional and non-conventional ways of extracting useful information, and this approach uses my math and analytic skills to fully understand the stock market and certain stocks and trends with public sentiment. 
+
+On this highest trade day, the daily change in dollars was still within the standard error by only dropping 0.33 USD. Where the standard error is 32.00 USD. 
+
+Of note is whether or not those making these trades are doing so to lower their Capital Gains at the end of the year, because there is a slight loss on it to balance out the portfolio. Also, this is the end of the year, possibly the last trading day of the year as it is. Lets look at all monthYear dates equal to Dec-2015 to see if there are any other dates past Dec 28, 2015.
+```{r}
+dec2015 <- subset(C_stock, C_stock$MonthYear=='Dec-2015')
+tail(dec2015)
+```
+
+We now know that Dec-28-2015 is not the last trading day of the year, because the 29th through 31st for Tuesday through Thursday are also trading days. There was a fluctuation in dollars earned and lost all under a dollar. Some useful information to add in would be who or where are these trades derived. Are they financial advisors, trust fund managers, independent investors, foreign or national investors, are they hobbyists just playing the stock market on an e-trade, are they educated, experienced, and so on? 
+
+To get this information we could first find out how much it costs for a hobbyist to make a trade online from e-trade or similar and whether or not this information is shared on demographics of the stock ownership. We could also look at the American Survey on Census data from the census bureau for numer of financial workers there are and how many people graduated with a BS, MS, or Phd in Finance or Economics. If there is location data on where these stock owners live attach this information gathered to it to make a better inference on this stock and what motivates the trades. Any volunteers?
+
+For now, we will just continue with what we have on hand for Citi. We can answer the question of whether or not, historically there are more trades in December than any other month in our data by grouping by month year and getting the median trades per month and year.
+```{r}
+Citi_trades_monthYear <- C_stock %>% group_by(MonthYear) %>%
+  summarise_at(vars(colnames(C_stock[2])), mean)
+Citi_trades_monthYear <- Citi_trades_monthYear[order(Citi_trades_monthYear$C.Volume,decreasing=TRUE),]
+Citi_trades_monthYear
+```
+
+From the above table ordered from most trades to least trades per month and year by mean number of trades per month, we see that December is in the top 10 month years of high trades in 2011,2012, 2015, and 2019. February has the next highest trades but the years are the same years of the sub-prime mortgage crisis that Citigroup was involved in, but also in 2015. looking at the next top ten months we see that Dec, Jan, and Feb are in the highest mean of the trades per day grouped by month and year. What do we know about Jan and Feb outside of the assumption about December being the last day of the tax year to offset capital gains with capital losses? 
+
+Well, I know that being a student, some people get their student loans around winter quarter in January and that many people expecting tax refunds get their refunds in February. We would have to see if there are any other assumptions about these months. But we would be able to ascertain if students receiving an education are investing, and if consumers with tax refunds are using some of that money to invest.There are certainly other assumptions that could be made for why the last month of the year and the first two months of the first quarter are high trade volume days. But for now lets stick with these assumptions. 
+
+July starts to show up in the following set of ten top month years from 21-30, as the 30th highest trade month year. Jan and Feb are still in the top 40 high volume trade month years, while June shows up three times in the 30-40 top high volume trade month and years. July could also be the start of the third quarter and the remaining balance on student loans made. Lets see where September/October show up in these top ordered volumes. They are near the end of the top trade months. 
+
+So, possibly this indicates no ties to student loan payments, but tax refunds could be likely for February being a high trade month. We definitely know December is a top trade day. 
+
+Lets plot this data.
+```{r}
+Citi_trades_monthYear$Month <- gsub('-[0-9]{4}','',Citi_trades_monthYear$MonthYear)
+Citi_trades_monthYear$Year <- gsub('[a-zA-z]{3}-','',Citi_trades_monthYear$MonthYear)
+
+ggplot(data = Citi_trades_monthYear, aes(x=Month, y=C.Volume,group=Year)) +
+  geom_line(aes(color=Year))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Citigroup Mean Month-Year Trade Volume 2007-2020')+
+  ylab('Trade Volume')
+
+```
+
+We can see that December is definitely the highest trading month, then February as the next highest, and January as the third highest trading month.
+
+Lets look at the daily change mean values per month, by grouping by MonthYear and taking the mean value of the daily change, order by highest to smallest, and plot.
+```{r}
+Citi_meanMonthly_dailyChange <- C_stock %>% group_by(MonthYear) %>% 
+  summarise_at(vars(as.vector(colnames(C_stock))[4]), mean)
+
+```
+
+
+
+```{r}
+Citi_meanMonthly_dailyChange$Year <-
+  gsub('[a-zA-Z]{3}-','',Citi_meanMonthly_dailyChange$MonthYear)
+Citi_meanMonthly_dailyChange$Month <-
+  gsub('-[0-9]{4}','',Citi_meanMonthly_dailyChange$MonthYear)
+
+
+ggplot(data = Citi_meanMonthly_dailyChange, aes(x=Month, y=C_dailyChange,group=Year)) +
+  geom_line(aes(color=Year))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Citigroup Mean Month-Year Daily Change 2007-2020')+
+  ylab('Mean Daily Change Dollars')
+```
+
+From the above line chart, it is not obvious what years those years having almost no change are.The year 2007 is at the top with the highest positive mean daily change values fluctuating to around 20 USD per day. While the years 2008 and 2009 have the highest negative mean of daily change values per month with average daily decreases around a daily loss of 5-15 USD.   
+
+
+Lets make a bar chart of 2007, 2008, 2009, 2015, and 2019 of this data on mean daily value changes per month.
+```{r}
+y4 <- subset(Citi_meanMonthly_dailyChange,
+                          Citi_meanMonthly_dailyChange$Year==2008 | 
+                          Citi_meanMonthly_dailyChange$Year==2009 | 
+                          Citi_meanMonthly_dailyChange$Year==2007 |
+                          Citi_meanMonthly_dailyChange$Year==2015 |
+                          Citi_meanMonthly_dailyChange$Year==2019)
+ggplot(data = y4, aes(x=Month, y=C_dailyChange,fill=Year)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_y_continuous()+
+  scale_fill_brewer(palette='Paired') +
+  geom_hline(yintercept=0, linetype="dashed", color = "red")+
+  theme_classic()+
+  theme(legend.position="bottom")+
+  ggtitle('Citigroup Mean Monthly Daily Dollar Change 2007-2019')+
+  ylab('Mean Daily Change Values')
+```
+
+From the above, we can see the Citigroup stock had increases per day in value from the previous day in 2007, but that in 2008 and 2009 those daily increases turned to daily decreases from day to day as the sub-prime loans collapsed that Citigroup held. And in 2015 and 2019 years after Citigroup's bailout there was a mean monthly daily change value next to nothing as the daily change from day to day fluctuated around zero dollars for the month. 
+
+This could mean it is gaining strength and remains as is safe to buy as it increases. But lets look at the years 2015-2019 to see how the value of the Citigroup stock has faired by month year to confirm this assertion just made.
+```{r}
+y4value <- subset(C_stock, C_stock$Year>2014)
+y4valMY <- y4value %>% group_by(MonthYear) %>%
+  summarise_at(vars(as.vector(colnames(y4value)[1])), mean)
+```
+
+```{r}
+y4valMY$Year <- gsub('[a-zA-Z]{3}-','', y4valMY$MonthYear)
+y4valMY$Month <- gsub('-[0-9]{4}','', y4valMY$MonthYear)
+
+ggplot(data = y4valMY, aes(x=Month, y=C.Close,fill=Year)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_y_continuous()+
+  scale_fill_brewer(palette='Paired') +
+  geom_hline(yintercept=min(y4valMY$C.Close), linetype="dashed", color = "red")+
+  geom_hline(yintercept=mean(y4valMY$C.Close), linetype="dashed", color = "black")+
+  theme_classic()+
+  theme(legend.position="bottom")+
+  ggtitle('Citigroup Mean Monthly Dollar Value 2015-2020')+
+  ylab('Mean Monthly Dollar Value')
+
+```
+
+From the above bar chart, we can see that the minimum value is the dashed red line which occured in February 2016. And that every month since 2016 has been above this minimum value.
+It has almost double from it's minimum value in January and February 2020.The mean value from 2015-2020 (Jan-Feb) is just above 60 USD which is 1 1/2 times its minimum value.
+
+Lets look at the line chart of this by years 2015-2020.
+```{r}
+ggplot(data = y4valMY, aes(x=Year, y=C.Close,group=Month)) +
+  geom_line(aes(color=Month))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Citigroup Mean Monthly Value 2015-2020')+
+  ylab('Mean Daily Value Dollars')
+```
+
+The above line chart of the mean monthly dollar value of the Citigroup stock show that all months move the same direction of decreasing in 2015, increasing in 2016, except for in 2017 and 2018 where 3-6 months decreased and 6-9 months increased monthly mean values. The span of 2019 through 2020 can't be analyzed yet, but both months available for Jan and Feb increased since the year prior. Overall, since 2015 the value has increased from 50-60 USD to between 75-80 USD. This could make it a good stock to have in your portfolio as it has steadily been increasing since it's historical rough patches of the sub-prime mortgage loan accounts, the public bailout, and the lawsuit settlement payout. But nothing has been in the news about them to discourage investors from dropping this stock from their stock folder. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
