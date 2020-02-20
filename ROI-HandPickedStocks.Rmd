@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: "2/17/2020"
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 ```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
@@ -755,14 +755,449 @@ ggplot(data = y4valMY, aes(x=Year, y=C.Close,group=Month)) +
 The above line chart of the mean monthly dollar value of the Citigroup stock show that all months move the same direction of decreasing in 2015, increasing in 2016, except for in 2017 and 2018 where 3-6 months decreased and 6-9 months increased monthly mean values. The span of 2019 through 2020 can't be analyzed yet, but January increased since the year prior. Overall, since 2015 the value has increased from 50-60 USD to between 75-80 USD. This could make it a good stock to have in your portfolio as it has steadily been increasing since it's historical rough patches of the sub-prime mortgage loan accounts, the public bailout, and the lawsuit settlement payout. But nothing has been in the news about them to discourage investors from dropping this stock from their stock folder. 
 
 
+***
+***
+
+We saw that Citigroup is maintaining its current value and slightly increasing over the last four years. Lets start subset sampling stocks and look at the changes they have made in value over the last four years. And see if we notice anything we want to further exploit.
+```{r}
+Value1 <- StocksSTATS[,c(1:53,160:230)]
+Value2 <- subset(Value1, Year>2014)
+
+```
+
+```{r}
+sub1 <- Value2[,c(1:4,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+```
+
+The first four stocks in our set of 53 is shown in the line chart above from 2015-2020.
+
+From the above line chart, it is obvious that over the last five years, the pink line for FTR is a terrible stock as it has been on the decline, but we would have to look at it further to see why it has been decreasing in value since 2015. 
+
+The olive color line for HD indicates it has been on a steady increase from the 120-125 USD range in 2015 to the 220-225 USD range in 2020. 
+
+Also, increasing steadily is the blue line for TGT, which started at 75-80 in 2015 and is at 125 in 2020 in value. 
+
+The purple line for UBSI has been maintaining steadily from 45 range to 45 range over five years.
+***
+
+Lets look at the next four stocks.
+```{r}
+sub1 <- Value2[,c(5:8,115)]
+
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+```
+
+From the above subset of the next four stock in our 53 stocks, we can see that there are two stocks increasing significantly for JPM and CVX. We also note that the XOM and NSANY stocks have decreased over the last five years.
+***
+
+Now for the next four stocks.
+
+```{r}
+sub1 <- Value2[,c(9:12,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+```
+
+The above line chart shows the third subset of four stocks of our 53 stocks.
+
+The MGM stock has increased significantly since 2005, and slight increases are shown for WFC and HST though not significantly. There is some cyclical movements in the WFC with 2016 giving a steady increase all year, then declining 2017-2019, and ending with a steady increase in 2019. 
+
+The TEVA stock has had a huge loss over the last five years, with the last year showing an an increase slightly. It started at the 55 range in 2015 and is at the 10 range in 2020.
+This could indicate that it is a good time to buy TEVA, since it is priced low and shows an increase in the last year, where the last four years it has been decreasing annually for each year. This would require further analysis for why it has been decreasing over the last five years.
+***
+
+Now for the next four stocks in our subset four.
+```{r}
+sub1 <- Value2[,c(13:16,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+The above line chart shows that SCE.PB is on its own scale that outweighs the scale of the other smaller valued stocks, there is also volatility and cyclical movements in SCE.PB which makes it a good choice to further analyze with timelines of web article events that could have triggered these changes in value of a steady increase in 2015, a high jump increase in 2016, then a steep decline throughout 2017 and 2018, then a huge jump of an increase to the same level at 2016. This is a utility company so government contracts could be involved with all that entails, and possible fires causing damage and settlements in the declining years. But for now it is just speculation and assumptions.
+
+The other stocks are getting limited spotlight above, and they need their own scale as SCE.PB pushed down their scaled visual line charts.
 
 
+Now for the next four stocks in our subset four.
+```{r}
+sub1 <- Value2[,c(13,14,16,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:3)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+From the above line chart, we see that WWE had a huge jump in 2018 of an increase from the 40 range to the 90 range but then decreased during 2018 and 2019 to a price still much higher at the 60 range than its starting value in 2015 of the 20 range.
+
+The FFIN stock has been steadily increasing over the last five years with a flat line on the value in 2017 and 2018.
+
+The INO stock has declined since 2016 after an increasing year in 2015, but lost only slightly in value over a five year span returning no profits over that time span.
 
 
+***
+
+***
 
 
+Now for the next stocks in our subset.
+```{r}
+sub1 <- Value2[,c(17:20,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+In the above subset of stocks, Google out scales the other three stocks and shows that it has been increasing steadily every year, except 2018 where it is almost the same price all year.
+
+Lets look at the other three stocks that our on a lower scaled value to analyze them.
+```{r}
+sub1 <- Value2[,c(18:20,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:3)
+
+#min2015 <- subset(StocksSTATS, StocksSTATS$MonthYear=='Jan-2015')
+#m15 <- min2015[1,"ONCY.Close"]
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  #geom_hline(yintercept=m15, color='red')
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+The line chart above shows that WM has increased significantly every year since 2015, with a slight decrease in 2019, but overall has increased from the 50 range in 2015 to the 113 range in 2020.
+
+The ONCY and S stocks have had slight increases and decreases in the last five years but look like they have increased slightly overall from 2015-2020.
+
+Lets look at S and ONCY stocks more closely.
+```{r}
+sub1 <- Value2[,c(19:20,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:2)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
 
 
+```
+
+It looks like these two stocks, ONCY and S, have had cyclical patterns in the last five years, and if that is true, then S stock hasn't reached its cyclical minimum and ONCY stock hasn't reached it cyclical maximum. And if this is not the case then there are some triggers in the value of this stock in 2016, where they both increased, then steadily decreased in 2017. A global minimum in the last five years is seen in 2019 for ONCY stock, while the global maximums for both stock is in 2017. The start of 2016 showed both stocks had a local minima while S stock had its global minima this year, but only for this last five year period.
+
+
+***
+
+
+Now for the next stocks in our subset.
+```{r}
+sub1 <- Value2[,c(21:24,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+The above subset shows that ARWR and COST stock have been increasing the last two years, but ARWR stock had some near flat changes in value for years 2015, 2016, and 2017. The purple line for Ford is relatively maintaining value, but no increases or decreases of note for Ford in the last five years. The AAL stock had a global maxima in 2018 but overall decreased in value slightly in the last five years.
+***
+
+
+Now for the next stocks in our subset.
+```{r}
+sub1 <- Value2[,c(25:28,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+The above line chart shows that ADDYY has been significantly increasing over the last five years it jumped from the 40 USD range to the 165 USD range in 2020. The other three stocks all moved together with slightly different rates of increase and decrease. But the JWN stock lost value over the last five years, while KSS and NUS stocks both increased only marginally after some cyclical rise and falls in value.
+***
+
+Now for the next stocks in our subset.
+```{r}
+sub1 <- Value2[,c(29:32,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+The above line chart shows that MSFT increased steadily the last five years with none of the years having declining values in stock. PCG stock had a local maxima in 2017 but a local minima in 2019 which led to an overall loss in value from 2015-2020. The LUV stock is the olive colored stock that had an increase overall in value by about 10 USD. And the HMC stock slightly stayed the same and may have decreased marginally in the last five years.
+***
+
+
+Now for the next stocks in our subset.
+```{r}
+sub1 <- Value2[,c(33:36,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+The above line chart shows that AMZN stock is on its own scale and has saw an overall huge jump in value in the last five years, with every year increasing, except in 2018 where it decreased from its local maxima at the start of 2018. Its value in 2015 was in the 500 USD range and at the start of 2020 was in the 1700-1800 USD range.
+
+Lets look at the scale more appropriate for the other three stocks of DLTR, KGJI, and NKE.
+```{r}
+sub1 <- Value2[,c(33:35,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:3)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+The above line chart shows the smaller scale value changes by year for DLTR, KGJI, and NKE. Both NKE and DLTR stocks have increased in value over the last five years, while DLTR did see a decreasing value throughout the last year of 2019. The KGJI stock showed marginal changes in value over the last five years, with no significant local minimas or local maximas.It does look like a slight increase overall from 2015-2020 for KGJI stock.
+***
+
+Now for the next stocks in our subset.
+```{r}
+sub1 <- Value2[,c(37:40,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+In the above line chart we see that all of the stocks increased noticeably in the last five years. The TM stock had some years that decreased in 2015, 2016, and 2018, but always starts the new year at a higher value than the year before. In 2018 WMT increased, while the other three stocks of TJX, TM, and ROST saw slight decreases.
+***
+
+Now for the next stocks in our subset.
+```{r}
+sub1 <- Value2[,c(41:44,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+The above line chart also shows an overall increase in value over the last five years with significant jumps in value for C and JNJ stocks. In 2017, there were some decreases in value throughout the year for all these stocks of C, EPD, JNJ, and T stocks, but in two years they all started 2019 at the same values of 2017 and saw increasing values throughout 2019. 
+***
+
+Now for the next stocks in our subset.
+```{r}
+sub1 <- Value2[,c(45:48,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+The above line chart shows that NFLX increased significantly while HRB and AAP saw losses over the last five years. VZ stock saw a slight increase in value over the last five years. In 2017 Netflix saw a huge inrease, while in 2018 it stayed somewhat stagnant with a sharp drop in value at the start of 2019 that saw an increasing year throughout 2019.
+
+In 2017, there was a sharp drop in value for AAP, but by the start of 2018 the value increased to a value above the start of 2017. 
+
+***
+
+Now for the last five stocks in our subset.
+```{r}
+sub1 <- Value2[,c(49:53,115)]
+sub1tidy <- gather(sub1, 'Stock','Value',1:4)
+
+ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
+  geom_line(aes(color=Stock))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('Value 2015-2020')+
+  ylab('Value Dollars')
+
+```
+
+Our last set of stock show that RRGB and SIG saw significant losses over the last five years, while M stock showed a smaller loss. HOFT stock saw an increase over the last five years, but only marginally or slightly. In 2017 M stock saw an increasing year for its value after having two years from 2015-2016 see decreasing values throughout those years. M stock and HOFT stock seemed to be negatively correlated for years 2015-2018, with both stocks having different rates of decrease in 2018 and an increase in value of similar rates of increase in 2019. All of these stocks decreased at different rates in 2018, and increased at different rates in 2019. 
+***
+
+
+Lets group by the year and get the mean values over the last five years for each stock value.
+```{r}
+Value3 <- Value2[,c(1:53,112,115)]
+
+yearMeans <- Value3 %>% group_by(Year) %>%
+  summarise_at(vars(as.vector(colnames(Value3)[1:53])), mean)
+
+yearMeansTidy <- gather(yearMeans,'Stock','YearMeanValue',2:54)
+
+stock5yrMeans <- yearMeansTidy %>% group_by(Stock) %>%
+  summarise_at(vars(as.vector(colnames(yearMeansTidy)[3])), mean)
+colnames(stock5yrMeans)[2] <- 'stock5yrMeans'
+
+```
+
+```{r}
+Stock5year <- merge(stock5yrMeans,yearMeansTidy, by.x='Stock', by.y='Stock')
+```
+
+```{r}
+stock5yrOrdered <- Stock5year[with(Stock5year, order(Stock, Year)),]
+```
+
+Lets add a field that shows if the stock had an increase of 10% during the year and a field that shows if it decreased 
+```{r}
+ymn <- stock5yrOrdered$YearMeanValue
+YMN <- c(ymn[1],ymn[1:length(ymn)-1])
+
+stc2 <- stock5yrOrdered$Stock
+STC2 <- c('xyz',stc2[1:length(stc2)-1])
+
+STC3 <- ifelse(stc2==STC2, 1,0)
+
+stock5yrOrdered$Direction5yr10PercentChange <- ifelse(STC3==1 & stock5yrOrdered$YearMeanValue-YMN >  .10*YMN,'up10',
+                                               ifelse(STC3==1 & stock5yrOrdered$YearMeanValue-YMN <= -0.10*YMN, 'down10',
+                                               ifelse(STC3==1 & stock5yrOrdered$YearMeanValue-YMN <= 0, 'down', ifelse(STC3==1 & stock5yrOrdered$YearMeanValue-YMN > 0, 'up', ''))))
+
+show1 <- cbind(head(stock5yrOrdered), tail(stock5yrOrdered))
+show1
+```
+
+Lets get these subsets of stocks that within the time span of 2015-2020 increased by more than 10% annually, decreased by 10% or more annually, decreased, or increased. 
+```{r}
+Stocks10PercentAnnualDecrease2015_2020 <- subset(stock5yrOrdered, stock5yrOrdered$Direction5yr10PercentChange=='down10')
+
+stocks10Decr <- Stocks10PercentAnnualDecrease2015_2020 %>% group_by(Stock) %>% count(n=n())
+colnames(stocks10Decr)[2] <- 'nTimesDecr10_5yr'
+stocks10Decr <- stocks10Decr[,-3]
+
+Stocks10PercentAnnualIncrease2015_2020 <- subset(stock5yrOrdered, stock5yrOrdered$Direction5yr10PercentChange=='up10')
+
+stocks10Incr <- Stocks10PercentAnnualIncrease2015_2020 %>% group_by(Stock) %>% count(n=n())
+colnames(stocks10Incr)[2] <- 'nTimesIncr10_5yr'
+stocks10Incr <- stocks10Incr[,-3]
+
+StocksAnnualIncrease2015_2020 <- subset(stock5yrOrdered, stock5yrOrdered$Direction5yr10PercentChange=='up')
+
+StocksIncrZerobase <- StocksAnnualIncrease2015_2020 %>% group_by(Stock) %>% count(n=n())
+colnames(StocksIncrZerobase)[2] <- 'nTimesIncrFromZero_5yrs'
+StocksIncrZerobase <- StocksIncrZerobase[,-3]
+  
+StocksAnnualDecrease2015_2020 <- subset(stock5yrOrdered, stock5yrOrdered$Direction5yr10PercentChange=='down')
+
+StocksDecrZerobase <- StocksAnnualDecrease2015_2020 %>% group_by(Stock) %>% count(n=n())
+colnames(StocksDecrZerobase)[2] <- 'nTimesDecrFromZero_5yrs'
+StocksDecrZerobase <- StocksDecrZerobase[,-3]
+
+
+```
+
+
+Lets merge these sets together with outer joins.
+```{r}
+Stocks5yrChanges_outerJoin <- merge(stocks10Decr,stocks10Incr, by.x='Stock', by.y='Stock', all=TRUE)
+
+Stocks5yrChanges_outerJoin1 <- merge(Stocks5yrChanges_outerJoin,StocksDecrZerobase, by.x='Stock', by.y='Stock', all=TRUE)
+
+Stocks5yrChanges_outerJoin2 <- merge(Stocks5yrChanges_outerJoin1,StocksIncrZerobase, by.x='Stock', by.y='Stock', all=TRUE)
+
+stock_5yr_stats_2015_2020 <- merge(stock5yrOrdered,Stocks5yrChanges_outerJoin2, by.x='Stock', by.y='Stock', all=TRUE)
+```
+
+Write this file out to analyze those stocks having decreased and increased the most in the last 5 years.
+```{r}
+write.csv(stock_5yr_stats_2015_2020,'stocks_STATS_N_Changes.csv', row.names=FALSE)
+
+```
+
+```{r}
+
+
+```
 
 
 
