@@ -592,6 +592,22 @@ I am going to pull the data from these dates with the Google Search for the spec
 
 Note: when searching the internet, there were limited articles and [most](https://www.nytimes.com/2008/11/23/business/23citi.html) were about Citi's involvement in the sub-prime mortgage crisis of 2007-2008, and a [bailout](https://www.reuters.com/article/us-citigroup/citigroup-gets-massive-government-bailout-idUSTRE4AJ45G20081124) of Citigroup by the US. For the month and years of the two dates not in or around 2007-2008, there are only two for April 2013 and December 2015. Where Citi settled a [lawsuit](https://www.reuters.com/article/us-citigroup-settlement/citigroup-settles-shareholder-cdo-lawsuit-for-590-million-idUSBRE87S0UA20120829) for covering up bad mortgage loans in August 2012 and a [person reported](https://ficoforums.myfico.com/t5/Credit-Card-Approvals/Citi-Simplicity-Approved-Woohoooooo/td-p/4388074) on a forum about FICO scores how he was approved for a 4600 USD credit card with Citi. There isn't enough data to rely on the web for NLP on Citigroup for these time frames. 
 
+Lets plot this as a simple line chart of the value of the stock over the years.
+```{r}
+
+ggplot(data = C_stock, aes(x=Year, y=C.Close, group=Month)) +
+  geom_line(aes(color=Month))+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  scale_x_continuous(breaks=c(2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020),
+                     labels=c(2007,'subprime crash','Bailout',2010,2011,2012,'settlement',2014,'remodel',2016,2017,2018,2019,2020))+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  geom_vline(xintercept=c(2008,2009,2013,2015), linetype='dashed', color='red')+
+  ggtitle('Citigroup Stock Value 2007-2020')+
+  ylab('Value')
+```
+
 We could pull based on the keywords: 'settlement', 'bail-out', 'sub-prime loans', but we would only get the obvious negative sentiment for these keywords. A New York Times article posted an article in Dec 2015 about the remodeling that Citigroup was doing to their offices, but the full article would have to be purchased. The fact that they spent money on remodeling could have some public sentiment of either they aren't distributing their profits to shareholders or they are making enough profits to  spend money on remodeling, which is also reported at the end of the year in 2015 to write off for that tax year. Although, I was told by an accountant that some corporations and small businesses have a different tax year and a quick search on Google returned the fiscal year is any consecutive 12-month business cycle that usually ends at the end of each quarter. 
 
 We can see that the volume of trades is highest in December 2015 from our dates, but we should compare this to which quantile this number is within for the volume of trades of Citi stock.
