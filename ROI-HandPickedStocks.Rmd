@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: "2/17/2020"
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 ```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
@@ -1194,11 +1194,95 @@ write.csv(stock_5yr_stats_2015_2020,'stocks_STATS_N_Changes.csv', row.names=FALS
 
 ```
 
+Lets attach the stock name to this data set above by reading in the file with the names on it when hand picking these stocks by searching manually in finance.yahoo.com.
 ```{r}
+stockNames <- read.csv('yahooStockBasket.csv', header=T, sep=',', na.strings=c('',' '))
+stock_5yr_stats_2015_2020$Stock <- gsub('[.]Close','', stock_5yr_stats_2015_2020$Stock)
+stock_5yr_stats_2015_2020$Stock <- as.factor(stock_5yr_stats_2015_2020$Stock)
+StockNames_STATS_2015_2020 <- merge(stockNames,stock_5yr_stats_2015_2020,
+                                    by.x='stock', by.y='Stock')
+show2 <- rbind(head(StockNames_STATS_2015_2020,3),tail(StockNames_STATS_2015_2020,3))
+show2
+```
+
+Make separate portfolios for each of the stocks that increased by more than 10% annually more than at least 1 time, decreased more than 10% annually more than at least 1 time, then get the mean value of the YearMeanValue column. Compare this to the portfolio of the stocks that never decreased more than 10% annually.
+```{r}
+sub_D10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesDecr10_5yr > 0)
+
+sub_nvr_D10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesDecr10_5yr != (0 |1|2|3|4|5))
+
+pMean_sub_D10 <- mean(sub_D10$YearMeanValue)
+pMean_sub_D10
+pMean_sub_nvr_D10 <- mean(sub_nvr_D10$YearMeanValue)
+pMean_sub_nvr_D10
+```
+
+From the above, it looks like **the portfolio mean of those stocks that decreased by at least 10% and at least one time in the last five years of 2015-2020 have a higher portfolio mean than those stocks that never decreased by 10%** in the last five years at 41.82 USD compared to 30.30 USD.
+
+Lets now do the reverse and look at those stocks that increased more than 10% at least one time in the last five years of 2015-2020 and compare the means.
+```{r}
+sub_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncr10_5yr > 0)
+
+sub_nvr_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncr10_5yr != (0 |1|2|3|4|5))
+
+pMean_sub_I10 <- mean(sub_I10$YearMeanValue)
+pMean_sub_I10
+pMean_sub_nvr_I10 <- mean(sub_nvr_I10$YearMeanValue)
+pMean_sub_nvr_I10
+```
+
+We also notice that the portfoliio of **stocks having increased by at least 10% in the last five years have a lower portfolio mean than the stocks that never increased by at least 10% in the last five years** with respective values of 121 USD to 152 USD.
+
+Now lets look at those stocks that increased at least one time in the last five years but never by more than 10% to compare the portfolio mean to those that decreased over the last five years but never by more than 10%.
+```{r}
+sub_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr > 0)
+
+sub_nvr_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr != (0 |1|2|3|4|5))
+
+pMean_sub_I0 <- mean(sub_I10$YearMeanValue)
+pMean_sub_I0
+pMean_sub_nvr_I0 <- mean(sub_nvr_I10$YearMeanValue)
+pMean_sub_nvr_I0
 
 
 ```
 
+From the above information, we see that those **stocks that increased at least once during the last five years but not by more than 10% had a lower portfolio mean than those stocks that never increased less than 10%** in the last five years (this could mean those stocks increased but by more than 10%) with respective values of 130 USD compared to 156 USD.
+
+Lets get the portfolio mean value in 2015 and compare to the portfolio mean value in 2020 of all stocks in this set to compare the above values to.
+```{r}
+p2015 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$Year==2015)
+p2020 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$Year==2020)
+pm2015 <- mean(p2015$YearMeanValue)
+pm2020 <- mean(p2020$YearMeanValue)
+
+pm2015
+pm2020
+```
+
+The portfolio mean was 73 USD in 2015 and 133 USD in 2020. Knowing this combined with the other last three clues to stock volatility (by analyzing the volatility by year using the number of times the stock has an increase or decrease by 10% during each of the last five years) we can say that all of these stocks without carefully selecting them did increase the whole portfolio in the last five years from 73 USD to 133 USD, but the best set of stocks are the ones that increased at least once during the last five years but not more than a 10% annual increase because the portfolio of that set of stocks was 156 USD.
+
+What would the ROI be for all stocks compared to only those stocks that increased at least one time during the last five years but not by more than 10 per cent?
+```{r}
+ROI_all <- pm2020/pm2015
+ROI_Inc_not10 <- pMean_sub_nvr_I0/pm2015
+
+ROI_all
+ROI_Inc_not10
+```
+
+The **return on investment** is almost doubled over five years selecting all the stocks in this portfolio of stocks that had values from 2007-2020 (done in the beginning is 53 out of 65) with a value of 1.817 or **182 per cent**. While the portfolio with only the stocks that increased over the last five years at least one time (had an increasing year at least once) but never more than 10% had an ROI of 2.127 or **213 per cent**. 
+
+Either way, these stocks returned a profit over the span of the last five years. We could see what the [annual ROI rate](https://www.investopedia.com/terms/a/apr.asp) is knowing the amount of 156 USD for best portfolio and 133 USD for all stocks, compared to the initial value of 73 USD.
+```{r}
+n =365*5
+principalPlusFees <- pMean_sub_nvr_I0
+initial <- pm2015
+apr <- ((principalPlusFees/initial)/n)*365*100
+apr
+```
+
+Using the formula from the web, the apr on this portfolio is 42.55%, which seems really high. When using another source for mortgage the apr was about 16% which is still good and much better than any bank.
 
 
 

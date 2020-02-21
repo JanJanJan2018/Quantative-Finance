@@ -1777,6 +1777,113 @@ Stocks5yrChanges_outerJoin2 &lt;- merge(Stocks5yrChanges_outerJoin1,StocksIncrZe
 stock_5yr_stats_2015_2020 &lt;- merge(stock5yrOrdered,Stocks5yrChanges_outerJoin2, by.x=&#39;Stock&#39;, by.y=&#39;Stock&#39;, all=TRUE)</code></pre>
 <p>Write this file out to analyze those stocks having decreased and increased the most in the last 5 years.</p>
 <pre class="r"><code>write.csv(stock_5yr_stats_2015_2020,&#39;stocks_STATS_N_Changes.csv&#39;, row.names=FALSE)</code></pre>
+<p>Lets attach the stock name to this data set above by reading in the file with the names on it when hand picking these stocks by searching manually in finance.yahoo.com.</p>
+<pre class="r"><code>stockNames &lt;- read.csv(&#39;yahooStockBasket.csv&#39;, header=T, sep=&#39;,&#39;, na.strings=c(&#39;&#39;,&#39; &#39;))
+stock_5yr_stats_2015_2020$Stock &lt;- gsub(&#39;[.]Close&#39;,&#39;&#39;, stock_5yr_stats_2015_2020$Stock)
+stock_5yr_stats_2015_2020$Stock &lt;- as.factor(stock_5yr_stats_2015_2020$Stock)
+StockNames_STATS_2015_2020 &lt;- merge(stockNames,stock_5yr_stats_2015_2020,
+                                    by.x=&#39;stock&#39;, by.y=&#39;Stock&#39;)
+show2 &lt;- rbind(head(StockNames_STATS_2015_2020,3),tail(StockNames_STATS_2015_2020,3))
+show2</code></pre>
+<pre><code>##     stock
+## 1     AAL
+## 2     AAL
+## 3     AAL
+## 310   XOM
+## 311   XOM
+## 312   XOM
+##                                                                                    stockInfo
+## 1   American Airlines Group Inc. (AAL)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD
+## 2   American Airlines Group Inc. (AAL)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD
+## 3   American Airlines Group Inc. (AAL)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD
+## 310                Exxon Mobil Corporation (XOM)\nNYSE - NYSE Delayed Price. Currency in USD
+## 311                Exxon Mobil Corporation (XOM)\nNYSE - NYSE Delayed Price. Currency in USD
+## 312                Exxon Mobil Corporation (XOM)\nNYSE - NYSE Delayed Price. Currency in USD
+##     stockExchange stock5yrMeans Year YearMeanValue Direction5yr10PercentChange
+## 1          Nasdaq      38.67371 2018      42.80195                        down
+## 2          Nasdaq      38.67371 2017      47.49072                        up10
+## 3          Nasdaq      38.67371 2020      27.56429                      down10
+## 310          NYSE      78.73700 2016      86.21968                          up
+## 311          NYSE      78.73700 2020      67.82191                        down
+## 312          NYSE      78.73700 2019      73.73464                        down
+##     nTimesDecr10_5yr nTimesIncr10_5yr nTimesDecrFromZero_5yrs
+## 1                  3                1                       1
+## 2                  3                1                       1
+## 3                  3                1                       1
+## 310               NA               NA                       4
+## 311               NA               NA                       4
+## 312               NA               NA                       4
+##     nTimesIncrFromZero_5yrs
+## 1                        NA
+## 2                        NA
+## 3                        NA
+## 310                       1
+## 311                       1
+## 312                       1</code></pre>
+<p>Make separate portfolios for each of the stocks that increased by more than 10% annually more than at least 1 time, decreased more than 10% annually more than at least 1 time, then get the mean value of the YearMeanValue column. Compare this to the portfolio of the stocks that never decreased more than 10% annually.</p>
+<pre class="r"><code>sub_D10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesDecr10_5yr &gt; 0)
+
+sub_nvr_D10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesDecr10_5yr != (0 |1|2|3|4|5))
+
+pMean_sub_D10 &lt;- mean(sub_D10$YearMeanValue)
+pMean_sub_D10</code></pre>
+<pre><code>## [1] 41.81591</code></pre>
+<pre class="r"><code>pMean_sub_nvr_D10 &lt;- mean(sub_nvr_D10$YearMeanValue)
+pMean_sub_nvr_D10</code></pre>
+<pre><code>## [1] 30.29653</code></pre>
+<p>From the above, it looks like <strong>the portfolio mean of those stocks that decreased by at least 10% and at least one time in the last five years of 2015-2020 have a higher portfolio mean than those stocks that never decreased by 10%</strong> in the last five years at 41.82 USD compared to 30.30 USD.</p>
+<p>Lets now do the reverse and look at those stocks that increased more than 10% at least one time in the last five years of 2015-2020 and compare the means.</p>
+<pre class="r"><code>sub_I10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncr10_5yr &gt; 0)
+
+sub_nvr_I10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncr10_5yr != (0 |1|2|3|4|5))
+
+pMean_sub_I10 &lt;- mean(sub_I10$YearMeanValue)
+pMean_sub_I10</code></pre>
+<pre><code>## [1] 120.9571</code></pre>
+<pre class="r"><code>pMean_sub_nvr_I10 &lt;- mean(sub_nvr_I10$YearMeanValue)
+pMean_sub_nvr_I10</code></pre>
+<pre><code>## [1] 152.317</code></pre>
+<p>We also notice that the portfoliio of <strong>stocks having increased by at least 10% in the last five years have a lower portfolio mean than the stocks that never increased by at least 10% in the last five years</strong> with respective values of 121 USD to 152 USD.</p>
+<p>Now lets look at those stocks that increased at least one time in the last five years but never by more than 10% to compare the portfolio mean to those that decreased over the last five years but never by more than 10%.</p>
+<pre class="r"><code>sub_I10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr &gt; 0)
+
+sub_nvr_I10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr != (0 |1|2|3|4|5))
+
+pMean_sub_I0 &lt;- mean(sub_I10$YearMeanValue)
+pMean_sub_I0</code></pre>
+<pre><code>## [1] 129.7607</code></pre>
+<pre class="r"><code>pMean_sub_nvr_I0 &lt;- mean(sub_nvr_I10$YearMeanValue)
+pMean_sub_nvr_I0</code></pre>
+<pre><code>## [1] 156.0346</code></pre>
+<p>From the above information, we see that those <strong>stocks that increased at least once during the last five years but not by more than 10% had a lower portfolio mean than those stocks that never increased less than 10%</strong> in the last five years (this could mean those stocks increased but by more than 10%) with respective values of 130 USD compared to 156 USD.</p>
+<p>Lets get the portfolio mean value in 2015 and compare to the portfolio mean value in 2020 of all stocks in this set to compare the above values to.</p>
+<pre class="r"><code>p2015 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$Year==2015)
+p2020 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$Year==2020)
+pm2015 &lt;- mean(p2015$YearMeanValue)
+pm2020 &lt;- mean(p2020$YearMeanValue)
+
+pm2015</code></pre>
+<pre><code>## [1] 73.33239</code></pre>
+<pre class="r"><code>pm2020</code></pre>
+<pre><code>## [1] 133.2523</code></pre>
+<p>The portfolio mean was 73 USD in 2015 and 133 USD in 2020. Knowing this combined with the other last three clues to stock volatility (by analyzing the volatility by year using the number of times the stock has an increase or decrease by 10% during each of the last five years) we can say that all of these stocks without carefully selecting them did increase the whole portfolio in the last five years from 73 USD to 133 USD, but the best set of stocks are the ones that increased at least once during the last five years but not more than a 10% annual increase because the portfolio of that set of stocks was 156 USD.</p>
+<p>What would the ROI be for all stocks compared to only those stocks that increased at least one time during the last five years but not by more than 10 per cent?</p>
+<pre class="r"><code>ROI_all &lt;- pm2020/pm2015
+ROI_Inc_not10 &lt;- pMean_sub_nvr_I0/pm2015
+
+ROI_all</code></pre>
+<pre><code>## [1] 1.8171</code></pre>
+<pre class="r"><code>ROI_Inc_not10</code></pre>
+<pre><code>## [1] 2.127772</code></pre>
+<p>The <strong>return on investment</strong> is almost doubled over five years selecting all the stocks in this portfolio of stocks that had values from 2007-2020 (done in the beginning is 53 out of 65) with a value of 1.817 or <strong>182 per cent</strong>. While the portfolio with only the stocks that increased over the last five years at least one time (had an increasing year at least once) but never more than 10% had an ROI of 2.127 or <strong>213 per cent</strong>.</p>
+<p>Either way, these stocks returned a profit over the span of the last five years. We could see what the <a href="https://www.investopedia.com/terms/a/apr.asp">annual ROI rate</a> is knowing the amount of 156 USD for best portfolio and 133 USD for all stocks, compared to the initial value of 73 USD.</p>
+<pre class="r"><code>n =365*5
+principalPlusFees &lt;- pMean_sub_nvr_I0
+initial &lt;- pm2015
+apr &lt;- ((principalPlusFees/initial)/n)*365*100
+apr</code></pre>
+<pre><code>## [1] 42.55544</code></pre>
+<p>Using the formula from the web, the apr on this portfolio is 42.55%, which seems really high. When using another source for mortgage the apr was about 16% which is still good and much better than any bank.</p>
 
 
 
