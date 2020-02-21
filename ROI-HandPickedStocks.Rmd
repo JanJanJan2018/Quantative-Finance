@@ -1201,6 +1201,7 @@ stock_5yr_stats_2015_2020$Stock <- gsub('[.]Close','', stock_5yr_stats_2015_2020
 stock_5yr_stats_2015_2020$Stock <- as.factor(stock_5yr_stats_2015_2020$Stock)
 StockNames_STATS_2015_2020 <- merge(stockNames,stock_5yr_stats_2015_2020,
                                     by.x='stock', by.y='Stock')
+write.csv(StockNames_STATS_2015_2020, 'StockNames_STATS_2015_2020.csv', row.names=FALSE)
 show2 <- rbind(head(StockNames_STATS_2015_2020,3),tail(StockNames_STATS_2015_2020,3))
 show2
 ```
