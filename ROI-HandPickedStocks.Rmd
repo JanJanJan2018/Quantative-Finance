@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: "2/17/2020"
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 ```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
@@ -1201,44 +1201,91 @@ stock_5yr_stats_2015_2020$Stock <- gsub('[.]Close','', stock_5yr_stats_2015_2020
 stock_5yr_stats_2015_2020$Stock <- as.factor(stock_5yr_stats_2015_2020$Stock)
 StockNames_STATS_2015_2020 <- merge(stockNames,stock_5yr_stats_2015_2020,
                                     by.x='stock', by.y='Stock')
+
+StockNames_STATS_2015_2020$nTimesDecr10_5yr <-
+  ifelse(is.na(StockNames_STATS_2015_2020$nTimesDecr10_5yr==TRUE),
+                          0,StockNames_STATS_2015_2020$nTimesDecr10_5yr)
+
+StockNames_STATS_2015_2020$nTimesIncr10_5yr <-
+  ifelse(is.na(StockNames_STATS_2015_2020$nTimesIncr10_5yr==TRUE),
+                          0,StockNames_STATS_2015_2020$nTimesIncr10_5yr)
+
+StockNames_STATS_2015_2020$nTimesDecrFromZero_5yrs <-
+  ifelse(is.na(StockNames_STATS_2015_2020$nTimesDecrFromZero_5yrs==TRUE),
+                          0,StockNames_STATS_2015_2020$nTimesDecrFromZero_5yrs)
+
+StockNames_STATS_2015_2020$nTimesIncrFromZero_5yrs <-
+  ifelse(is.na(StockNames_STATS_2015_2020$nTimesIncrFromZero_5yrs==TRUE),
+                          0,StockNames_STATS_2015_2020$nTimesIncrFromZero_5yrs)
+
+StockNames_STATS_2015_2020$Direction5yr10PercentChange <-
+  ifelse(StockNames_STATS_2015_2020$Direction5yr10PercentChange=='',0,StockNames_STATS_2015_2020$Direction5yr10PercentChange)
+
 write.csv(StockNames_STATS_2015_2020, 'StockNames_STATS_2015_2020.csv', row.names=FALSE)
+
 show2 <- rbind(head(StockNames_STATS_2015_2020,3),tail(StockNames_STATS_2015_2020,3))
 show2
+
 ```
+
+
+Lets the mean annual unemployment rates using the original table to combine with this table of the n times a stock increases/decreases per year in the last five years.
+```{r}
+ue$Annual <- round(rowMeans(ue[,2:13], na.rm=T),2)
+ue_15_20 <- ue[9:14,c(1,14)]
+colnames(ue_15_20)[2] <- 'Annual_UE'
+```
+
+Now, combine the unemployment and the newest stats with counts table.
+```{r}
+stock_5yrs_ue <- merge(ue_15_20,StockNames_STATS_2015_2020, by.x='Year', by.y='Year')
+```
+
+Add in a boolean field to show if the YearMeanValue is greater than the Stock5yrMeans column as a 1 if true and a 0 if not.
+```{r}
+stock_5yrs_ue$YearMeanGreaterThan5yrMean <- ifelse(stock_5yrs_ue$YearMeanValue >
+                                                     stock_5yrs_ue$stock5yrMeans,1,0)
+```
+
+
+```{r}
+write.csv(stock_5yrs_ue,'stock_2015-2020_ue.csv',row.names=FALSE)
+```
+
+
+***
 
 Make separate portfolios for each of the stocks that increased by more than 10% annually more than at least 1 time, decreased more than 10% annually more than at least 1 time, then get the mean value of the YearMeanValue column. Compare this to the portfolio of the stocks that never decreased more than 10% annually.
 ```{r}
 sub_D10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesDecr10_5yr > 0)
 
-sub_nvr_D10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesDecr10_5yr != (0 |1|2|3|4|5))
+sub_nvr_D10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesDecr10_5yr == 0)
 
-pMean_sub_D10 <- mean(sub_D10$YearMeanValue)
+pMean_sub_D10 <- mean(sub_D10$stock5yrMeans)
 pMean_sub_D10
-pMean_sub_nvr_D10 <- mean(sub_nvr_D10$YearMeanValue)
+pMean_sub_nvr_D10 <- mean(sub_nvr_D10$stock5yrMeans)
 pMean_sub_nvr_D10
+pMean_sub_nvr_D10*length(unique(sub_nvr_D10$stock))
 ```
-
-From the above, it looks like **the portfolio mean of those stocks that decreased by at least 10% and at least one time in the last five years of 2015-2020 have a higher portfolio mean than those stocks that never decreased by 10%** in the last five years at 41.82 USD compared to 30.30 USD.
 
 Lets now do the reverse and look at those stocks that increased more than 10% at least one time in the last five years of 2015-2020 and compare the means.
 ```{r}
-sub_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncr10_5yr > 0)
+sub_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncr10_5yr > 3)
 
-sub_nvr_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncr10_5yr != (0 |1|2|3|4|5))
+sub_nvr_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncr10_5yr == 0)
 
-pMean_sub_I10 <- mean(sub_I10$YearMeanValue)
+pMean_sub_I10 <- mean(sub_I10$stock5yrMeans)
 pMean_sub_I10
-pMean_sub_nvr_I10 <- mean(sub_nvr_I10$YearMeanValue)
+pMean_sub_nvr_I10 <- mean(sub_nvr_I10$stock5yrMeans)
 pMean_sub_nvr_I10
+pMean_sub_I10*length(unique(sub_I10$stock))
 ```
 
-We also notice that the portfoliio of **stocks having increased by at least 10% in the last five years have a lower portfolio mean than the stocks that never increased by at least 10% in the last five years** with respective values of 121 USD to 152 USD.
-
-Now lets look at those stocks that increased at least one time in the last five years but never by more than 10% to compare the portfolio mean to those that decreased over the last five years but never by more than 10%.
+Now lets look at those stocks that increased at least one time in the last five years but never by more than 10% to compare the portfolio mean to those above that decreased over the last five years but never by more than 10%.
 ```{r}
 sub_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr > 0)
 
-sub_nvr_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr != (0 |1|2|3|4|5))
+sub_nvr_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr == 0)
 
 pMean_sub_I0 <- mean(sub_I10$YearMeanValue)
 pMean_sub_I0
@@ -1247,8 +1294,6 @@ pMean_sub_nvr_I0
 
 
 ```
-
-From the above information, we see that those **stocks that increased at least once during the last five years but not by more than 10% had a lower portfolio mean than those stocks that never increased less than 10%** in the last five years (this could mean those stocks increased but by more than 10%) with respective values of 130 USD compared to 156 USD.
 
 Lets get the portfolio mean value in 2015 and compare to the portfolio mean value in 2020 of all stocks in this set to compare the above values to.
 ```{r}
@@ -1259,35 +1304,105 @@ pm2020 <- mean(p2020$YearMeanValue)
 
 pm2015
 pm2020
+pm2015*length(unique(StockNames_STATS_2015_2020$stock))
+pm2020*length(unique(StockNames_STATS_2015_2020$stock))
 ```
 
-The portfolio mean was 73 USD in 2015 and 133 USD in 2020. Knowing this combined with the other last three clues to stock volatility (by analyzing the volatility by year using the number of times the stock has an increase or decrease by 10% during each of the last five years) we can say that all of these stocks without carefully selecting them did increase the whole portfolio in the last five years from 73 USD to 133 USD, but the best set of stocks are the ones that increased at least once during the last five years but not more than a 10% annual increase because the portfolio of that set of stocks was 156 USD.
+The portfolio mean was 73 USD in 2015 and 133 USD in 2020. Knowing this combined with the other last three clues to stock volatility (by analyzing the volatility by year using the number of times the stock has an increase or decrease by 10% during each of the last five years) we can say that all of these stocks without carefully selecting them did increase the whole portfolio in the last five years from 73 USD to 133 USD, but the best set of stocks are the ones that increased at least three times during the last five years more than 10% annually, because the portfolio of that set of stocks was 204 USD average value of the stock with a small portfolio subset for only those stocks at 1432 USD and the subset that never decreased by more than 10% annually over the last five years had an average value of 192 USD and a price for that subset of stocks as a portfolio of 4023 USD.
 
-What would the ROI be for all stocks compared to only those stocks that increased at least one time during the last five years but not by more than 10 per cent?
+What would the ROI be for all stocks compared to only those stocks that increased at least three times during the last five years by more than 10 per cent?
 ```{r}
+incr3_10 <- subset(sub_I10, sub_I10$Year==2015)
+mean_incr3_10 <- mean(incr3_10$YearMeanValue)
 ROI_all <- pm2020/pm2015
-ROI_Inc_not10 <- pMean_sub_nvr_I0/pm2015
-
+ROI_Incr3_10 <- pMean_sub_I10/mean_incr3_10
 ROI_all
-ROI_Inc_not10
+ROI_Incr3_10
 ```
 
-The **return on investment** is almost doubled over five years selecting all the stocks in this portfolio of stocks that had values from 2007-2020 (done in the beginning is 53 out of 65) with a value of 1.817 or **182 per cent**. While the portfolio with only the stocks that increased over the last five years at least one time (had an increasing year at least once) but never more than 10% had an ROI of 2.127 or **213 per cent**. 
+The **return on investment** is almost doubled over five years selecting all the stocks in this portfolio of stocks that had values from 2007-2020 (done in the beginning is 53 out of 65) with a value of 1.817 or **182 per cent**. While the portfolio with only the stocks that never decreased more than 10% over the last five years had an ROI of 1.74 or **174 per cent**. 
 
 Either way, these stocks returned a profit over the span of the last five years. We could see what the [annual ROI rate](https://www.investopedia.com/terms/a/apr.asp) is knowing the amount of 156 USD for best portfolio and 133 USD for all stocks, compared to the initial value of 73 USD.
 ```{r}
 n =365*5
-principalPlusFees <- pMean_sub_nvr_I0
+principalPlusFees <- pMean_sub_nvr_D10
 initial <- pm2015
 apr <- ((principalPlusFees/initial)/n)*365*100
 apr
 ```
 
-Using the formula from the web, the apr on this portfolio is 42.55%, which seems really high. When using another source for mortgage the apr was about 16% which is still good and much better than any bank.
+Using the formula from the web, the apr on this portfolio is 52.25%, which seems really high. This is the average value over the last five years of all the stocks in the subset of the portfolio having never decreased by 10%.
+
+***
+
+There are four sets of counts for those that increased more than 10%, decreased more than 10%, increased more than zero but less than 10%, and decreased more than zero but less than 10% within the five year span from 2015-2020. Lets see if there is a better subset of choices for a better market portfolio. 
+
+Lets add a five year poisson column using lambda=(unemployment rate), time=(1), and k=(YearMeanGreaterThan5yrMean).
+```{r}
+ue2 <- stock_5yrs_ue$Annual_UE
+t <- 1
+k <- stock_5yrs_ue$YearMeanGreaterThan5yrMean
+stock_5yrs_ue$poisson5yrUE <- round((exp(-ue2*t)*(ue2*t)^k)/(factorial(k)),5)
+```
 
 
+Lets get a subset of those stocks that have cyclical patterns within five years, so that we have three years the stock increases more than 10% exactly 3 times, and two years where the stock decreases less than 10% exactly 2 times. Separately, get the stocks it increases greater than 10% exactly 3 times, and decreases more than 10% exactly 2 times. Also get the reverse of these values
+```{r}
+cyclical <- subset(stock_5yrs_ue, stock_5yrs_ue$nTimesIncr10_5yr==3 & (stock_5yrs_ue$nTimesDecr10_5yr==2 | stock_5yrs_ue$nTimesDecrFromZero_5yrs==2))
+
+cyclical2 <- subset(stock_5yrs_ue, stock_5yrs_ue$nTimesIncrFromZero_5yrs >=2 & (stock_5yrs_ue$nTimesDecr10_5yr >= 2 | stock_5yrs_ue$nTimesDecrFromZero_5yrs >= 2))
+
+c1 <- as.character(unique(cyclical$stock))
+c2 <- as.character(unique(cyclical2$stock))
+cycle <- c(c1,c2)
+cycle1 <- as.data.frame(cycle)
+colnames(cycle1) <- 'Stock'
+
+portCycle <- merge(cycle1,stock_5yrs_ue, by.x='Stock', by.y='stock')
+portCycle_2015 <- subset(portCycle, Year==2015)
+portCycle_2020 <- subset(portCycle, Year==2020)
+
+mean(portCycle_2015$YearMeanValue)
+mean(portCycle_2020$YearMeanValue)
+mean(portCycle$YearMeanValue)
+```
+
+The above shows that the **cyclical stocks that have highs and lows the time span of the loan aren't great investments**, as these ones only profited $1.70 over five years. We could see if we dropped these stocks if they would make the portfolio better profit wise.
+```{r}
+m1 <- grep('MGM', stock_5yrs_ue$stock)
+m2 <- grep('ONCY', stock_5yrs_ue$stock)
+m3 <- grep('ARWR', stock_5yrs_ue$stock)
+m4 <- grep('S', stock_5yrs_ue$stock)
+m5 <- grep('JBLU', stock_5yrs_ue$stock)
+m6 <- grep('CVX', stock_5yrs_ue$stock)
+m7 <- grep('WFC', stock_5yrs_ue$stock)
+m8 <- grep('HRB', stock_5yrs_ue$stock)
+m9 <- grep('HMC', stock_5yrs_ue$stock)
+m10 <- grep('RRGB', stock_5yrs_ue$stock)
+m11 <- grep('LUV', stock_5yrs_ue$stock)
+m12 <- grep('UBSI', stock_5yrs_ue$stock)
+c3 <- c(m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12)
+stock_5yrs_ue_dropCycle <- stock_5yrs_ue[-c3,]
+mean(stock_5yrs_ue_dropCycle$YearMeanValue)                                   
+```
+The mean of the portfolio without the cyclical stocks is 134 USD. This is not much better than all of the stock in the portfolio of 133 USD.
 
 
+Lets get their poisson values for the cyclical stock, and drop any stock with this median value from our set of stocks, and compare the value of the portfolio after dropping stock with this poisson value.
+```{r}
+summary(portCycle$poisson5yrUE)
+```
 
+The median poisson is 0.02689. Lets drop any stock within the range of 0.025 and 0.03.
+```{r}
+stock_5yrs_ue_drop <- subset(stock_5yrs_ue, stock_5yrs_ue$poisson5yrUE < 0.025 | 
+                               stock_5yrs_ue$poisson5yrUE > 0.03)
+unique(stock_5yrs_ue_drop$stock)
+mean(stock_5yrs_ue_drop$YearMeanValue)
+```
 
+Removing the stock with poisson values in the range of the cyclical stock median value is worse than removing just the cyclical stock at 121 USD portfolio value compared to 134 USD.
 
+***
+
+There is more to do and work with after realizing I rushed through it. It will be updated with more accurate information as it develops.
