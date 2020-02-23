@@ -1060,7 +1060,6 @@ C_stock_minmaxValueChanges</code></pre>
 <pre class="r"><code>gg &lt;- ggplot(C_stock, aes(x=C_dailyChange))
 gg &lt;- gg + geom_histogram(binwidth=2, colour=&quot;black&quot;, 
                           aes(y=..density.., fill=..count..))
-#gg &lt;- gg + scale_fill_gradient(&quot;Count&quot;, low=&quot;#DCDCDC&quot;, high=&quot;#7C7C7C&quot;)
 gg &lt;- gg + stat_function(fun=dnorm,
                          color=&quot;red&quot;,
                          args=list(mean=mean(C_stock$C_dailyChange), 
@@ -1543,8 +1542,6 @@ ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
 <pre class="r"><code>sub1 &lt;- Value2[,c(18:20,115)]
 sub1tidy &lt;- gather(sub1, &#39;Stock&#39;,&#39;Value&#39;,1:3)
 
-#min2015 &lt;- subset(StocksSTATS, StocksSTATS$MonthYear==&#39;Jan-2015&#39;)
-#m15 &lt;- min2015[1,&quot;ONCY.Close&quot;]
 
 ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
   geom_line(aes(color=Stock))+
@@ -1743,6 +1740,8 @@ show1</code></pre>
 ## 1 XOM.Close        78.737 2018      79.95570                        down
 ## 5 XOM.Close        78.737 2019      73.73464                        down
 ## 6 XOM.Close        78.737 2020      67.82191                        down</code></pre>
+<pre class="r"><code>length(unique(stock5yrOrdered$Stock))</code></pre>
+<pre><code>## [1] 53</code></pre>
 <p>Lets get these subsets of stocks that within the time span of 2015-2020 increased by more than 10% annually, decreased by 10% or more annually, decreased, or increased.</p>
 <pre class="r"><code>Stocks10PercentAnnualDecrease2015_2020 &lt;- subset(stock5yrOrdered, stock5yrOrdered$Direction5yr10PercentChange==&#39;down10&#39;)
 
@@ -1774,12 +1773,17 @@ Stocks5yrChanges_outerJoin1 &lt;- merge(Stocks5yrChanges_outerJoin,StocksDecrZer
 
 Stocks5yrChanges_outerJoin2 &lt;- merge(Stocks5yrChanges_outerJoin1,StocksIncrZerobase, by.x=&#39;Stock&#39;, by.y=&#39;Stock&#39;, all=TRUE)
 
-stock_5yr_stats_2015_2020 &lt;- merge(stock5yrOrdered,Stocks5yrChanges_outerJoin2, by.x=&#39;Stock&#39;, by.y=&#39;Stock&#39;, all=TRUE)</code></pre>
+stock_5yr_stats_2015_2020 &lt;- merge(stock5yrOrdered,Stocks5yrChanges_outerJoin2, by.x=&#39;Stock&#39;, by.y=&#39;Stock&#39;, all=TRUE)
+
+length(unique(stock_5yr_stats_2015_2020$Stock))</code></pre>
+<pre><code>## [1] 53</code></pre>
 <p>Write this file out to analyze those stocks having decreased and increased the most in the last 5 years.</p>
 <pre class="r"><code>write.csv(stock_5yr_stats_2015_2020,&#39;stocks_STATS_N_Changes.csv&#39;, row.names=FALSE)</code></pre>
 <p>Lets attach the stock name to this data set above by reading in the file with the names on it when hand picking these stocks by searching manually in finance.yahoo.com.</p>
 <pre class="r"><code>stockNames &lt;- read.csv(&#39;yahooStockBasket.csv&#39;, header=T, sep=&#39;,&#39;, na.strings=c(&#39;&#39;,&#39; &#39;))
 stock_5yr_stats_2015_2020$Stock &lt;- gsub(&#39;[.]Close&#39;,&#39;&#39;, stock_5yr_stats_2015_2020$Stock)
+stockNames$stock &lt;- gsub(&#39;-&#39;,&#39;.&#39;, stockNames$stock)
+
 stock_5yr_stats_2015_2020$Stock &lt;- as.factor(stock_5yr_stats_2015_2020$Stock)
 StockNames_STATS_2015_2020 &lt;- merge(stockNames,stock_5yr_stats_2015_2020,
                                     by.x=&#39;stock&#39;, by.y=&#39;Stock&#39;)
@@ -1811,37 +1815,39 @@ show2</code></pre>
 ## 1     AAL
 ## 2     AAL
 ## 3     AAL
-## 310   XOM
-## 311   XOM
-## 312   XOM
+## 316   XOM
+## 317   XOM
+## 318   XOM
 ##                                                                                    stockInfo
 ## 1   American Airlines Group Inc. (AAL)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD
 ## 2   American Airlines Group Inc. (AAL)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD
 ## 3   American Airlines Group Inc. (AAL)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD
-## 310                Exxon Mobil Corporation (XOM)\nNYSE - NYSE Delayed Price. Currency in USD
-## 311                Exxon Mobil Corporation (XOM)\nNYSE - NYSE Delayed Price. Currency in USD
-## 312                Exxon Mobil Corporation (XOM)\nNYSE - NYSE Delayed Price. Currency in USD
+## 316                Exxon Mobil Corporation (XOM)\nNYSE - NYSE Delayed Price. Currency in USD
+## 317                Exxon Mobil Corporation (XOM)\nNYSE - NYSE Delayed Price. Currency in USD
+## 318                Exxon Mobil Corporation (XOM)\nNYSE - NYSE Delayed Price. Currency in USD
 ##     stockExchange stock5yrMeans Year YearMeanValue Direction5yr10PercentChange
 ## 1          Nasdaq      38.67371 2018      42.80195                        down
 ## 2          Nasdaq      38.67371 2017      47.49072                        up10
 ## 3          Nasdaq      38.67371 2020      27.56429                      down10
-## 310          NYSE      78.73700 2016      86.21968                          up
-## 311          NYSE      78.73700 2020      67.82191                        down
-## 312          NYSE      78.73700 2019      73.73464                        down
+## 316          NYSE      78.73700 2017      81.86159                        down
+## 317          NYSE      78.73700 2019      73.73464                        down
+## 318          NYSE      78.73700 2015      82.82845                           0
 ##     nTimesDecr10_5yr nTimesIncr10_5yr nTimesDecrFromZero_5yrs
 ## 1                  3                1                       1
 ## 2                  3                1                       1
 ## 3                  3                1                       1
-## 310                0                0                       4
-## 311                0                0                       4
-## 312                0                0                       4
+## 316                0                0                       4
+## 317                0                0                       4
+## 318                0                0                       4
 ##     nTimesIncrFromZero_5yrs
 ## 1                         0
 ## 2                         0
 ## 3                         0
-## 310                       1
-## 311                       1
-## 312                       1</code></pre>
+## 316                       1
+## 317                       1
+## 318                       1</code></pre>
+<pre class="r"><code>length(unique(StockNames_STATS_2015_2020$stock))</code></pre>
+<pre><code>## [1] 53</code></pre>
 <p>Lets the mean annual unemployment rates using the original table to combine with this table of the n times a stock increases/decreases per year in the last five years.</p>
 <pre class="r"><code>ue$Annual &lt;- round(rowMeans(ue[,2:13], na.rm=T),2)
 ue_15_20 &lt;- ue[9:14,c(1,14)]
@@ -1856,78 +1862,186 @@ colnames(ue_15_20)[2] &lt;- &#39;Annual_UE&#39;</code></pre>
 <p>Make separate portfolios for each of the stocks that increased by more than 10% annually more than at least 1 time, decreased more than 10% annually more than at least 1 time, then get the mean value of the YearMeanValue column. Compare this to the portfolio of the stocks that never decreased more than 10% annually.</p>
 <pre class="r"><code>sub_D10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesDecr10_5yr &gt; 0)
 
-sub_nvr_D10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesDecr10_5yr == 0)
 
-pMean_sub_D10 &lt;- mean(sub_D10$stock5yrMeans)
-pMean_sub_D10</code></pre>
-<pre><code>## [1] 41.81591</code></pre>
-<pre class="r"><code>pMean_sub_nvr_D10 &lt;- mean(sub_nvr_D10$stock5yrMeans)
-pMean_sub_nvr_D10</code></pre>
-<pre><code>## [1] 191.595</code></pre>
-<pre class="r"><code>pMean_sub_nvr_D10*length(unique(sub_nvr_D10$stock))</code></pre>
-<pre><code>## [1] 4023.495</code></pre>
-<p>Lets now do the reverse and look at those stocks that increased more than 10% at least one time in the last five years of 2015-2020 and compare the means.</p>
-<pre class="r"><code>sub_I10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncr10_5yr &gt; 3)
+D10_2015 &lt;- subset(sub_D10, sub_D10$Year==2015)
+D10_2020 &lt;- subset(sub_D10, sub_D10$Year==2020)
 
-sub_nvr_I10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncr10_5yr == 0)
+md10_2015 &lt;- mean(D10_2015$YearMeanValue)
+md10_2020 &lt;- mean(D10_2020$YearMeanValue)
+md10_2015</code></pre>
+<pre><code>## [1] 67.18499</code></pre>
+<pre class="r"><code>md10_2020</code></pre>
+<pre><code>## [1] 65.57645</code></pre>
+<pre class="r"><code>ROI_D10 &lt;- md10_2020/md10_2015
+ROI_D10</code></pre>
+<pre><code>## [1] 0.9760581</code></pre>
+<pre class="r"><code>d10_startValue &lt;- md10_2015*length(unique(D10_2015$stock))
+d10_endValue &lt;- md10_2020*length(unique(D10_2020$stock))
+d10_startValue</code></pre>
+<pre><code>## [1] 2149.92</code></pre>
+<pre class="r"><code>d10_endValue</code></pre>
+<pre><code>## [1] 2098.446</code></pre>
+<p>The above values show the 2015 average stock value of those stocks that decreased more than 10 percent in the last five years more than once was 67 USD. And in 2020 those stocks decreased in value to 66 USD giving it a five year ROI in the last five years of 0.976, or a decline of 2.4 percent in value. The 2015 value of this portfolio of stocks was 2150 USD, and in 2020 the portfolio value of the stocks was 2098 USD showing the dollar decrease over five years.</p>
+<pre class="r"><code>sub_nvr_D10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesDecr10_5yr == 0)
 
-pMean_sub_I10 &lt;- mean(sub_I10$stock5yrMeans)
-pMean_sub_I10</code></pre>
-<pre><code>## [1] 204.6173</code></pre>
-<pre class="r"><code>pMean_sub_nvr_I10 &lt;- mean(sub_nvr_I10$stock5yrMeans)
-pMean_sub_nvr_I10</code></pre>
-<pre><code>## [1] 32.77691</code></pre>
-<pre class="r"><code>pMean_sub_I10*length(unique(sub_I10$stock))</code></pre>
-<pre><code>## [1] 1432.321</code></pre>
-<p>Now lets look at those stocks that increased at least one time in the last five years but never by more than 10% to compare the portfolio mean to those above that decreased over the last five years but never by more than 10%.</p>
-<pre class="r"><code>sub_I10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr &gt; 0)
+nD10_2015 &lt;- subset(sub_nvr_D10, sub_nvr_D10$Year==2015)
+nD10_2020 &lt;- subset(sub_nvr_D10, sub_nvr_D10$Year==2020)
 
-sub_nvr_I10 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr == 0)
+mnD10_2015 &lt;- mean(nD10_2015$YearMeanValue)
+mnD10_2020 &lt;- mean(nD10_2020$YearMeanValue)
+mnD10_2015</code></pre>
+<pre><code>## [1] 109.2018</code></pre>
+<pre class="r"><code>mnD10_2020</code></pre>
+<pre><code>## [1] 272.5558</code></pre>
+<pre class="r"><code>ROI_nD10 &lt;- mnD10_2020/mnD10_2015
+ROI_nD10</code></pre>
+<pre><code>## [1] 2.495891</code></pre>
+<pre class="r"><code>nD10_startValue &lt;- mnD10_2015*length(unique(nD10_2015$stock))
+nD10_endValue &lt;- mnD10_2020*length(unique(nD10_2020$stock))
+nD10_startValue</code></pre>
+<pre><code>## [1] 2293.238</code></pre>
+<pre class="r"><code>nD10_endValue</code></pre>
+<pre><code>## [1] 5723.671</code></pre>
+<p>The above numbers show the mean stock value of those stocks that never decreased by more than 10 percent in 2015-2020. The 2015 average stock price of these stocks was 109 USD, and in 2020 the average price was 273 USD. This was a ROI of 2.49 or 249 percent, which means it more than doubled in value over the last five years. The 2015 portfolio price of these specific stock were 2293 USD and in 2020 the portfolio price was 5724 USD. This shows that having a stock that never decreases by more than 10 percent in five years could be a good stock to buy.</p>
+<hr />
+<p>Lets now do the reverse and look at those stocks that increased more than 10% at least three times in the last five years of 2015-2020 and compare the means.</p>
+<pre class="r"><code>sub_I10 &lt;- subset(StockNames_STATS_2015_2020, 
+                  StockNames_STATS_2015_2020$nTimesIncr10_5yr &gt; 3)
 
-pMean_sub_I0 &lt;- mean(sub_I10$YearMeanValue)
-pMean_sub_I0</code></pre>
-<pre><code>## [1] 129.7607</code></pre>
-<pre class="r"><code>pMean_sub_nvr_I0 &lt;- mean(sub_nvr_I10$YearMeanValue)
-pMean_sub_nvr_I0</code></pre>
-<pre><code>## [1] 50.44023</code></pre>
-<p>Lets get the portfolio mean value in 2015 and compare to the portfolio mean value in 2020 of all stocks in this set to compare the above values to.</p>
+sub_nvr_I10 &lt;- subset(StockNames_STATS_2015_2020,
+                      StockNames_STATS_2015_2020$nTimesIncr10_5yr == 0)
+
+m2015 &lt;- subset(sub_I10, sub_I10$Year==2015)
+m2020 &lt;- subset(sub_I10, sub_I10$Year==2020)
+
+pm_2015 &lt;- mean(m2015$YearMeanValue)
+pm_2020 &lt;- mean(m2020$YearMeanValue)
+
+ROI_incr10_3x &lt;- pm_2020/pm_2015
+ROI_incr10_3x</code></pre>
+<pre><code>## [1] 2.553548</code></pre>
+<pre class="r"><code>I10_3_startValue &lt;- pm_2015*length(unique(m2015$stock))
+I10_3_endValue &lt;- pm_2020*length(unique(m2020$stock))
+I10_3_startValue</code></pre>
+<pre><code>## [1] 823.0797</code></pre>
+<pre class="r"><code>I10_3_endValue</code></pre>
+<pre><code>## [1] 2101.773</code></pre>
+<pre class="r"><code>mn_2015 &lt;- subset(sub_nvr_I10, sub_nvr_I10$Year==2015)
+mn_2020 &lt;- subset(sub_nvr_I10, sub_nvr_I10$Year==2020)
+
+pmn_2015 &lt;- mean(mn_2015$YearMeanValue)
+pmn_2020 &lt;- mean(mn_2020$YearMeanValue)
+
+ROI_nvr10 &lt;- pmn_2020/pmn_2015
+ROI_nvr10</code></pre>
+<pre><code>## [1] 0.5342204</code></pre>
+<pre class="r"><code>nI10_startValue &lt;- pmn_2015*length(unique(mn_2015$stock))
+nI10_endValue &lt;- pmn_2020*length(unique(mn_2020$stock))
+nI10_startValue</code></pre>
+<pre><code>## [1] 502.048</code></pre>
+<pre class="r"><code>nI10_endValue</code></pre>
+<pre><code>## [1] 268.2043</code></pre>
+<p>From the above, we can see that those stocks that never increased by more than 10 percent during the last five years lost almost half their 2015 start value of 502 USD in 2015 and 268 USD in 2020 and having a ROI ratio of 0.53. On the other hand, the stocks that increased by more than 10 percent at least three times during the last five years had a ROI ratio of 2.55, a 2015 portfolio value of 823 USD and a 2020 portfolio value of 2102 USD.</p>
+<hr />
+<p>Now lets look at those stocks that increased at least one time in the last five years but never by more than 10 percent.</p>
+<pre class="r"><code>sub_Iz &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr &gt; 0)
+
+Iz_2015 &lt;- subset(sub_Iz, sub_Iz$Year==2015)
+Iz_2020 &lt;- subset(sub_Iz, sub_Iz$Year==2020)
+
+Iz_2015 &lt;- subset(sub_Iz, sub_Iz$Year==2015)
+Iz_2020 &lt;- subset(sub_Iz, sub_Iz$Year==2020)
+
+m_Iz_2015 &lt;- mean(Iz_2015$YearMeanValue)
+m_Iz_2020 &lt;- mean(Iz_2020$YearMeanValue)
+m_Iz_2015</code></pre>
+<pre><code>## [1] 100.1005</code></pre>
+<pre class="r"><code>m_Iz_2020</code></pre>
+<pre><code>## [1] 194.7926</code></pre>
+<pre class="r"><code>ROI_Iz &lt;- m_Iz_2020/m_Iz_2015
+ROI_Iz</code></pre>
+<pre><code>## [1] 1.945971</code></pre>
+<pre class="r"><code>p_Iz_2015 &lt;- m_Iz_2015*length(unique(sub_Iz$stock))
+p_Iz_2020 &lt;- m_Iz_2020*length(unique(sub_Iz$stock))
+p_Iz_2015</code></pre>
+<pre><code>## [1] 3503.518</code></pre>
+<pre class="r"><code>p_Iz_2020</code></pre>
+<pre><code>## [1] 6817.742</code></pre>
+<p>From the data above, the 2015 average stock price of 100 USD for the stock that had an increasing year at least one time in the last five years but not by more than 10 percent of the last year value. The 2020 average stock price increased to 195 USD, with an ROI of 1.95 or 195 percent. The 2015 portfolio value was 3504 USD and in 2020 the portfolio value increased to 6818 USD. This makes sense that those stocks that increase are good to have as they are making you money, but even if they don’t increase by more than 10 percent in any year, when combined with other increasing stock they can nearly double your investment over five years.</p>
+<hr />
+<p>Here are the stocks that never increased in the last five years.</p>
+<pre class="r"><code>sub_nvr_Iz &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr == 0)
+
+nIz_2015 &lt;- subset(sub_nvr_Iz, sub_nvr_Iz$Year==2015)
+nIz_2020 &lt;- subset(sub_nvr_Iz, sub_nvr_Iz$Year==2020)
+
+m_nIz_2015 &lt;- mean(nIz_2015$YearMeanValue)
+m_nIz_2020 &lt;- mean(nIz_2020$YearMeanValue)
+m_nIz_2015</code></pre>
+<pre><code>## [1] 52.2022</code></pre>
+<pre class="r"><code>m_nIz_2020</code></pre>
+<pre><code>## [1] 55.79861</code></pre>
+<pre class="r"><code>ROI_nIz &lt;- m_nIz_2020/m_nIz_2015
+ROI_nIz</code></pre>
+<pre><code>## [1] 1.068894</code></pre>
+<pre class="r"><code>nIz_startValue &lt;- m_nIz_2015*length(unique(nIz_2015$stock))
+nIz_endValue &lt;- m_nIz_2020*length(unique(nIz_2020$stock))
+nIz_startValue</code></pre>
+<pre><code>## [1] 939.6396</code></pre>
+<pre class="r"><code>nIz_endValue</code></pre>
+<pre><code>## [1] 1004.375</code></pre>
+<p>From the above we have a portfolio of stock that never increased from zero, but might have increased by more than 10 percent.This variable was designed to capture exactly those stocks that did not increase by more than 10 percent but did increase some. This portfolio has a 2015 average stock value of 52 USD and this value increases to 56 USD in 2020 with an ROI of 1.07 or a five year interest of 7 percent. The 2015 portfolio value was 940 USD and in 2020 the portfolio value was 1004 USD. ***</p>
+<p>Lets get the entire 53 stock portfolio mean value in 2015 and compare to the same 53 stock portfolio mean value in 2020.</p>
 <pre class="r"><code>p2015 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$Year==2015)
 p2020 &lt;- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$Year==2020)
+
 pm2015 &lt;- mean(p2015$YearMeanValue)
 pm2020 &lt;- mean(p2020$YearMeanValue)
 
 pm2015</code></pre>
-<pre><code>## [1] 73.33239</code></pre>
+<pre><code>## [1] 83.83316</code></pre>
 <pre class="r"><code>pm2020</code></pre>
-<pre><code>## [1] 133.2523</code></pre>
-<pre class="r"><code>pm2015*length(unique(StockNames_STATS_2015_2020$stock))</code></pre>
-<pre><code>## [1] 3813.284</code></pre>
-<pre class="r"><code>pm2020*length(unique(StockNames_STATS_2015_2020$stock))</code></pre>
-<pre><code>## [1] 6929.117</code></pre>
-<p>The portfolio mean was 73 USD in 2015 and 133 USD in 2020. Knowing this combined with the other last three clues to stock volatility (by analyzing the volatility by year using the number of times the stock has an increase or decrease by 10% during each of the last five years) we can say that all of these stocks without carefully selecting them did increase the whole portfolio in the last five years from 73 USD to 133 USD, but the best set of stocks are the ones that increased at least three times during the last five years more than 10% annually, because the portfolio of that set of stocks was 204 USD average value of the stock with a small portfolio subset for only those stocks at 1432 USD and the subset that never decreased by more than 10% annually over the last five years had an average value of 192 USD and a price for that subset of stocks as a portfolio of 4023 USD.</p>
-<p>What would the ROI be for all stocks compared to only those stocks that increased at least three times during the last five years by more than 10 per cent?</p>
-<pre class="r"><code>incr3_10 &lt;- subset(sub_I10, sub_I10$Year==2015)
-mean_incr3_10 &lt;- mean(incr3_10$YearMeanValue)
-ROI_all &lt;- pm2020/pm2015
-ROI_Incr3_10 &lt;- pMean_sub_I10/mean_incr3_10
+<pre><code>## [1] 147.5871</code></pre>
+<pre class="r"><code>ROI_all &lt;- pm2020/pm2015
 ROI_all</code></pre>
-<pre><code>## [1] 1.8171</code></pre>
-<pre class="r"><code>ROI_Incr3_10</code></pre>
-<pre><code>## [1] 2.420963</code></pre>
-<p>The <strong>return on investment</strong> is almost doubled over five years selecting all the stocks in this portfolio of stocks that had values from 2007-2020 (done in the beginning is 53 out of 65) with a value of 1.817 or <strong>182 per cent</strong>. While the portfolio with only the stocks that never decreased more than 10% over the last five years had an ROI of 1.74 or <strong>174 per cent</strong>.</p>
-<p>Either way, these stocks returned a profit over the span of the last five years. We could see what the <a href="https://www.investopedia.com/terms/a/apr.asp">annual ROI rate</a> is knowing the amount of 156 USD for best portfolio and 133 USD for all stocks, compared to the initial value of 73 USD.</p>
-<pre class="r"><code>n =365*5
-principalPlusFees &lt;- pMean_sub_nvr_D10
-initial &lt;- pm2015
-apr &lt;- ((principalPlusFees/initial)/n)*365*100
-apr</code></pre>
-<pre><code>## [1] 52.25385</code></pre>
-<p>Using the formula from the web, the apr on this portfolio is 52.25%, which seems really high. This is the average value over the last five years of all the stocks in the subset of the portfolio having never decreased by 10%.</p>
+<pre><code>## [1] 1.760486</code></pre>
+<pre class="r"><code>pm2015*length(unique(StockNames_STATS_2015_2020$stock))</code></pre>
+<pre><code>## [1] 4443.157</code></pre>
+<pre class="r"><code>pm2020*length(unique(StockNames_STATS_2015_2020$stock))</code></pre>
+<pre><code>## [1] 7822.117</code></pre>
+<p>The portfolio mean was 84 USD in 2015 and 147 USD in 2020. The 2015 portfolio was valued at 4443 USD and in 2020 at 7822 USD for all stocks. The ROI is 1.76, which is good because you almost doubled the loan with all 53 of these stocks in five years spanning 2015-2020.</p>
+<pre class="r"><code>76/5</code></pre>
+<pre><code>## [1] 15.2</code></pre>
+<p>So, with a return of 76% on top of the value invested in 2015 figuratively for this example, that is 15.2% annual interest earned each of five years. This is called pooling, that the wins over compensate for the losses and it is used in health insurance companies as well as financial portfolios like 401k investment tools.</p>
+<hr />
+<p>What would the ROI be for all stocks that increased during the last five years by more than 10 per cent?</p>
+<pre class="r"><code>incr_10_2015 &lt;- subset(sub_I10, sub_I10$Year==2015)
+mean_incr_10_2015 &lt;- mean(incr_10_2015$YearMeanValue)
+
+incr_10_2020 &lt;- subset(sub_I10, sub_I10$Year==2020)
+mean_incr_10_2020 &lt;- mean(incr_10_2020$YearMeanValue)
+
+mean_incr_10_2015</code></pre>
+<pre><code>## [1] 117.5828</code></pre>
+<pre class="r"><code>mean_incr_10_2020</code></pre>
+<pre><code>## [1] 300.2533</code></pre>
+<pre class="r"><code>ROI_Incr_10 &lt;- mean_incr_10_2020/mean_incr_10_2015
+ROI_Incr_10</code></pre>
+<pre><code>## [1] 2.553548</code></pre>
+<pre class="r"><code>value2015 &lt;- mean_incr_10_2015*length(unique(sub_I10$stock))
+value2020 &lt;- mean_incr_10_2020*length(unique(sub_I10$stock))
+
+value2015</code></pre>
+<pre><code>## [1] 823.0797</code></pre>
+<pre class="r"><code>value2020</code></pre>
+<pre><code>## [1] 2101.773</code></pre>
+<p>The <strong>return on investment</strong> is more than doubled to 2102 USD over five years from a value of 823 USD in 2015 by selecting only the stocks in this portfolio of stocks that increased by more than 10% at least once in the last 5 years. The return of the ratio of the mean value in 2020 to 2015 is 2.55, which means the portfolio more than doubled.</p>
+<p>But how do we or how can we know what stocks to select now that will increase many times as long as we have the investment? Can machine learning be built from this data set to find the stocks in this sample that produce good indicating features of other stocks that could be profitable to buy? We will develop this as we progress through this portfolio. We would also want indicators that would tell if certain stocks look like a good prospect but are actually going to be on a steady decline that translates to financial loss as long as you own them.</p>
 <hr />
 <p>There are four sets of counts for those that increased more than 10%, decreased more than 10%, increased more than zero but less than 10%, and decreased more than zero but less than 10% within the five year span from 2015-2020. Lets see if there is a better subset of choices for a better market portfolio.</p>
-<p>Lets add a five year poisson column using lambda=(unemployment rate), time=(1), and k=(YearMeanGreaterThan5yrMean).</p>
+<p>Lets add a five year poisson column using lambda=(unemployment rate), time=(nTimesIncr10_5yr), and k=(YearMeanGreaterThan5yrMean).We will use the best subset so far of the stocks that increased by more than 10% annually in at least 3 out of the last five years.</p>
 <pre class="r"><code>ue2 &lt;- stock_5yrs_ue$Annual_UE
-t &lt;- 1
+t &lt;- stock_5yrs_ue$nTimesIncr10_5yr
 k &lt;- stock_5yrs_ue$YearMeanGreaterThan5yrMean
 stock_5yrs_ue$poisson5yrUE &lt;- round((exp(-ue2*t)*(ue2*t)^k)/(factorial(k)),5)</code></pre>
 <p>Lets get a subset of those stocks that have cyclical patterns within five years, so that we have three years the stock increases more than 10% exactly 3 times, and two years where the stock decreases less than 10% exactly 2 times. Separately, get the stocks it increases greater than 10% exactly 3 times, and decreases more than 10% exactly 2 times. Also get the reverse of these values</p>
@@ -1945,49 +2059,172 @@ portCycle &lt;- merge(cycle1,stock_5yrs_ue, by.x=&#39;Stock&#39;, by.y=&#39;stoc
 portCycle_2015 &lt;- subset(portCycle, Year==2015)
 portCycle_2020 &lt;- subset(portCycle, Year==2020)
 
-mean(portCycle_2015$YearMeanValue)</code></pre>
+pc_mean2015 &lt;- mean(portCycle_2015$YearMeanValue)
+pc_mean2020 &lt;- mean(portCycle_2020$YearMeanValue)
+
+pc_mean2015</code></pre>
 <pre><code>## [1] 36.228</code></pre>
-<pre class="r"><code>mean(portCycle_2020$YearMeanValue)</code></pre>
+<pre class="r"><code>pc_mean2020</code></pre>
 <pre><code>## [1] 37.91673</code></pre>
-<pre class="r"><code>mean(portCycle$YearMeanValue)</code></pre>
-<pre><code>## [1] 36.02808</code></pre>
-<p>The above shows that the <strong>cyclical stocks that have highs and lows the time span of the loan aren’t great investments</strong>, as these ones only profited $1.70 over five years. We could see if we dropped these stocks if they would make the portfolio better profit wise.</p>
-<pre class="r"><code>m1 &lt;- grep(&#39;MGM&#39;, stock_5yrs_ue$stock)
-m2 &lt;- grep(&#39;ONCY&#39;, stock_5yrs_ue$stock)
-m3 &lt;- grep(&#39;ARWR&#39;, stock_5yrs_ue$stock)
-m4 &lt;- grep(&#39;S&#39;, stock_5yrs_ue$stock)
-m5 &lt;- grep(&#39;JBLU&#39;, stock_5yrs_ue$stock)
-m6 &lt;- grep(&#39;CVX&#39;, stock_5yrs_ue$stock)
-m7 &lt;- grep(&#39;WFC&#39;, stock_5yrs_ue$stock)
-m8 &lt;- grep(&#39;HRB&#39;, stock_5yrs_ue$stock)
-m9 &lt;- grep(&#39;HMC&#39;, stock_5yrs_ue$stock)
-m10 &lt;- grep(&#39;RRGB&#39;, stock_5yrs_ue$stock)
-m11 &lt;- grep(&#39;LUV&#39;, stock_5yrs_ue$stock)
-m12 &lt;- grep(&#39;UBSI&#39;, stock_5yrs_ue$stock)
-c3 &lt;- c(m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12)
-stock_5yrs_ue_dropCycle &lt;- stock_5yrs_ue[-c3,]
-mean(stock_5yrs_ue_dropCycle$YearMeanValue)                                   </code></pre>
-<pre><code>## [1] 134.3824</code></pre>
-<p>The mean of the portfolio without the cyclical stocks is 134 USD. This is not much better than all of the stock in the portfolio of 133 USD.</p>
-<p>Lets get their poisson values for the cyclical stock, and drop any stock with this median value from our set of stocks, and compare the value of the portfolio after dropping stock with this poisson value.</p>
-<pre class="r"><code>summary(portCycle$poisson5yrUE)</code></pre>
-<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-## 0.00509 0.02045 0.02689 0.03908 0.05658 0.09837</code></pre>
-<p>The median poisson is 0.02689. Lets drop any stock within the range of 0.025 and 0.03.</p>
-<pre class="r"><code>stock_5yrs_ue_drop &lt;- subset(stock_5yrs_ue, stock_5yrs_ue$poisson5yrUE &lt; 0.025 | 
-                               stock_5yrs_ue$poisson5yrUE &gt; 0.03)
-unique(stock_5yrs_ue_drop$stock)</code></pre>
-<pre><code>##  [1] COST  CVX   NUS   HD    MSFT  DLTR  MGM   KGJI  JPM   ADDYY HOFT  C    
-## [13] NFLX  AMZN  TGT   ARWR  S     GOOG  NKE   TJX   WMT   JNJ   VZ    WM   
-## [25] LUV   ROST  T     FFIN  WWE   TEVA  XOM   AAL   ONCY  AAP   NSANY HRB  
-## [37] PCG   HMC   HST   SIG   INO   RRGB  WFC   EPD   JWN   UBSI  TM    JBLU 
-## [49] FTR   M     KSS   F    
-## 65 Levels: AAL AAP ADDYY AMC AMZN ARWR ASCCY C COST CSSEP CVX DLTR EPD ... YELP</code></pre>
-<pre class="r"><code>mean(stock_5yrs_ue_drop$YearMeanValue)</code></pre>
-<pre><code>## [1] 121.3385</code></pre>
-<p>Removing the stock with poisson values in the range of the cyclical stock median value is worse than removing just the cyclical stock at 121 USD portfolio value compared to 134 USD.</p>
+<pre class="r"><code>ROI_pc &lt;- pc_mean2020/pc_mean2015
+ROI_pc</code></pre>
+<pre><code>## [1] 1.046614</code></pre>
+<pre class="r"><code>startValue &lt;- pc_mean2015*length(unique(portCycle_2015$Stock))
+endValue &lt;- pc_mean2020*length(unique(portCycle_2020$Stock))
+
+startValue</code></pre>
+<pre><code>## [1] 434.736</code></pre>
+<pre class="r"><code>endValue</code></pre>
+<pre><code>## [1] 455.0007</code></pre>
+<p>The above shows that the <strong>cyclical stocks that have highs and lows the time span of the loan aren’t great investments</strong>, as these stocks started at 435 USD in 2015 but ended with a portfolio value of 455 USD over a five year time span from 2015-2020. The ratio of average stock in 2020 to average stock in 2015 is 1.04, which means it earned 4 perent interest over 5 years or less than 1 percent interest a year. This is equivalent to most bank savings accounts. It is good they at least stayed the same and didn’t cause the portfolio to lose money, and we can assume those stocks that do decrease continuously will be the stocks that lose money. We should look at the columns we added earlier that calculated the ROI dollars for each stock and see the average number of times the stock closes at a decreasing value over the span of the original data. Then use those outcomes to rank the stock a poor, average, good, or great stock to buy.</p>
 <hr />
-<p>There is more to do and work with after realizing I rushed through it. It will be updated with more accurate information as it develops.</p>
+<p>Lets use the StocksSTATS table with the 230 columns of ROI for each stock from the start in 2007 throughout 2020 and the daily changes for each stock for the same time span. We could add cumulative sum columns to each stock or just plot the daily changes for each of the 53 stocks and see if we notice any patterns and compare the the final recording ROI from the initial investment. Maybe see if some of these stocks are good to jump on, like a wave to increase value of the portfolio, or drop the stock at some point to keep the portfolio from dropping in value.</p>
+<pre class="r"><code>dailyChange &lt;- grep(&#39;dailyChange&#39;,colnames(StocksSTATS))
+DailyChanges &lt;- StocksSTATS[,c(dailyChange,218:222,229)]
+summary(DailyChanges)</code></pre>
+<pre><code>##  TGT_dailyChange     FTR_dailyChange     UBSI_dailyChange  
+##  Min.   :-66.41001   Min.   :-81.00000   Min.   :-16.2500  
+##  1st Qu.: -0.51000   1st Qu.: -0.90000   1st Qu.: -0.3500  
+##  Median :  0.03000   Median :  0.00000   Median :  0.0000  
+##  Mean   :  0.03247   Mean   :  0.00026   Mean   :  0.0115  
+##  3rd Qu.:  0.57000   3rd Qu.:  0.75000   3rd Qu.:  0.3300  
+##  Max.   : 59.93000   Max.   :235.68000   Max.   : 34.8000  
+##  HD_dailyChange       JPM_dailyChange     XOM_dailyChange    
+##  Min.   :-199.42000   Min.   :-88.18999   Min.   :-23.84000  
+##  1st Qu.:  -0.43999   1st Qu.: -0.51000   1st Qu.: -0.58000  
+##  Median :   0.06000   Median :  0.02000   Median :  0.00000  
+##  Mean   :   0.07046   Mean   :  0.03574   Mean   :  0.02144  
+##  3rd Qu.:   0.67000   3rd Qu.:  0.58000   3rd Qu.:  0.61000  
+##  Max.   :  57.01999   Max.   : 48.24000   Max.   : 76.16000  
+##  CVX_dailyChange     NSANY_dailyChange    MGM_dailyChange    
+##  Min.   :-56.84000   Min.   :-15.639999   Min.   :-73.43000  
+##  1st Qu.: -0.78000   1st Qu.: -0.170000   1st Qu.: -0.30000  
+##  Median :  0.08000   Median :  0.000000   Median :  0.01000  
+##  Mean   :  0.03602   Mean   :  0.003793   Mean   :  0.00842  
+##  3rd Qu.:  0.88000   3rd Qu.:  0.170000   3rd Qu.:  0.32000  
+##  Max.   : 74.83000   Max.   : 21.540001   Max.   : 71.58000  
+##  TEVA_dailyChange    HST_dailyChange      WFC_dailyChange    
+##  Min.   :-30.11000   Min.   :-13.010280   Min.   :-18.84000  
+##  1st Qu.: -0.38000   1st Qu.: -0.190000   1st Qu.: -0.37000  
+##  Median : -0.02000   Median :  0.010000   Median :  0.00000  
+##  Mean   :  0.00209   Mean   :  0.005251   Mean   :  0.01532  
+##  3rd Qu.:  0.34000   3rd Qu.:  0.200000   3rd Qu.:  0.38000  
+##  Max.   : 38.18000   Max.   : 26.206558   Max.   : 34.01000  
+##  WWE_dailyChange     INO_dailyChange      SCE.PB_dailyChange 
+##  Min.   :-69.75000   Min.   :-11.520000   Min.   :-890.0000  
+##  1st Qu.: -0.18000   1st Qu.: -0.120000   1st Qu.: -19.0000  
+##  Median :  0.01000   Median :  0.000000   Median :   0.0000  
+##  Mean   :  0.02161   Mean   :  0.000623   Mean   :   0.2712  
+##  3rd Qu.:  0.21000   3rd Qu.:  0.080000   3rd Qu.:  22.0000  
+##  Max.   : 67.69000   Max.   : 13.320000   Max.   : 886.0000  
+##  FFIN_dailyChange     GOOG_dailyChange     WM_dailyChange     
+##  Min.   :-28.191665   Min.   :-1170.0303   Min.   :-84.98000  
+##  1st Qu.: -0.120000   1st Qu.:   -3.1314   1st Qu.: -0.23000  
+##  Median :  0.006667   Median :    0.2989   Median :  0.05000  
+##  Mean   :  0.010121   Mean   :    0.3702   Mean   :  0.03492  
+##  3rd Qu.:  0.155000   3rd Qu.:    4.4200   3rd Qu.:  0.34000  
+##  Max.   :  9.840002   Max.   :  344.4899   Max.   : 34.65000  
+##  ONCY_dailyChange    S_dailyChange        F_dailyChange      
+##  Min.   :-25.08000   Min.   :-14.830000   Min.   :-6.200001  
+##  1st Qu.: -0.28500   1st Qu.: -0.100000   1st Qu.:-0.120000  
+##  Median :  0.00000   Median :  0.000000   Median : 0.000000  
+##  Mean   :  0.00017   Mean   :  0.001874   Mean   : 0.002782  
+##  3rd Qu.:  0.19000   3rd Qu.:  0.090000   3rd Qu.: 0.120000  
+##  Max.   : 41.23000   Max.   : 19.299999   Max.   : 9.780000  
+##  ARWR_dailyChange    COST_dailyChange     AAL_dailyChange    
+##  Min.   :-49.50000   Min.   :-245.26999   Min.   :-42.66000  
+##  1st Qu.: -0.20000   1st Qu.:  -0.60000   1st Qu.: -0.36000  
+##  Median :  0.00000   Median :   0.10000   Median :  0.00000  
+##  Mean   :  0.00856   Mean   :   0.08749   Mean   :  0.00819  
+##  3rd Qu.:  0.20000   3rd Qu.:   0.90000   3rd Qu.:  0.37000  
+##  Max.   : 50.91000   Max.   :  93.68001   Max.   : 45.05000  
+##  JWN_dailyChange     NUS_dailyChange     HMC_dailyChange    
+##  Min.   :-38.08000   Min.   :-96.59000   Min.   :-13.20000  
+##  1st Qu.: -0.54000   1st Qu.: -0.41000   1st Qu.: -0.31000  
+##  Median :  0.03000   Median :  0.02000   Median :  0.00000  
+##  Mean   :  0.01022   Mean   :  0.01292   Mean   :  0.00792  
+##  3rd Qu.:  0.58000   3rd Qu.:  0.52000   3rd Qu.:  0.30000  
+##  Max.   : 53.74000   Max.   : 95.71001   Max.   : 34.69000  
+##  AMZN_dailyChange     T_dailyChange       HRB_dailyChange     
+##  Min.   :-1939.1100   Min.   :-15.26000   Min.   :-14.630001  
+##  1st Qu.:   -2.4300   1st Qu.: -0.22000   1st Qu.: -0.220001  
+##  Median :    0.3200   Median :  0.02000   Median :  0.010000  
+##  Mean   :    0.5272   Mean   :  0.01149   Mean   :  0.007173  
+##  3rd Qu.:    4.1200   3rd Qu.:  0.24000   3rd Qu.:  0.230001  
+##  Max.   : 1078.1600   Max.   : 39.46000   Max.   : 21.260000  
+##  RRGB_dailyChange   ADDYY_dailyChange    PCG_dailyChange    
+##  Min.   :-43.2600   Min.   :-138.60000   Min.   :-36.91000  
+##  1st Qu.: -0.5200   1st Qu.:  -0.45000   1st Qu.: -0.34000  
+##  Median :  0.0000   Median :   0.04000   Median :  0.03000  
+##  Mean   :  0.0101   Mean   :   0.04728   Mean   :  0.00304  
+##  3rd Qu.:  0.5600   3rd Qu.:   0.57001   3rd Qu.:  0.35000  
+##  Max.   : 42.7500   Max.   :  48.06000   Max.   : 49.44000  
+##  ROST_dailyChange     JNJ_dailyChange     NFLX_dailyChange   
+##  Min.   :-109.62500   Min.   :-87.02000   Min.   :-368.0886  
+##  1st Qu.:  -0.19000   1st Qu.: -0.38000   1st Qu.:  -0.4286  
+##  Median :   0.02750   Median :  0.03000   Median :   0.0143  
+##  Mean   :   0.03336   Mean   :  0.03929   Mean   :   0.0813  
+##  3rd Qu.:   0.32500   3rd Qu.:  0.50000   3rd Qu.:   0.6243  
+##  Max.   :  35.09000   Max.   : 60.10000   Max.   : 216.5200  
+##  M_dailyChange       KSS_dailyChange     DLTR_dailyChange   
+##  Min.   :-35.46000   Min.   :-31.74000   Min.   :-98.37333  
+##  1st Qu.: -0.40000   1st Qu.: -0.59000   1st Qu.: -0.32667  
+##  Median :  0.02000   Median :  0.01000   Median :  0.02333  
+##  Mean   :  0.00472   Mean   :  0.01508   Mean   :  0.03467  
+##  3rd Qu.:  0.44000   3rd Qu.:  0.61000   3rd Qu.:  0.46000  
+##  Max.   : 45.06000   Max.   : 77.49000   Max.   : 37.19000  
+##  WMT_dailyChange     C_dailyChange      AAP_dailyChange     
+##  Min.   :-74.62000   Min.   :-298.300   Min.   :-131.92001  
+##  1st Qu.: -0.39000   1st Qu.:  -0.680   1st Qu.:  -0.74000  
+##  Median :  0.04000   Median :  -0.010   Median :   0.04000  
+##  Mean   :  0.03604   Mean   :   0.021   Mean   :   0.05023  
+##  3rd Qu.:  0.46000   3rd Qu.:   0.650   3rd Qu.:   0.85001  
+##  Max.   : 47.40000   Max.   : 510.500   Max.   :  87.86001  
+##  JBLU_dailyChange     MSFT_dailyChange     KGJI_dailyChange   
+##  Min.   :-10.390000   Min.   :-140.49000   Min.   :-7.820000  
+##  1st Qu.: -0.139999   1st Qu.:  -0.29000   1st Qu.:-0.020000  
+##  Median :  0.000000   Median :   0.03000   Median : 0.000000  
+##  Mean   :  0.005087   Mean   :   0.04222   Mean   : 0.000182  
+##  3rd Qu.:  0.140000   3rd Qu.:   0.39000   3rd Qu.: 0.020000  
+##  Max.   : 14.690000   Max.   :  56.19000   Max.   : 9.090000  
+##  EPD_dailyChange      TJX_dailyChange     HOFT_dailyChange    
+##  Min.   :-14.510001   Min.   :-53.93750   Min.   :-23.229999  
+##  1st Qu.: -0.170000   1st Qu.: -0.14250   1st Qu.: -0.240000  
+##  Median :  0.015000   Median :  0.02000   Median :  0.000000  
+##  Mean   :  0.008679   Mean   :  0.01693   Mean   :  0.006511  
+##  3rd Qu.:  0.195000   3rd Qu.:  0.21250   3rd Qu.:  0.250000  
+##  Max.   : 15.875000   Max.   : 21.21500   Max.   : 22.400002  
+##  LUV_dailyChange    NKE_dailyChange     TM_dailyChange      VZ_dailyChange     
+##  Min.   :-42.8500   Min.   :-88.72500   Min.   :-47.61000   Min.   :-25.92523  
+##  1st Qu.: -0.2100   1st Qu.: -0.23250   1st Qu.: -0.84000   1st Qu.: -0.29000  
+##  Median :  0.0100   Median :  0.02750   Median : -0.02000   Median :  0.02814  
+##  Mean   :  0.0164   Mean   :  0.02852   Mean   :  0.04084   Mean   :  0.01833  
+##  3rd Qu.:  0.2500   3rd Qu.:  0.31750   3rd Qu.:  0.85999   3rd Qu.:  0.31888  
+##  Max.   : 25.0600   Max.   : 29.47000   Max.   :126.92000   Max.   : 35.31607  
+##  SIG_dailyChange          Date             DayOfWeek            Month          
+##  Min.   :-75.22000   Min.   :2007-01-03   Length:3293        Length:3293       
+##  1st Qu.: -0.61000   1st Qu.:2010-04-12   Class :character   Class :character  
+##  Median :  0.03000   Median :2013-07-18   Mode  :character   Mode  :character  
+##  Mean   :  0.00509   Mean   :2013-07-16                                        
+##  3rd Qu.:  0.61000   3rd Qu.:2016-10-21                                        
+##  Max.   : 50.72000   Max.   :2020-01-31                                        
+##       Year      UE_monthlyRate     dayOfMonth   
+##  Min.   :2007   Min.   : 3.500   Min.   : 1.00  
+##  1st Qu.:2010   1st Qu.: 4.600   1st Qu.: 8.00  
+##  Median :2013   Median : 5.600   Median :16.00  
+##  Mean   :2013   Mean   : 6.282   Mean   :15.74  
+##  3rd Qu.:2016   3rd Qu.: 8.200   3rd Qu.:23.00  
+##  Max.   :2020   Max.   :10.000   Max.   :31.00</code></pre>
+<pre class="r"><code>dailyChangesColSums &lt;- as.data.frame(colSums(DailyChanges[1:53]))
+colnames(dailyChangesColSums) &lt;- &#39;avgDailyChange_2007_2020&#39;
+row.names(dailyChangesColSums) &lt;- gsub(&#39;_dailyChange&#39;,&#39;&#39;,row.names(dailyChangesColSums))
+head(dailyChangesColSums,5)</code></pre>
+<pre><code>##      avgDailyChange_2007_2020
+## TGT                    106.91
+## FTR                      0.87
+## UBSI                    37.87
+## HD                     232.02
+## JPM                    117.69</code></pre>
 
 
 

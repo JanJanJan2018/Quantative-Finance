@@ -3,26 +3,26 @@
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",19.6615883299158,21.4940476230159,"0",1,0,2,2,1
 2015,5.28,"COST","Costco Wholesale Corporation (COST)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",207.238222252366,147.835357174603,"0",0,3,0,2,0
-2015,5.28,"CVX","Chevron Corporation (CVX)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",110.440072177818,96.3625793293651,"0",0,1,2,2,0
+2015,5.28,"GOOG","Alphabet Inc. (GOOG)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1000.92420225954,602.00568109127,"0",0,4,0,1,0
 2015,5.28,"NUS","Nu Skin Enterprises, Inc. (NUS)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.0492748184326,46.1096030992063,"0",2,2,0,1,0
-2015,5.28,"HD","The Home Depot, Inc. (HD)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",170.802718858724,116.382460198413,"0",0,3,0,2,0
+2015,5.28,"CVX","Chevron Corporation (CVX)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",110.440072177818,96.3625793293651,"0",0,1,2,2,0
 2015,5.28,"AAL","American Airlines Group Inc. (AAL)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",38.6737054883561,45.122103281746,"0",3,1,1,0,1
 2015,5.28,"MSFT","Microsoft Corporation (MSFT)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",94.8954482158456,46.7142857738095,"0",0,5,0,0,0
-2015,5.28,"WFC","Wells Fargo & Company (WFC)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.1354323993813,54.775555484127,"0",2,1,0,2,1
+2015,5.28,"HD","The Home Depot, Inc. (HD)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",170.802718858724,116.382460198413,"0",0,3,0,2,0
 2015,5.28,"AAP","Advance Auto Parts, Inc. (AAP)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",147.886972418024,163.64726184127,"0",1,2,2,0,1
 2015,5.28,"DLTR","Dollar Tree, Inc. (DLTR)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",87.6758774193728,74.9722620952381,"0",1,3,1,0,0
+2015,5.28,"FTR","Frontier Communications Corporation (FTR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",31.3429243098953,87.1767856904762,"0",5,0,0,0,1
 2015,5.28,"MGM","MGM Resorts International (MGM)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7943314907776,20.8232936071429,"0",0,3,2,0,0
-2015,5.28,"KGJI","Kingold Jewelry, Inc. (KGJI)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1.31737697358713,0.86531746031746,"0",2,2,0,1,0
 2015,5.28,"PCG","PG&E Corporation (PCG)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",40.9263597885073,52.8376984206349,"0",3,1,0,1,1
 2015,5.28,"HRB","H&R Block, Inc. (HRB)
@@ -31,8 +31,8 @@ NYSE - NYSE Delayed Price. Currency in USD","NYSE",26.6604071315505,33.573055595
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",29.4053807895323,32.6697619920635,"0",2,0,0,3,1
 2015,5.28,"EPD","Enterprise Products Partners L.P. (EPD)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7199511831326,29.9369047380952,"0",1,0,1,3,1
-2015,5.28,"JPM","JPMorgan Chase & Co. (JPM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",97.0635266907344,63.8294840873016,"0",0,3,0,2,0
+2015,5.28,"M","Macy's, Inc. (M)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",32.1473374649945,59.4090873492064,"0",4,1,0,0,1
 2015,5.28,"ADDYY","adidas AG (ADDYY)
 Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",105.694756240604,40.5471824920635,"0",0,5,0,0,0
 2015,5.28,"HOFT","Hooker Furniture Corporation (HOFT)
@@ -47,579 +47,591 @@ NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",224.382641734833,
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1243.49690606713,478.138295126984,"0",0,3,0,2,0
 2015,5.28,"ONCY","Oncolytics Biotech Inc. (ONCY)
 NasdaqCM - NasdaqCM Real Time Price. Currency in USD","Nasdaq",3.68625059286663,5.32150793650794,"0",2,3,0,0,1
-2015,5.28,"NSANY","Nissan Motor Co., Ltd. (NSANY)
-Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",17.2846980173222,19.8959524007937,"0",2,0,2,1,1
+2015,5.28,"KGJI","Kingold Jewelry, Inc. (KGJI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1.31737697358713,0.86531746031746,"0",2,2,0,1,0
 2015,5.28,"RRGB","Red Robin Gourmet Burgers, Inc. (RRGB)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",50.662259620871,79.3992063571429,"0",3,0,0,2,1
-2015,5.28,"TGT","Target Corporation (TGT)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",82.904471348242,78.1561112896825,"0",1,3,1,0,0
+2015,5.28,"UBSI","United Bankshares, Inc. (UBSI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",37.6227410947822,38.4132936706349,"0",0,0,3,2,1
 2015,5.28,"ARWR","Arrowhead Pharmaceuticals, Inc. (ARWR)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",17.9777560280861,6.47234126984127,"0",2,3,0,0,0
 2015,5.28,"S","Sprint Corporation (S)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",5.72459165981576,4.45849206349206,"0",2,3,0,0,0
-2015,5.28,"GOOG","Alphabet Inc. (GOOG)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1000.92420225954,602.00568109127,"0",0,4,0,1,0
-2015,5.28,"M","Macy's, Inc. (M)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",32.1473374649945,59.4090873492064,"0",4,1,0,0,1
-2015,5.28,"NKE","NIKE, Inc. (NKE)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",71.4152645031725,55.1266070793651,"0",0,3,1,1,0
-2015,5.28,"TJX","The TJX Companies, Inc. (TJX)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",45.2872698382159,34.4945635912698,"0",0,3,1,1,0
-2015,5.28,"WMT","Walmart Inc. (WMT)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",89.6644855794336,72.491111218254,"0",0,3,1,1,0
-2015,5.28,"FTR","Frontier Communications Corporation (FTR)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",31.3429243098953,87.1767856904762,"0",5,0,0,0,1
+2015,5.28,"TGT","Target Corporation (TGT)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",82.904471348242,78.1561112896825,"0",1,3,1,0,0
+2015,5.28,"TM","Toyota Motor Corporation (TM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",125.531297267515,130.025079650794,"0",1,1,0,3,1
+2015,5.28,"HST","Host Hotels & Resorts, Inc. (HST)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",18.2532595738633,19.4215476111111,"0",2,1,1,1,1
+2015,5.28,"WM","Waste Management, Inc. (WM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",83.9403728867572,51.5974602738095,"0",0,4,0,1,0
+2015,5.28,"INO","Inovio Pharmaceuticals, Inc. (INO)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",5.63565154725015,7.70920634920635,"0",3,1,0,1,1
+2015,5.28,"SCE.PB","Southern California Edison Company (SCE-PB)
+NYSE American - NYSE American Delayed Price. Currency in USD","NYSE",690.844964059107,629.873015873016,"0",1,3,0,1,0
 2015,5.28,"JNJ","Johnson & Johnson (JNJ)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",126.401366391582,99.7594045674603,"0",0,2,0,3,0
 2015,5.28,"JWN","Nordstrom, Inc. (JWN)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",49.6409798692294,72.6979763214286,"0",2,1,1,1,1
-2015,5.28,"TEVA","Teva Pharmaceutical Industries Limited (TEVA)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",30.0819310392135,61.657817531746,"0",5,0,0,0,1
-2015,5.28,"SIG","Signet Jewelers Limited (SIG)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",64.5447094476723,130.46436493254,"0",4,1,0,0,1
-2015,5.28,"VZ","Verizon Communications Inc. (VZ)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.7978111684321,47.1702380714286,"0",0,1,1,3,0
-2015,5.28,"WM","Waste Management, Inc. (WM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",83.9403728867572,51.5974602738095,"0",0,4,0,1,0
 2015,5.28,"LUV","Southwest Airlines Co. (LUV)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",50.5661435154014,40.9728174880952,"0",0,1,2,2,0
-2015,5.28,"XOM","Exxon Mobil Corporation (XOM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",78.7369955725405,82.8284525039683,"0",0,0,4,1,1
+2015,5.28,"TJX","The TJX Companies, Inc. (TJX)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",45.2872698382159,34.4945635912698,"0",0,3,1,1,0
+2015,5.28,"WFC","Wells Fargo & Company (WFC)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.1354323993813,54.775555484127,"0",2,1,0,2,1
+2015,5.28,"SIG","Signet Jewelers Limited (SIG)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",64.5447094476723,130.46436493254,"0",4,1,0,0,1
+2015,5.28,"NKE","NIKE, Inc. (NKE)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",71.4152645031725,55.1266070793651,"0",0,3,1,1,0
 2015,5.28,"KSS","Kohl's Corporation (KSS)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",53.0735338323716,59.8627382142857,"0",3,1,1,0,1
-2015,5.28,"ROST","Ross Stores, Inc. (ROST)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",79.8764150829565,50.4961111746032,"0",0,4,0,1,0
-2015,5.28,"UBSI","United Bankshares, Inc. (UBSI)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",37.6227410947822,38.4132936706349,"0",0,0,3,2,1
-2015,5.28,"HST","Host Hotels & Resorts, Inc. (HST)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",18.2532595738633,19.4215476111111,"0",2,1,1,1,1
-2015,5.28,"TM","Toyota Motor Corporation (TM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",125.531297267515,130.025079650794,"0",1,1,0,3,1
-2015,5.28,"INO","Inovio Pharmaceuticals, Inc. (INO)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",5.63565154725015,7.70920634920635,"0",3,1,0,1,1
+2015,5.28,"XOM","Exxon Mobil Corporation (XOM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",78.7369955725405,82.8284525039683,"0",0,0,4,1,1
+2015,5.28,"WMT","Walmart Inc. (WMT)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",89.6644855794336,72.491111218254,"0",0,3,1,1,0
 2015,5.28,"T","AT&T Inc. (T)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",36.2243727055034,33.8040475793651,"0",1,2,1,1,0
-2015,5.28,"FFIN","First Financial Bankshares, Inc. (FFIN)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",24.4529351617314,15.3533531547619,"0",0,4,0,1,0
+2015,5.28,"NSANY","Nissan Motor Co., Ltd. (NSANY)
+Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",17.2846980173222,19.8959524007937,"0",2,0,2,1,1
 2015,5.28,"WWE","World Wrestling Entertainment, Inc. (WWE)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",42.5369822838593,16.3656349047619,"0",1,4,0,0,0
-2016,4.88,"C","Citigroup Inc. (C)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",63.6453837411413,46.386111281746,"down10",1,2,1,1,0
-2016,4.88,"HD","The Home Depot, Inc. (HD)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",170.802718858724,129.820317527778,"up10",0,3,0,2,0
-2016,4.88,"TEVA","Teva Pharmaceutical Industries Limited (TEVA)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",30.0819310392135,50.9552778928571,"down10",5,0,0,0,1
-2016,4.88,"XOM","Exxon Mobil Corporation (XOM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",78.7369955725405,86.219682468254,"up",0,0,4,1,1
-2016,4.88,"AAL","American Airlines Group Inc. (AAL)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",38.6737054883561,38.1838491230159,"down10",3,1,1,0,0
+2015,5.28,"TEVA","Teva Pharmaceutical Industries Limited (TEVA)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",30.0819310392135,61.657817531746,"0",5,0,0,0,1
+2015,5.28,"JPM","JPMorgan Chase & Co. (JPM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",97.0635266907344,63.8294840873016,"0",0,3,0,2,0
+2015,5.28,"FFIN","First Financial Bankshares, Inc. (FFIN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",24.4529351617314,15.3533531547619,"0",0,4,0,1,0
+2015,5.28,"ROST","Ross Stores, Inc. (ROST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",79.8764150829565,50.4961111746032,"0",0,4,0,1,0
+2015,5.28,"VZ","Verizon Communications Inc. (VZ)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.7978111684321,47.1702380714286,"0",0,1,1,3,0
 2016,4.88,"LUV","Southwest Airlines Co. (LUV)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",50.5661435154014,41.5830952380952,"up",0,1,2,2,0
-2016,4.88,"ONCY","Oncolytics Biotech Inc. (ONCY)
-NasdaqCM - NasdaqCM Real Time Price. Currency in USD","Nasdaq",3.68625059286663,2.95517857142857,"down10",2,3,0,0,0
-2016,4.88,"S","Sprint Corporation (S)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",5.72459165981576,5.06992063492063,"up10",2,3,0,0,0
-2016,4.88,"AAP","Advance Auto Parts, Inc. (AAP)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",147.886972418024,155.488135111111,"down",1,2,2,0,1
-2016,4.88,"NSANY","Nissan Motor Co., Ltd. (NSANY)
-Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",17.2846980173222,19.0858729920635,"down",2,0,2,1,1
-2016,4.88,"HRB","H&R Block, Inc. (HRB)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",26.6604071315505,24.9084920753968,"down10",1,0,2,2,0
-2016,4.88,"PCG","PG&E Corporation (PCG)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",40.9263597885073,59.8014285595238,"up10",3,1,0,1,1
-2016,4.88,"WM","Waste Management, Inc. (WM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",83.9403728867572,62.0321032896825,"up10",0,4,0,1,0
-2016,4.88,"ADDYY","adidas AG (ADDYY)
-Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",105.694756240604,69.1715079523809,"up10",0,5,0,0,0
-2016,4.88,"HMC","Honda Motor Co., Ltd. (HMC)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",29.4053807895323,28.0876983690476,"down10",2,0,0,3,0
-2016,4.88,"T","AT&T Inc. (T)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",36.2243727055034,39.2782144047619,"up10",1,2,1,1,1
-2016,4.88,"GOOG","Alphabet Inc. (GOOG)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1000.92420225954,743.486706698413,"up10",0,4,0,1,0
 2016,4.88,"HOFT","Hooker Furniture Corporation (HOFT)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",29.9153385082237,26.8423015714286,"up10",1,2,2,0,0
-2016,4.88,"FFIN","First Financial Bankshares, Inc. (FFIN)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",24.4529351617314,16.9579167301587,"up10",0,4,0,1,0
+2016,4.88,"AAL","American Airlines Group Inc. (AAL)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",38.6737054883561,38.1838491230159,"down10",3,1,1,0,0
+2016,4.88,"NSANY","Nissan Motor Co., Ltd. (NSANY)
+Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",17.2846980173222,19.0858729920635,"down",2,0,2,1,1
+2016,4.88,"HMC","Honda Motor Co., Ltd. (HMC)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",29.4053807895323,28.0876983690476,"down10",2,0,0,3,0
 2016,4.88,"HST","Host Hotels & Resorts, Inc. (HST)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",18.2532595738633,16.212619015873,"down10",2,1,1,1,0
-2016,4.88,"JNJ","Johnson & Johnson (JNJ)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",126.401366391582,113.607301650794,"up10",0,2,0,3,0
-2016,4.88,"ROST","Ross Stores, Inc. (ROST)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",79.8764150829565,59.5187301904762,"up10",0,4,0,1,0
+2016,4.88,"AAP","Advance Auto Parts, Inc. (AAP)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",147.886972418024,155.488135111111,"down",1,2,2,0,1
+2016,4.88,"JPM","JPMorgan Chase & Co. (JPM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",97.0635266907344,65.6228174365079,"up",0,3,0,2,0
 2016,4.88,"AMZN","Amazon.com, Inc. (AMZN)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1243.49690606713,699.523134861111,"up10",0,3,0,2,0
-2016,4.88,"SIG","Signet Jewelers Limited (SIG)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",64.5447094476723,96.7517859166667,"down10",4,1,0,0,1
-2016,4.88,"NFLX","Netflix, Inc. (NFLX)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",224.382641734833,102.030357198413,"up10",0,3,0,2,0
-2016,4.88,"INO","Inovio Pharmaceuticals, Inc. (INO)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",5.63565154725015,8.35051587301587,"up",3,1,0,1,1
-2016,4.88,"COST","Costco Wholesale Corporation (COST)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",207.238222252366,154.353531130952,"up",0,3,0,2,0
+2016,4.88,"PCG","PG&E Corporation (PCG)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",40.9263597885073,59.8014285595238,"up10",3,1,0,1,1
+2016,4.88,"GOOG","Alphabet Inc. (GOOG)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1000.92420225954,743.486706698413,"up10",0,4,0,1,0
+2016,4.88,"ROST","Ross Stores, Inc. (ROST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",79.8764150829565,59.5187301904762,"up10",0,4,0,1,0
+2016,4.88,"ADDYY","adidas AG (ADDYY)
+Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",105.694756240604,69.1715079523809,"up10",0,5,0,0,0
 2016,4.88,"RRGB","Red Robin Gourmet Burgers, Inc. (RRGB)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",50.662259620871,54.6440872103175,"down10",3,0,0,2,1
+2016,4.88,"WFC","Wells Fargo & Company (WFC)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.1354323993813,48.9573810634921,"down10",2,1,0,2,0
+2016,4.88,"WMT","Walmart Inc. (WMT)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",89.6644855794336,69.547063468254,"down",0,3,1,1,0
+2016,4.88,"NUS","Nu Skin Enterprises, Inc. (NUS)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.0492748184326,46.5176189880952,"up",2,2,0,1,0
+2016,4.88,"C","Citigroup Inc. (C)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",63.6453837411413,46.386111281746,"down10",1,2,1,1,0
 2016,4.88,"MGM","MGM Resorts International (MGM)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7943314907776,23.6467063373016,"up10",0,3,2,0,0
-2016,4.88,"TGT","Target Corporation (TGT)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",82.904471348242,73.5250793174603,"down",1,3,1,0,0
+2016,4.88,"WWE","World Wrestling Entertainment, Inc. (WWE)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",42.5369822838593,18.3765476388889,"up10",1,4,0,0,0
+2016,4.88,"EPD","Enterprise Products Partners L.P. (EPD)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7199511831326,25.9833333134921,"down10",1,0,1,3,0
+2016,4.88,"INO","Inovio Pharmaceuticals, Inc. (INO)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",5.63565154725015,8.35051587301587,"up",3,1,0,1,1
+2016,4.88,"HRB","H&R Block, Inc. (HRB)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",26.6604071315505,24.9084920753968,"down10",1,0,2,2,0
+2016,4.88,"NFLX","Netflix, Inc. (NFLX)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",224.382641734833,102.030357198413,"up10",0,3,0,2,0
+2016,4.88,"S","Sprint Corporation (S)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",5.72459165981576,5.06992063492063,"up10",2,3,0,0,0
+2016,4.88,"SCE.PB","Southern California Edison Company (SCE-PB)
+NYSE American - NYSE American Delayed Price. Currency in USD","NYSE",690.844964059107,796.095238095238,"up10",1,3,0,1,1
+2016,4.88,"COST","Costco Wholesale Corporation (COST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",207.238222252366,154.353531130952,"up",0,3,0,2,0
+2016,4.88,"KGJI","Kingold Jewelry, Inc. (KGJI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1.31737697358713,1.56015873015873,"up10",2,2,0,1,1
+2016,4.88,"DLTR","Dollar Tree, Inc. (DLTR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",87.6758774193728,83.54301575,"up10",1,3,1,0,0
 2016,4.88,"NKE","NIKE, Inc. (NKE)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",71.4152645031725,56.2472619563492,"up",0,3,1,1,0
 2016,4.88,"CVX","Chevron Corporation (CVX)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",110.440072177818,99.8736506865079,"up",0,1,2,2,0
-2016,4.88,"JPM","JPMorgan Chase & Co. (JPM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",97.0635266907344,65.6228174365079,"up",0,3,0,2,0
-2016,4.88,"WFC","Wells Fargo & Company (WFC)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.1354323993813,48.9573810634921,"down10",2,1,0,2,0
-2016,4.88,"EPD","Enterprise Products Partners L.P. (EPD)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7199511831326,25.9833333134921,"down10",1,0,1,3,0
-2016,4.88,"JWN","Nordstrom, Inc. (JWN)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",49.6409798692294,49.2721428928571,"down10",2,1,1,1,0
-2016,4.88,"UBSI","United Bankshares, Inc. (UBSI)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",37.6227410947822,38.4114285793651,"down",0,0,3,2,1
-2016,4.88,"TJX","The TJX Companies, Inc. (TJX)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",45.2872698382159,37.8634127698413,"up",0,3,1,1,0
-2016,4.88,"WWE","World Wrestling Entertainment, Inc. (WWE)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",42.5369822838593,18.3765476388889,"up10",1,4,0,0,0
-2016,4.88,"ARWR","Arrowhead Pharmaceuticals, Inc. (ARWR)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",17.9777560280861,5.18063492063492,"down10",2,3,0,0,0
-2016,4.88,"KGJI","Kingold Jewelry, Inc. (KGJI)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1.31737697358713,1.56015873015873,"up10",2,2,0,1,1
-2016,4.88,"TM","Toyota Motor Corporation (TM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",125.531297267515,111.024999793651,"down10",1,1,0,3,0
-2016,4.88,"MSFT","Microsoft Corporation (MSFT)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",94.8954482158456,55.2593251984127,"up10",0,5,0,0,0
-2016,4.88,"JBLU","JetBlue Airways Corporation (JBLU)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",19.6615883299158,19.0905159087302,"down10",1,0,2,2,0
+2016,4.88,"JNJ","Johnson & Johnson (JNJ)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",126.401366391582,113.607301650794,"up10",0,2,0,3,0
+2016,4.88,"ONCY","Oncolytics Biotech Inc. (ONCY)
+NasdaqCM - NasdaqCM Real Time Price. Currency in USD","Nasdaq",3.68625059286663,2.95517857142857,"down10",2,3,0,0,0
 2016,4.88,"FTR","Frontier Communications Corporation (FTR)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",31.3429243098953,69.3005951785714,"down10",5,0,0,0,1
-2016,4.88,"M","Macy's, Inc. (M)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",32.1473374649945,38.0255555357143,"down10",4,1,0,0,1
-2016,4.88,"NUS","Nu Skin Enterprises, Inc. (NUS)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.0492748184326,46.5176189880952,"up",2,2,0,1,0
-2016,4.88,"KSS","Kohl's Corporation (KSS)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",53.0735338323716,44.4618254007936,"down10",3,1,1,0,0
-2016,4.88,"VZ","Verizon Communications Inc. (VZ)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.7978111684321,51.4048015912698,"up",0,1,1,3,0
-2016,4.88,"DLTR","Dollar Tree, Inc. (DLTR)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",87.6758774193728,83.54301575,"up10",1,3,1,0,0
+2016,4.88,"TGT","Target Corporation (TGT)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",82.904471348242,73.5250793174603,"down",1,3,1,0,0
 2016,4.88,"F","Ford Motor Company (F)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",11.3671494708995,12.6310317460317,"down10",3,0,2,0,1
-2016,4.88,"WMT","Walmart Inc. (WMT)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",89.6644855794336,69.547063468254,"down",0,3,1,1,0
-2017,4.34,"CVX","Chevron Corporation (CVX)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",110.440072177818,111.45756974502,"up10",0,1,2,2,1
+2016,4.88,"XOM","Exxon Mobil Corporation (XOM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",78.7369955725405,86.219682468254,"up",0,0,4,1,1
+2016,4.88,"T","AT&T Inc. (T)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",36.2243727055034,39.2782144047619,"up10",1,2,1,1,1
+2016,4.88,"JBLU","JetBlue Airways Corporation (JBLU)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",19.6615883299158,19.0905159087302,"down10",1,0,2,2,0
+2016,4.88,"ARWR","Arrowhead Pharmaceuticals, Inc. (ARWR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",17.9777560280861,5.18063492063492,"down10",2,3,0,0,0
+2016,4.88,"SIG","Signet Jewelers Limited (SIG)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",64.5447094476723,96.7517859166667,"down10",4,1,0,0,1
+2016,4.88,"FFIN","First Financial Bankshares, Inc. (FFIN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",24.4529351617314,16.9579167301587,"up10",0,4,0,1,0
+2016,4.88,"KSS","Kohl's Corporation (KSS)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",53.0735338323716,44.4618254007936,"down10",3,1,1,0,0
+2016,4.88,"TEVA","Teva Pharmaceutical Industries Limited (TEVA)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",30.0819310392135,50.9552778928571,"down10",5,0,0,0,1
+2016,4.88,"TM","Toyota Motor Corporation (TM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",125.531297267515,111.024999793651,"down10",1,1,0,3,0
+2016,4.88,"TJX","The TJX Companies, Inc. (TJX)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",45.2872698382159,37.8634127698413,"up",0,3,1,1,0
+2016,4.88,"MSFT","Microsoft Corporation (MSFT)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",94.8954482158456,55.2593251984127,"up10",0,5,0,0,0
+2016,4.88,"JWN","Nordstrom, Inc. (JWN)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",49.6409798692294,49.2721428928571,"down10",2,1,1,1,0
+2016,4.88,"VZ","Verizon Communications Inc. (VZ)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.7978111684321,51.4048015912698,"up",0,1,1,3,0
+2016,4.88,"M","Macy's, Inc. (M)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",32.1473374649945,38.0255555357143,"down10",4,1,0,0,1
+2016,4.88,"WM","Waste Management, Inc. (WM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",83.9403728867572,62.0321032896825,"up10",0,4,0,1,0
+2016,4.88,"UBSI","United Bankshares, Inc. (UBSI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",37.6227410947822,38.4114285793651,"down",0,0,3,2,1
+2016,4.88,"HD","The Home Depot, Inc. (HD)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",170.802718858724,129.820317527778,"up10",0,3,0,2,0
+2017,4.34,"AAP","Advance Auto Parts, Inc. (AAP)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",147.886972418024,122.574860701195,"down10",1,2,2,0,0
 2017,4.34,"LUV","Southwest Airlines Co. (LUV)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",50.5661435154014,56.7354979920319,"up10",0,1,2,2,1
-2017,4.34,"DLTR","Dollar Tree, Inc. (DLTR)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",87.6758774193728,82.038844498008,"down",1,3,1,0,0
-2017,4.34,"WWE","World Wrestling Entertainment, Inc. (WWE)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",42.5369822838593,22.4424700756972,"up10",1,4,0,0,0
-2017,4.34,"JBLU","JetBlue Airways Corporation (JBLU)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",19.6615883299158,20.9437052191235,"up",1,0,2,2,1
-2017,4.34,"ADDYY","adidas AG (ADDYY)
-Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",105.694756240604,100.01852587251,"up10",0,5,0,0,0
-2017,4.34,"FTR","Frontier Communications Corporation (FTR)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",31.3429243098953,22.9364939601594,"down10",5,0,0,0,0
 2017,4.34,"PCG","PG&E Corporation (PCG)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",40.9263597885073,63.91199212749,"up",3,1,0,1,1
 2017,4.34,"HST","Host Hotels & Resorts, Inc. (HST)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",18.2532595738633,18.603864498008,"up10",2,1,1,1,1
-2017,4.34,"HD","The Home Depot, Inc. (HD)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",170.802718858724,155.342749155378,"up10",0,3,0,2,0
-2017,4.34,"EPD","Enterprise Products Partners L.P. (EPD)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7199511831326,26.6907569521912,"up",1,0,1,3,0
-2017,4.34,"C","Citigroup Inc. (C)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",63.6453837411413,65.6995218525896,"up10",1,2,1,1,1
-2017,4.34,"AMZN","Amazon.com, Inc. (AMZN)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1243.49690606713,968.167011645418,"up10",0,3,0,2,0
-2017,4.34,"AAP","Advance Auto Parts, Inc. (AAP)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",147.886972418024,122.574860701195,"down10",1,2,2,0,0
+2017,4.34,"MGM","MGM Resorts International (MGM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7943314907776,30.7705577450199,"up10",0,3,2,0,1
 2017,4.34,"HMC","Honda Motor Co., Ltd. (HMC)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",29.4053807895323,29.9091633944223,"up",2,0,0,3,1
-2017,4.34,"HRB","H&R Block, Inc. (HRB)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",26.6604071315505,25.9171314860558,"up",1,0,2,2,0
+2017,4.34,"ARWR","Arrowhead Pharmaceuticals, Inc. (ARWR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",17.9777560280861,2.42637450199203,"down10",2,3,0,0,0
+2017,4.34,"EPD","Enterprise Products Partners L.P. (EPD)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7199511831326,26.6907569521912,"up",1,0,1,3,0
+2017,4.34,"NUS","Nu Skin Enterprises, Inc. (NUS)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.0492748184326,58.6671712589641,"up10",2,2,0,1,1
+2017,4.34,"DLTR","Dollar Tree, Inc. (DLTR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",87.6758774193728,82.038844498008,"down",1,3,1,0,0
+2017,4.34,"KGJI","Kingold Jewelry, Inc. (KGJI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1.31737697358713,1.68609561752988,"up",2,2,0,1,1
+2017,4.34,"TEVA","Teva Pharmaceutical Industries Limited (TEVA)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",30.0819310392135,25.6220717290837,"down10",5,0,0,0,0
+2017,4.34,"C","Citigroup Inc. (C)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",63.6453837411413,65.6995218525896,"up10",1,2,1,1,1
+2017,4.34,"JPM","JPMorgan Chase & Co. (JPM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",97.0635266907344,92.0094818366534,"up10",0,3,0,2,0
+2017,4.34,"SCE.PB","Southern California Edison Company (SCE-PB)
+NYSE American - NYSE American Delayed Price. Currency in USD","NYSE",690.844964059107,824.888446215139,"up",1,3,0,1,1
+2017,4.34,"JNJ","Johnson & Johnson (JNJ)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",126.401366391582,129.760517884462,"up10",0,2,0,3,1
+2017,4.34,"T","AT&T Inc. (T)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",36.2243727055034,38.5963744541833,"down",1,2,1,1,1
+2017,4.34,"TM","Toyota Motor Corporation (TM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",125.531297267515,114.916414326693,"up",1,1,0,3,0
+2017,4.34,"F","Ford Motor Company (F)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",11.3671494708995,11.7925896414343,"down",3,0,2,0,1
+2017,4.34,"WM","Waste Management, Inc. (WM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",83.9403728867572,75.4068524342629,"up10",0,4,0,1,0
+2017,4.34,"JWN","Nordstrom, Inc. (JWN)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",49.6409798692294,44.9178486494024,"down",2,1,1,1,0
 2017,4.34,"INO","Inovio Pharmaceuticals, Inc. (INO)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",5.63565154725015,6.28175298804781,"down10",3,1,0,1,1
 2017,4.34,"TGT","Target Corporation (TGT)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",82.904471348242,58.296294876494,"down10",1,3,1,0,0
-2017,4.34,"KGJI","Kingold Jewelry, Inc. (KGJI)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1.31737697358713,1.68609561752988,"up",2,2,0,1,1
-2017,4.34,"M","Macy's, Inc. (M)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",32.1473374649945,25.0884064103586,"down10",4,1,0,0,0
-2017,4.34,"JPM","JPMorgan Chase & Co. (JPM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",97.0635266907344,92.0094818366534,"up10",0,3,0,2,0
-2017,4.34,"FFIN","First Financial Bankshares, Inc. (FFIN)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",24.4529351617314,21.2730079521912,"up10",0,4,0,1,0
-2017,4.34,"HOFT","Hooker Furniture Corporation (HOFT)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",29.9153385082237,41.0180478286853,"up10",1,2,2,0,1
-2017,4.34,"NFLX","Netflix, Inc. (NFLX)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",224.382641734833,165.374263059761,"up10",0,3,0,2,0
-2017,4.34,"MGM","MGM Resorts International (MGM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7943314907776,30.7705577450199,"up10",0,3,2,0,1
-2017,4.34,"WM","Waste Management, Inc. (WM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",83.9403728867572,75.4068524342629,"up10",0,4,0,1,0
-2017,4.34,"JNJ","Johnson & Johnson (JNJ)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",126.401366391582,129.760517884462,"up10",0,2,0,3,1
-2017,4.34,"ARWR","Arrowhead Pharmaceuticals, Inc. (ARWR)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",17.9777560280861,2.42637450199203,"down10",2,3,0,0,0
-2017,4.34,"NKE","NIKE, Inc. (NKE)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",71.4152645031725,55.7060160119522,"down",0,3,1,1,0
-2017,4.34,"RRGB","Red Robin Gourmet Burgers, Inc. (RRGB)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",50.662259620871,58.0271314223108,"up",3,0,0,2,1
-2017,4.34,"XOM","Exxon Mobil Corporation (XOM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",78.7369955725405,81.8615937091633,"down",0,0,4,1,1
-2017,4.34,"AAL","American Airlines Group Inc. (AAL)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",38.6737054883561,47.4907172151394,"up10",3,1,1,0,1
-2017,4.34,"TJX","The TJX Companies, Inc. (TJX)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",45.2872698382159,37.0224502749004,"down",0,3,1,1,0
-2017,4.34,"ONCY","Oncolytics Biotech Inc. (ONCY)
-NasdaqCM - NasdaqCM Real Time Price. Currency in USD","Nasdaq",3.68625059286663,4.229203187251,"up10",2,3,0,0,1
-2017,4.34,"MSFT","Microsoft Corporation (MSFT)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",94.8954482158456,71.9840242310757,"up10",0,5,0,0,0
-2017,4.34,"T","AT&T Inc. (T)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",36.2243727055034,38.5963744541833,"down",1,2,1,1,1
-2017,4.34,"COST","Costco Wholesale Corporation (COST)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",207.238222252366,167.407449936255,"up",0,3,0,2,0
-2017,4.34,"KSS","Kohl's Corporation (KSS)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",53.0735338323716,41.5462151115538,"down",3,1,1,0,0
-2017,4.34,"SIG","Signet Jewelers Limited (SIG)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",64.5447094476723,64.6477687689243,"down10",4,1,0,0,1
-2017,4.34,"VZ","Verizon Communications Inc. (VZ)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.7978111684321,48.2367329721116,"down",0,1,1,3,0
-2017,4.34,"JWN","Nordstrom, Inc. (JWN)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",49.6409798692294,44.9178486494024,"down",2,1,1,1,0
-2017,4.34,"TM","Toyota Motor Corporation (TM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",125.531297267515,114.916414326693,"up",1,1,0,3,0
-2017,4.34,"NUS","Nu Skin Enterprises, Inc. (NUS)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.0492748184326,58.6671712589641,"up10",2,2,0,1,1
-2017,4.34,"F","Ford Motor Company (F)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",11.3671494708995,11.7925896414343,"down",3,0,2,0,1
 2017,4.34,"NSANY","Nissan Motor Co., Ltd. (NSANY)
 Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",17.2846980173222,19.6755776334661,"up",2,0,2,1,1
-2017,4.34,"GOOG","Alphabet Inc. (GOOG)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1000.92420225954,921.780837310757,"up10",0,4,0,1,0
+2017,4.34,"RRGB","Red Robin Gourmet Burgers, Inc. (RRGB)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",50.662259620871,58.0271314223108,"up",3,0,0,2,1
+2017,4.34,"HOFT","Hooker Furniture Corporation (HOFT)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",29.9153385082237,41.0180478286853,"up10",1,2,2,0,1
 2017,4.34,"WFC","Wells Fargo & Company (WFC)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.1354323993813,54.9799203665339,"up10",2,1,0,2,1
-2017,4.34,"TEVA","Teva Pharmaceutical Industries Limited (TEVA)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",30.0819310392135,25.6220717290837,"down10",5,0,0,0,0
-2017,4.34,"UBSI","United Bankshares, Inc. (UBSI)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",37.6227410947822,38.7286852868526,"up",0,0,3,2,1
-2017,4.34,"WMT","Walmart Inc. (WMT)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",89.6644855794336,78.9623906494024,"up10",0,3,1,1,0
-2017,4.34,"S","Sprint Corporation (S)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",5.72459165981576,7.89836653386454,"up10",2,3,0,0,1
+2017,4.34,"XOM","Exxon Mobil Corporation (XOM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",78.7369955725405,81.8615937091633,"down",0,0,4,1,1
+2017,4.34,"CVX","Chevron Corporation (CVX)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",110.440072177818,111.45756974502,"up10",0,1,2,2,1
+2017,4.34,"HRB","H&R Block, Inc. (HRB)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",26.6604071315505,25.9171314860558,"up",1,0,2,2,0
+2017,4.34,"ADDYY","adidas AG (ADDYY)
+Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",105.694756240604,100.01852587251,"up10",0,5,0,0,0
+2017,4.34,"FTR","Frontier Communications Corporation (FTR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",31.3429243098953,22.9364939601594,"down10",5,0,0,0,0
+2017,4.34,"HD","The Home Depot, Inc. (HD)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",170.802718858724,155.342749155378,"up10",0,3,0,2,0
+2017,4.34,"M","Macy's, Inc. (M)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",32.1473374649945,25.0884064103586,"down10",4,1,0,0,0
 2017,4.34,"ROST","Ross Stores, Inc. (ROST)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",79.8764150829565,64.1682072310757,"up",0,4,0,1,0
-2018,3.89,"KGJI","Kingold Jewelry, Inc. (KGJI)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1.31737697358713,1.27788844621514,"down10",2,2,0,1,0
-2018,3.89,"HMC","Honda Motor Co., Ltd. (HMC)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",29.4053807895323,31.3766533784861,"up",2,0,0,3,1
-2018,3.89,"F","Ford Motor Company (F)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",11.3671494708995,10.4074103585657,"down10",3,0,2,0,0
-2018,3.89,"KSS","Kohl's Corporation (KSS)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",53.0735338323716,69.0268524342629,"up10",3,1,1,0,1
-2018,3.89,"ADDYY","adidas AG (ADDYY)
-Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",105.694756240604,114.792947920319,"up10",0,5,0,0,1
-2018,3.89,"NUS","Nu Skin Enterprises, Inc. (NUS)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.0492748184326,73.8764142111554,"up10",2,2,0,1,1
-2018,3.89,"DLTR","Dollar Tree, Inc. (DLTR)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",87.6758774193728,92.2278085936255,"up10",1,3,1,0,1
-2018,3.89,"ONCY","Oncolytics Biotech Inc. (ONCY)
-NasdaqCM - NasdaqCM Real Time Price. Currency in USD","Nasdaq",3.68625059286663,4.74169322709163,"up10",2,3,0,0,1
-2018,3.89,"CVX","Chevron Corporation (CVX)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",110.440072177818,120.231514115538,"up",0,1,2,2,1
-2018,3.89,"FFIN","First Financial Bankshares, Inc. (FFIN)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",24.4529351617314,27.0800995856574,"up10",0,4,0,1,1
-2018,3.89,"MSFT","Microsoft Corporation (MSFT)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",94.8954482158456,101.03398412749,"up10",0,5,0,0,1
-2018,3.89,"XOM","Exxon Mobil Corporation (XOM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",78.7369955725405,79.9556969721116,"down",0,0,4,1,1
-2018,3.89,"C","Citigroup Inc. (C)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",63.6453837411413,69.4605177529881,"up",1,2,1,1,1
-2018,3.89,"AAP","Advance Auto Parts, Inc. (AAP)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",147.886972418024,139.247569350598,"up10",1,2,2,0,0
-2018,3.89,"GOOG","Alphabet Inc. (GOOG)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1000.92420225954,1113.22513411554,"up10",0,4,0,1,1
-2018,3.89,"COST","Costco Wholesale Corporation (COST)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",207.238222252366,208.814382641434,"up10",0,3,0,2,1
-2018,3.89,"NFLX","Netflix, Inc. (NFLX)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",224.382641734833,319.290319007968,"up10",0,3,0,2,1
-2018,3.89,"AAL","American Airlines Group Inc. (AAL)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",38.6737054883561,42.8019521792829,"down",3,1,1,0,1
-2018,3.89,"PCG","PG&E Corporation (PCG)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",40.9263597885073,41.5239840956175,"down10",3,1,0,1,1
-2018,3.89,"JPM","JPMorgan Chase & Co. (JPM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",97.0635266907344,110.723346553785,"up10",0,3,0,2,1
-2018,3.89,"HST","Host Hotels & Resorts, Inc. (HST)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",18.2532595738633,19.9647011832669,"up",2,1,1,1,1
-2018,3.89,"UBSI","United Bankshares, Inc. (UBSI)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",37.6227410947822,35.9159760239044,"down",0,0,3,2,0
-2018,3.89,"WFC","Wells Fargo & Company (WFC)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.1354323993813,55.283904498008,"up",2,1,0,2,1
-2018,3.89,"TEVA","Teva Pharmaceutical Industries Limited (TEVA)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",30.0819310392135,20.917609561753,"down10",5,0,0,0,0
-2018,3.89,"WWE","World Wrestling Entertainment, Inc. (WWE)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",42.5369822838593,61.0647011195219,"up10",1,4,0,0,1
-2018,3.89,"HOFT","Hooker Furniture Corporation (HOFT)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",29.9153385082237,38.3838246055777,"down",1,2,2,0,1
-2018,3.89,"INO","Inovio Pharmaceuticals, Inc. (INO)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",5.63565154725015,4.70338645418327,"down10",3,1,0,1,0
-2018,3.89,"TJX","The TJX Companies, Inc. (TJX)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",45.2872698382159,46.3794621075697,"up10",0,3,1,1,1
-2018,3.89,"MGM","MGM Resorts International (MGM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7943314907776,30.598685310757,"down",0,3,2,0,1
+2017,4.34,"WMT","Walmart Inc. (WMT)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",89.6644855794336,78.9623906494024,"up10",0,3,1,1,0
+2017,4.34,"NKE","NIKE, Inc. (NKE)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",71.4152645031725,55.7060160119522,"down",0,3,1,1,0
+2017,4.34,"TJX","The TJX Companies, Inc. (TJX)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",45.2872698382159,37.0224502749004,"down",0,3,1,1,0
+2017,4.34,"COST","Costco Wholesale Corporation (COST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",207.238222252366,167.407449936255,"up",0,3,0,2,0
+2017,4.34,"VZ","Verizon Communications Inc. (VZ)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.7978111684321,48.2367329721116,"down",0,1,1,3,0
+2017,4.34,"NFLX","Netflix, Inc. (NFLX)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",224.382641734833,165.374263059761,"up10",0,3,0,2,0
+2017,4.34,"AMZN","Amazon.com, Inc. (AMZN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1243.49690606713,968.167011645418,"up10",0,3,0,2,0
+2017,4.34,"MSFT","Microsoft Corporation (MSFT)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",94.8954482158456,71.9840242310757,"up10",0,5,0,0,0
+2017,4.34,"FFIN","First Financial Bankshares, Inc. (FFIN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",24.4529351617314,21.2730079521912,"up10",0,4,0,1,0
+2017,4.34,"UBSI","United Bankshares, Inc. (UBSI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",37.6227410947822,38.7286852868526,"up",0,0,3,2,1
+2017,4.34,"KSS","Kohl's Corporation (KSS)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",53.0735338323716,41.5462151115538,"down",3,1,1,0,0
+2017,4.34,"JBLU","JetBlue Airways Corporation (JBLU)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",19.6615883299158,20.9437052191235,"up",1,0,2,2,1
+2017,4.34,"WWE","World Wrestling Entertainment, Inc. (WWE)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",42.5369822838593,22.4424700756972,"up10",1,4,0,0,0
+2017,4.34,"AAL","American Airlines Group Inc. (AAL)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",38.6737054883561,47.4907172151394,"up10",3,1,1,0,1
+2017,4.34,"SIG","Signet Jewelers Limited (SIG)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",64.5447094476723,64.6477687689243,"down10",4,1,0,0,1
+2017,4.34,"ONCY","Oncolytics Biotech Inc. (ONCY)
+NasdaqCM - NasdaqCM Real Time Price. Currency in USD","Nasdaq",3.68625059286663,4.229203187251,"up10",2,3,0,0,1
+2017,4.34,"S","Sprint Corporation (S)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",5.72459165981576,7.89836653386454,"up10",2,3,0,0,1
+2017,4.34,"GOOG","Alphabet Inc. (GOOG)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1000.92420225954,921.780837310757,"up10",0,4,0,1,0
 2018,3.89,"ARWR","Arrowhead Pharmaceuticals, Inc. (ARWR)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",17.9777560280861,11.4307569641434,"up10",2,3,0,0,0
-2018,3.89,"WM","Waste Management, Inc. (WM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",83.9403728867572,86.7568523426295,"up10",0,4,0,1,1
-2018,3.89,"HRB","H&R Block, Inc. (HRB)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",26.6604071315505,26.2284064183267,"up",1,0,2,2,0
-2018,3.89,"TM","Toyota Motor Corporation (TM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",125.531297267515,127.655179155378,"up10",1,1,0,3,1
-2018,3.89,"JWN","Nordstrom, Inc. (JWN)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",49.6409798692294,53.263625625498,"up10",2,1,1,1,1
-2018,3.89,"T","AT&T Inc. (T)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",36.2243727055034,33.3051792669323,"down10",1,2,1,1,0
-2018,3.89,"EPD","Enterprise Products Partners L.P. (EPD)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7199511831326,27.4154979442231,"up",1,0,1,3,0
-2018,3.89,"HD","The Home Depot, Inc. (HD)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",170.802718858724,188.76808823506,"up10",0,3,0,2,1
-2018,3.89,"FTR","Frontier Communications Corporation (FTR)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",31.3429243098953,6.40509960159363,"down10",5,0,0,0,0
-2018,3.89,"M","Macy's, Inc. (M)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",32.1473374649945,32.7158166613546,"up10",4,1,0,0,1
-2018,3.89,"SIG","Signet Jewelers Limited (SIG)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",64.5447094476723,51.3829481115538,"down10",4,1,0,0,0
+2018,3.89,"AAL","American Airlines Group Inc. (AAL)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",38.6737054883561,42.8019521792829,"down",3,1,1,0,1
+2018,3.89,"INO","Inovio Pharmaceuticals, Inc. (INO)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",5.63565154725015,4.70338645418327,"down10",3,1,0,1,0
 2018,3.89,"LUV","Southwest Airlines Co. (LUV)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",50.5661435154014,56.0334662948207,"down",0,1,2,2,1
+2018,3.89,"F","Ford Motor Company (F)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",11.3671494708995,10.4074103585657,"down10",3,0,2,0,0
+2018,3.89,"PCG","PG&E Corporation (PCG)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",40.9263597885073,41.5239840956175,"down10",3,1,0,1,1
+2018,3.89,"ADDYY","adidas AG (ADDYY)
+Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",105.694756240604,114.792947920319,"up10",0,5,0,0,1
+2018,3.89,"COST","Costco Wholesale Corporation (COST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",207.238222252366,208.814382641434,"up10",0,3,0,2,1
+2018,3.89,"JPM","JPMorgan Chase & Co. (JPM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",97.0635266907344,110.723346553785,"up10",0,3,0,2,1
+2018,3.89,"AAP","Advance Auto Parts, Inc. (AAP)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",147.886972418024,139.247569350598,"up10",1,2,2,0,0
 2018,3.89,"VZ","Verizon Communications Inc. (VZ)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.7978111684321,52.0838246972112,"up",0,1,1,3,0
-2018,3.89,"TGT","Target Corporation (TGT)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",82.904471348242,76.6442626653386,"up10",1,3,1,0,0
-2018,3.89,"RRGB","Red Robin Gourmet Burgers, Inc. (RRGB)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",50.662259620871,47.0994423346614,"down10",3,0,0,2,0
-2018,3.89,"S","Sprint Corporation (S)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",5.72459165981576,5.71422310756972,"down10",2,3,0,0,0
+2018,3.89,"GOOG","Alphabet Inc. (GOOG)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1000.92420225954,1113.22513411554,"up10",0,4,0,1,1
+2018,3.89,"KGJI","Kingold Jewelry, Inc. (KGJI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1.31737697358713,1.27788844621514,"down10",2,2,0,1,0
+2018,3.89,"NFLX","Netflix, Inc. (NFLX)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",224.382641734833,319.290319007968,"up10",0,3,0,2,1
+2018,3.89,"HD","The Home Depot, Inc. (HD)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",170.802718858724,188.76808823506,"up10",0,3,0,2,1
 2018,3.89,"JNJ","Johnson & Johnson (JNJ)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",126.401366391582,133.025458187251,"up",0,2,0,3,1
-2018,3.89,"AMZN","Amazon.com, Inc. (AMZN)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1243.49690606713,1641.72617584861,"up10",0,3,0,2,1
 2018,3.89,"NKE","NIKE, Inc. (NKE)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",71.4152645031725,72.9388047848606,"up10",0,3,1,1,1
-2018,3.89,"ROST","Ross Stores, Inc. (ROST)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",79.8764150829565,85.8211951992032,"up10",0,4,0,1,1
-2018,3.89,"NSANY","Nissan Motor Co., Ltd. (NSANY)
-Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",17.2846980173222,19.3678485577689,"down",2,0,2,1,1
 2018,3.89,"JBLU","JetBlue Airways Corporation (JBLU)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",19.6615883299158,19.2078486135458,"down",1,0,2,2,0
+2018,3.89,"SIG","Signet Jewelers Limited (SIG)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",64.5447094476723,51.3829481115538,"down10",4,1,0,0,0
+2018,3.89,"UBSI","United Bankshares, Inc. (UBSI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",37.6227410947822,35.9159760239044,"down",0,0,3,2,0
+2018,3.89,"KSS","Kohl's Corporation (KSS)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",53.0735338323716,69.0268524342629,"up10",3,1,1,0,1
+2018,3.89,"XOM","Exxon Mobil Corporation (XOM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",78.7369955725405,79.9556969721116,"down",0,0,4,1,1
 2018,3.89,"WMT","Walmart Inc. (WMT)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",89.6644855794336,92.3698404541833,"up10",0,3,1,1,1
-2019,3.67,"INO","Inovio Pharmaceuticals, Inc. (INO)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",5.63565154725015,3.1247619047619,"down10",3,1,0,1,0
-2019,3.67,"HST","Host Hotels & Resorts, Inc. (HST)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",18.2532595738633,17.909682468254,"down10",2,1,1,1,0
-2019,3.67,"HMC","Honda Motor Co., Ltd. (HMC)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",29.4053807895323,26.9271031269841,"down10",2,0,0,3,0
-2019,3.67,"NFLX","Netflix, Inc. (NFLX)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",224.382641734833,328.87238006746,"up",0,3,0,2,1
-2019,3.67,"HRB","H&R Block, Inc. (HRB)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",26.6604071315505,25.4877381190476,"down",1,0,2,2,0
-2019,3.67,"COST","Costco Wholesale Corporation (COST)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",207.238222252366,262.195277440476,"up10",0,3,0,2,1
-2019,3.67,"ADDYY","adidas AG (ADDYY)
-Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",105.694756240604,140.856944444444,"up10",0,5,0,0,1
-2019,3.67,"NUS","Nu Skin Enterprises, Inc. (NUS)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.0492748184326,48.4029365436508,"down10",2,2,0,1,0
+2018,3.89,"HST","Host Hotels & Resorts, Inc. (HST)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",18.2532595738633,19.9647011832669,"up",2,1,1,1,1
+2018,3.89,"SCE.PB","Southern California Edison Company (SCE-PB)
+NYSE American - NYSE American Delayed Price. Currency in USD","NYSE",690.844964059107,393.697211155379,"down10",1,3,0,1,0
+2018,3.89,"DLTR","Dollar Tree, Inc. (DLTR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",87.6758774193728,92.2278085936255,"up10",1,3,1,0,1
+2018,3.89,"MSFT","Microsoft Corporation (MSFT)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",94.8954482158456,101.03398412749,"up10",0,5,0,0,1
+2018,3.89,"FTR","Frontier Communications Corporation (FTR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",31.3429243098953,6.40509960159363,"down10",5,0,0,0,0
+2018,3.89,"HRB","H&R Block, Inc. (HRB)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",26.6604071315505,26.2284064183267,"up",1,0,2,2,0
+2018,3.89,"HMC","Honda Motor Co., Ltd. (HMC)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",29.4053807895323,31.3766533784861,"up",2,0,0,3,1
+2018,3.89,"HOFT","Hooker Furniture Corporation (HOFT)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",29.9153385082237,38.3838246055777,"down",1,2,2,0,1
+2018,3.89,"NUS","Nu Skin Enterprises, Inc. (NUS)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.0492748184326,73.8764142111554,"up10",2,2,0,1,1
+2018,3.89,"NSANY","Nissan Motor Co., Ltd. (NSANY)
+Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",17.2846980173222,19.3678485577689,"down",2,0,2,1,1
+2018,3.89,"AMZN","Amazon.com, Inc. (AMZN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1243.49690606713,1641.72617584861,"up10",0,3,0,2,1
+2018,3.89,"T","AT&T Inc. (T)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",36.2243727055034,33.3051792669323,"down10",1,2,1,1,0
+2018,3.89,"JWN","Nordstrom, Inc. (JWN)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",49.6409798692294,53.263625625498,"up10",2,1,1,1,1
+2018,3.89,"MGM","MGM Resorts International (MGM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7943314907776,30.598685310757,"down",0,3,2,0,1
+2018,3.89,"ONCY","Oncolytics Biotech Inc. (ONCY)
+NasdaqCM - NasdaqCM Real Time Price. Currency in USD","Nasdaq",3.68625059286663,4.74169322709163,"up10",2,3,0,0,1
+2018,3.89,"FFIN","First Financial Bankshares, Inc. (FFIN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",24.4529351617314,27.0800995856574,"up10",0,4,0,1,1
+2018,3.89,"S","Sprint Corporation (S)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",5.72459165981576,5.71422310756972,"down10",2,3,0,0,0
+2018,3.89,"RRGB","Red Robin Gourmet Burgers, Inc. (RRGB)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",50.662259620871,47.0994423346614,"down10",3,0,0,2,0
+2018,3.89,"C","Citigroup Inc. (C)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",63.6453837411413,69.4605177529881,"up",1,2,1,1,1
+2018,3.89,"EPD","Enterprise Products Partners L.P. (EPD)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7199511831326,27.4154979442231,"up",1,0,1,3,0
+2018,3.89,"TGT","Target Corporation (TGT)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",82.904471348242,76.6442626653386,"up10",1,3,1,0,0
+2018,3.89,"M","Macy's, Inc. (M)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",32.1473374649945,32.7158166613546,"up10",4,1,0,0,1
+2018,3.89,"TJX","The TJX Companies, Inc. (TJX)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",45.2872698382159,46.3794621075697,"up10",0,3,1,1,1
+2018,3.89,"TM","Toyota Motor Corporation (TM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",125.531297267515,127.655179155378,"up10",1,1,0,3,1
+2018,3.89,"WFC","Wells Fargo & Company (WFC)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.1354323993813,55.283904498008,"up",2,1,0,2,1
+2018,3.89,"ROST","Ross Stores, Inc. (ROST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",79.8764150829565,85.8211951992032,"up10",0,4,0,1,1
+2018,3.89,"TEVA","Teva Pharmaceutical Industries Limited (TEVA)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",30.0819310392135,20.917609561753,"down10",5,0,0,0,0
+2018,3.89,"WM","Waste Management, Inc. (WM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",83.9403728867572,86.7568523426295,"up10",0,4,0,1,1
+2018,3.89,"CVX","Chevron Corporation (CVX)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",110.440072177818,120.231514115538,"up",0,1,2,2,1
+2018,3.89,"WWE","World Wrestling Entertainment, Inc. (WWE)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",42.5369822838593,61.0647011195219,"up10",1,4,0,0,1
 2019,3.67,"FFIN","First Financial Bankshares, Inc. (FFIN)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",24.4529351617314,31.6503769285714,"up10",0,4,0,1,1
-2019,3.67,"C","Citigroup Inc. (C)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",63.6453837411413,67.7997619603175,"down",1,2,1,1,1
-2019,3.67,"XOM","Exxon Mobil Corporation (XOM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",78.7369955725405,73.7346426388889,"down",0,0,4,1,0
-2019,3.67,"ROST","Ross Stores, Inc. (ROST)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",79.8764150829565,101.94472222619,"up10",0,4,0,1,1
-2019,3.67,"TJX","The TJX Companies, Inc. (TJX)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",45.2872698382159,54.2103969047619,"up10",0,3,1,1,1
-2019,3.67,"WWE","World Wrestling Entertainment, Inc. (WWE)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",42.5369822838593,75.1092066309524,"up10",1,4,0,0,1
+2019,3.67,"ADDYY","adidas AG (ADDYY)
+Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",105.694756240604,140.856944444444,"up10",0,5,0,0,1
+2019,3.67,"WM","Waste Management, Inc. (WM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",83.9403728867572,109.085634980159,"up10",0,4,0,1,1
 2019,3.67,"FTR","Frontier Communications Corporation (FTR)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",31.3429243098953,1.59047619047619,"down10",5,0,0,0,0
+2019,3.67,"M","Macy's, Inc. (M)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",32.1473374649945,20.4742063571429,"down10",4,1,0,0,0
+2019,3.67,"DLTR","Dollar Tree, Inc. (DLTR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",87.6758774193728,103.289523769841,"up10",1,3,1,0,1
+2019,3.67,"CVX","Chevron Corporation (CVX)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",110.440072177818,119.625118904762,"down",0,1,2,2,1
+2019,3.67,"NFLX","Netflix, Inc. (NFLX)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",224.382641734833,328.87238006746,"up",0,3,0,2,1
+2019,3.67,"JPM","JPMorgan Chase & Co. (JPM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",97.0635266907344,113.800317563492,"up",0,3,0,2,1
+2019,3.67,"HRB","H&R Block, Inc. (HRB)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",26.6604071315505,25.4877381190476,"down",1,0,2,2,0
+2019,3.67,"INO","Inovio Pharmaceuticals, Inc. (INO)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",5.63565154725015,3.1247619047619,"down10",3,1,0,1,0
+2019,3.67,"NUS","Nu Skin Enterprises, Inc. (NUS)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.0492748184326,48.4029365436508,"down10",2,2,0,1,0
+2019,3.67,"TGT","Target Corporation (TGT)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",82.904471348242,91.8574603690476,"up10",1,3,1,0,1
+2019,3.67,"HD","The Home Depot, Inc. (HD)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",170.802718858724,207.30269822619,"up",0,3,0,2,1
+2019,3.67,"PCG","PG&E Corporation (PCG)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",40.9263597885073,14.9673412420635,"down10",3,1,0,1,0
+2019,3.67,"NKE","NIKE, Inc. (NKE)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",71.4152645031725,86.7333729960317,"up10",0,3,1,1,1
+2019,3.67,"XOM","Exxon Mobil Corporation (XOM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",78.7369955725405,73.7346426388889,"down",0,0,4,1,0
+2019,3.67,"HMC","Honda Motor Co., Ltd. (HMC)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",29.4053807895323,26.9271031269841,"down10",2,0,0,3,0
+2019,3.67,"S","Sprint Corporation (S)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",5.72459165981576,6.31607142857143,"up10",2,3,0,0,1
+2019,3.67,"ONCY","Oncolytics Biotech Inc. (ONCY)
+NasdaqCM - NasdaqCM Real Time Price. Currency in USD","Nasdaq",3.68625059286663,1.48944444444444,"down10",2,3,0,0,0
+2019,3.67,"JNJ","Johnson & Johnson (JNJ)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",126.401366391582,134.935040059524,"up",0,2,0,3,1
+2019,3.67,"ROST","Ross Stores, Inc. (ROST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",79.8764150829565,101.94472222619,"up10",0,4,0,1,1
+2019,3.67,"WMT","Walmart Inc. (WMT)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",89.6644855794336,108.405555638889,"up10",0,3,1,1,1
 2019,3.67,"AAP","Advance Auto Parts, Inc. (AAP)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",147.886972418024,158.543055503968,"up10",1,2,2,0,1
 2019,3.67,"RRGB","Red Robin Gourmet Burgers, Inc. (RRGB)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",50.662259620871,30.9803571626984,"down10",3,0,0,2,0
-2019,3.67,"LUV","Southwest Airlines Co. (LUV)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",50.5661435154014,53.0929365555556,"down",0,1,2,2,1
-2019,3.67,"DLTR","Dollar Tree, Inc. (DLTR)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",87.6758774193728,103.289523769841,"up10",1,3,1,0,1
-2019,3.67,"NKE","NIKE, Inc. (NKE)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",71.4152645031725,86.7333729960317,"up10",0,3,1,1,1
-2019,3.67,"ARWR","Arrowhead Pharmaceuticals, Inc. (ARWR)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",17.9777560280861,29.5976189404762,"up10",2,3,0,0,1
-2019,3.67,"M","Macy's, Inc. (M)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",32.1473374649945,20.4742063571429,"down10",4,1,0,0,0
-2019,3.67,"ONCY","Oncolytics Biotech Inc. (ONCY)
-NasdaqCM - NasdaqCM Real Time Price. Currency in USD","Nasdaq",3.68625059286663,1.48944444444444,"down10",2,3,0,0,0
-2019,3.67,"AAL","American Airlines Group Inc. (AAL)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",38.6737054883561,30.8793255119048,"down10",3,1,1,0,0
-2019,3.67,"CVX","Chevron Corporation (CVX)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",110.440072177818,119.625118904762,"down",0,1,2,2,1
-2019,3.67,"JNJ","Johnson & Johnson (JNJ)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",126.401366391582,134.935040059524,"up",0,2,0,3,1
-2019,3.67,"HD","The Home Depot, Inc. (HD)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",170.802718858724,207.30269822619,"up",0,3,0,2,1
-2019,3.67,"TEVA","Teva Pharmaceutical Industries Limited (TEVA)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",30.0819310392135,11.4964285674603,"down10",5,0,0,0,0
-2019,3.67,"JWN","Nordstrom, Inc. (JWN)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",49.6409798692294,37.6047620119048,"down10",2,1,1,1,0
 2019,3.67,"T","AT&T Inc. (T)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",36.2243727055034,33.9290873373016,"up",1,2,1,1,0
-2019,3.67,"JPM","JPMorgan Chase & Co. (JPM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",97.0635266907344,113.800317563492,"up",0,3,0,2,1
-2019,3.67,"TM","Toyota Motor Corporation (TM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",125.531297267515,128.51992072619,"up",1,1,0,3,1
-2019,3.67,"GOOG","Alphabet Inc. (GOOG)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1000.92420225954,1188.39305748413,"up",0,4,0,1,1
-2019,3.67,"NSANY","Nissan Motor Co., Ltd. (NSANY)
-Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",17.2846980173222,14.3424603293651,"down10",2,0,2,1,0
-2019,3.67,"TGT","Target Corporation (TGT)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",82.904471348242,91.8574603690476,"up10",1,3,1,0,1
-2019,3.67,"S","Sprint Corporation (S)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",5.72459165981576,6.31607142857143,"up10",2,3,0,0,1
-2019,3.67,"HOFT","Hooker Furniture Corporation (HOFT)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",29.9153385082237,24.9165476230159,"down10",1,2,2,0,0
-2019,3.67,"KSS","Kohl's Corporation (KSS)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",53.0735338323716,56.8702381666667,"down10",3,1,1,0,1
-2019,3.67,"AMZN","Amazon.com, Inc. (AMZN)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1243.49690606713,1789.18920606349,"up",0,3,0,2,1
 2019,3.67,"JBLU","JetBlue Airways Corporation (JBLU)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",19.6615883299158,17.9410316626984,"down",1,0,2,2,0
-2019,3.67,"SIG","Signet Jewelers Limited (SIG)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",64.5447094476723,20.5451983373016,"down10",4,1,0,0,0
-2019,3.67,"PCG","PG&E Corporation (PCG)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",40.9263597885073,14.9673412420635,"down10",3,1,0,1,0
-2019,3.67,"WM","Waste Management, Inc. (WM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",83.9403728867572,109.085634980159,"up10",0,4,0,1,1
+2019,3.67,"LUV","Southwest Airlines Co. (LUV)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",50.5661435154014,53.0929365555556,"down",0,1,2,2,1
+2019,3.67,"COST","Costco Wholesale Corporation (COST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",207.238222252366,262.195277440476,"up10",0,3,0,2,1
+2019,3.67,"TM","Toyota Motor Corporation (TM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",125.531297267515,128.51992072619,"up",1,1,0,3,1
+2019,3.67,"C","Citigroup Inc. (C)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",63.6453837411413,67.7997619603175,"down",1,2,1,1,1
+2019,3.67,"WWE","World Wrestling Entertainment, Inc. (WWE)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",42.5369822838593,75.1092066309524,"up10",1,4,0,0,1
+2019,3.67,"HST","Host Hotels & Resorts, Inc. (HST)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",18.2532595738633,17.909682468254,"down10",2,1,1,1,0
 2019,3.67,"UBSI","United Bankshares, Inc. (UBSI)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",37.6227410947822,37.3213490555556,"up",0,0,3,2,0
-2019,3.67,"WFC","Wells Fargo & Company (WFC)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.1354323993813,48.862499984127,"down10",2,1,0,2,0
-2019,3.67,"MGM","MGM Resorts International (MGM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7943314907776,28.3491269920635,"down",0,3,2,0,1
+2019,3.67,"TJX","The TJX Companies, Inc. (TJX)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",45.2872698382159,54.2103969047619,"up10",0,3,1,1,1
+2019,3.67,"AMZN","Amazon.com, Inc. (AMZN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1243.49690606713,1789.18920606349,"up",0,3,0,2,1
+2019,3.67,"JWN","Nordstrom, Inc. (JWN)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",49.6409798692294,37.6047620119048,"down10",2,1,1,1,0
+2019,3.67,"TEVA","Teva Pharmaceutical Industries Limited (TEVA)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",30.0819310392135,11.4964285674603,"down10",5,0,0,0,0
 2019,3.67,"VZ","Verizon Communications Inc. (VZ)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.7978111684321,58.0584127738095,"up10",0,1,1,3,1
-2019,3.67,"KGJI","Kingold Jewelry, Inc. (KGJI)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1.31737697358713,0.961944444444444,"down10",2,2,0,1,0
-2019,3.67,"WMT","Walmart Inc. (WMT)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",89.6644855794336,108.405555638889,"up10",0,3,1,1,1
-2019,3.67,"F","Ford Motor Company (F)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",11.3671494708995,9.23865079365079,"down10",3,0,2,0,0
-2019,3.67,"EPD","Enterprise Products Partners L.P. (EPD)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7199511831326,28.2432142460317,"up",1,0,1,3,1
 2019,3.67,"MSFT","Microsoft Corporation (MSFT)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",94.8954482158456,130.382024011905,"up10",0,5,0,0,1
-2020,3.6,"HOFT","Hooker Furniture Corporation (HOFT)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",29.9153385082237,24.8657141904762,"down",1,2,2,0,0
+2019,3.67,"MGM","MGM Resorts International (MGM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7943314907776,28.3491269920635,"down",0,3,2,0,1
+2019,3.67,"SIG","Signet Jewelers Limited (SIG)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",64.5447094476723,20.5451983373016,"down10",4,1,0,0,0
+2019,3.67,"KSS","Kohl's Corporation (KSS)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",53.0735338323716,56.8702381666667,"down10",3,1,1,0,1
+2019,3.67,"EPD","Enterprise Products Partners L.P. (EPD)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7199511831326,28.2432142460317,"up",1,0,1,3,1
+2019,3.67,"KGJI","Kingold Jewelry, Inc. (KGJI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1.31737697358713,0.961944444444444,"down10",2,2,0,1,0
+2019,3.67,"F","Ford Motor Company (F)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",11.3671494708995,9.23865079365079,"down10",3,0,2,0,0
+2019,3.67,"SCE.PB","Southern California Edison Company (SCE-PB)
+NYSE American - NYSE American Delayed Price. Currency in USD","NYSE",690.844964059107,607.515873015873,"up10",1,3,0,1,0
+2019,3.67,"GOOG","Alphabet Inc. (GOOG)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1000.92420225954,1188.39305748413,"up",0,4,0,1,1
+2019,3.67,"ARWR","Arrowhead Pharmaceuticals, Inc. (ARWR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",17.9777560280861,29.5976189404762,"up10",2,3,0,0,1
+2019,3.67,"AAL","American Airlines Group Inc. (AAL)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",38.6737054883561,30.8793255119048,"down10",3,1,1,0,0
+2019,3.67,"WFC","Wells Fargo & Company (WFC)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.1354323993813,48.862499984127,"down10",2,1,0,2,0
+2019,3.67,"NSANY","Nissan Motor Co., Ltd. (NSANY)
+Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",17.2846980173222,14.3424603293651,"down10",2,0,2,1,0
+2019,3.67,"HOFT","Hooker Furniture Corporation (HOFT)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",29.9153385082237,24.9165476230159,"down10",1,2,2,0,0
 2020,3.6,"GOOG","Alphabet Inc. (GOOG)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1000.92420225954,1436.65379685714,"up10",0,4,0,1,1
-2020,3.6,"DLTR","Dollar Tree, Inc. (DLTR)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",87.6758774193728,89.9838098095238,"down10",1,3,1,0,1
-2020,3.6,"HMC","Honda Motor Co., Ltd. (HMC)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",29.4053807895323,27.4619044761905,"up",2,0,0,3,0
+2020,3.6,"ARWR","Arrowhead Pharmaceuticals, Inc. (ARWR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",17.9777560280861,52.7588095714286,"up10",2,3,0,0,1
 2020,3.6,"F","Ford Motor Company (F)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",11.3671494708995,9.13047619047619,"down",3,0,2,0,0
-2020,3.6,"AAP","Advance Auto Parts, Inc. (AAP)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",147.886972418024,147.820952,"down",1,2,2,0,0
-2020,3.6,"LUV","Southwest Airlines Co. (LUV)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",50.5661435154014,54.9790475238095,"up",0,1,2,2,1
-2020,3.6,"KGJI","Kingold Jewelry, Inc. (KGJI)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1.31737697358713,1.55285714285714,"up10",2,2,0,1,1
+2020,3.6,"DLTR","Dollar Tree, Inc. (DLTR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",87.6758774193728,89.9838098095238,"down10",1,3,1,0,1
+2020,3.6,"JBLU","JetBlue Airways Corporation (JBLU)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",19.6615883299158,19.292380952381,"up",1,0,2,2,0
+2020,3.6,"HST","Host Hotels & Resorts, Inc. (HST)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",18.2532595738633,17.4071426666667,"down",2,1,1,1,0
+2020,3.6,"SCE.PB","Southern California Edison Company (SCE-PB)
+NYSE American - NYSE American Delayed Price. Currency in USD","NYSE",690.844964059107,893,"up10",1,3,0,1,1
+2020,3.6,"HOFT","Hooker Furniture Corporation (HOFT)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",29.9153385082237,24.8657141904762,"down",1,2,2,0,0
 2020,3.6,"M","Macy's, Inc. (M)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",32.1473374649945,17.1709524761905,"down10",4,1,0,0,0
 2020,3.6,"JWN","Nordstrom, Inc. (JWN)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",49.6409798692294,40.0895237142857,"up",2,1,1,1,0
-2020,3.6,"MSFT","Microsoft Corporation (MSFT)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",94.8954482158456,163.999045952381,"up10",0,5,0,0,1
-2020,3.6,"C","Citigroup Inc. (C)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",63.6453837411413,79.2495244761905,"up10",1,2,1,1,1
+2020,3.6,"MGM","MGM Resorts International (MGM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7943314907776,32.577618952381,"up10",0,3,2,0,1
 2020,3.6,"JNJ","Johnson & Johnson (JNJ)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",126.401366391582,147.320476,"up",0,2,0,3,1
+2020,3.6,"LUV","Southwest Airlines Co. (LUV)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",50.5661435154014,54.9790475238095,"up",0,1,2,2,1
+2020,3.6,"NKE","NIKE, Inc. (NKE)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",71.4152645031725,101.739524190476,"up10",0,3,1,1,1
 2020,3.6,"TJX","The TJX Companies, Inc. (TJX)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",45.2872698382159,61.7533333809524,"up10",0,3,1,1,1
-2020,3.6,"CVX","Chevron Corporation (CVX)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",110.440072177818,115.090000285714,"down",0,1,2,2,1
 2020,3.6,"HD","The Home Depot, Inc. (HD)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",170.802718858724,227.199999809524,"up",0,3,0,2,1
-2020,3.6,"COST","Costco Wholesale Corporation (COST)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",207.238222252366,302.823335190476,"up10",0,3,0,2,1
-2020,3.6,"SIG","Signet Jewelers Limited (SIG)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",64.5447094476723,23.4761906190476,"up10",4,1,0,0,0
-2020,3.6,"KSS","Kohl's Corporation (KSS)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",53.0735338323716,46.6733336666667,"down10",3,1,1,0,0
-2020,3.6,"ARWR","Arrowhead Pharmaceuticals, Inc. (ARWR)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",17.9777560280861,52.7588095714286,"up10",2,3,0,0,1
-2020,3.6,"VZ","Verizon Communications Inc. (VZ)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.7978111684321,59.8328569047619,"up",0,1,1,3,1
 2020,3.6,"NUS","Nu Skin Enterprises, Inc. (NUS)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.0492748184326,38.7219048095238,"down10",2,2,0,1,0
-2020,3.6,"NSANY","Nissan Motor Co., Ltd. (NSANY)
-Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",17.2846980173222,11.3404761904762,"down10",2,0,2,1,0
-2020,3.6,"JBLU","JetBlue Airways Corporation (JBLU)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",19.6615883299158,19.292380952381,"up",1,0,2,2,0
-2020,3.6,"T","AT&T Inc. (T)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",36.2243727055034,38.4333331904762,"up10",1,2,1,1,1
-2020,3.6,"TEVA","Teva Pharmaceutical Industries Limited (TEVA)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",30.0819310392135,9.84238095238095,"down10",5,0,0,0,0
+2020,3.6,"EPD","Enterprise Products Partners L.P. (EPD)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7199511831326,28.0499999047619,"down",1,0,1,3,1
+2020,3.6,"SIG","Signet Jewelers Limited (SIG)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",64.5447094476723,23.4761906190476,"up10",4,1,0,0,0
+2020,3.6,"AMZN","Amazon.com, Inc. (AMZN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1243.49690606713,1884.23761285714,"up",0,3,0,2,1
+2020,3.6,"S","Sprint Corporation (S)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",5.72459165981576,4.89047619047619,"down10",2,3,0,0,0
 2020,3.6,"FTR","Frontier Communications Corporation (FTR)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",31.3429243098953,0.648095238095238,"down10",5,0,0,0,0
 2020,3.6,"ONCY","Oncolytics Biotech Inc. (ONCY)
 NasdaqCM - NasdaqCM Real Time Price. Currency in USD","Nasdaq",3.68625059286663,3.38047619047619,"up10",2,3,0,0,0
-2020,3.6,"HRB","H&R Block, Inc. (HRB)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",26.6604071315505,23.8476190952381,"down",1,0,2,2,0
-2020,3.6,"MGM","MGM Resorts International (MGM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7943314907776,32.577618952381,"up10",0,3,2,0,1
-2020,3.6,"WM","Waste Management, Inc. (WM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",83.9403728867572,118.763334,"up",0,4,0,1,1
-2020,3.6,"INO","Inovio Pharmaceuticals, Inc. (INO)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",5.63565154725015,3.64428571428571,"up10",3,1,0,1,0
-2020,3.6,"ADDYY","adidas AG (ADDYY)
-Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",105.694756240604,168.781428761905,"up10",0,5,0,0,1
-2020,3.6,"JPM","JPMorgan Chase & Co. (JPM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",97.0635266907344,136.395712666667,"up10",0,3,0,2,1
-2020,3.6,"WMT","Walmart Inc. (WMT)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",89.6644855794336,116.210952047619,"up",0,3,1,1,1
-2020,3.6,"AAL","American Airlines Group Inc. (AAL)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",38.6737054883561,27.5642856190476,"down10",3,1,1,0,0
-2020,3.6,"EPD","Enterprise Products Partners L.P. (EPD)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",27.7199511831326,28.0499999047619,"down",1,0,1,3,1
-2020,3.6,"TGT","Target Corporation (TGT)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",82.904471348242,118.947619571429,"up10",1,3,1,0,1
-2020,3.6,"S","Sprint Corporation (S)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",5.72459165981576,4.89047619047619,"down10",2,3,0,0,0
+2020,3.6,"HMC","Honda Motor Co., Ltd. (HMC)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",29.4053807895323,27.4619044761905,"up",2,0,0,3,0
 2020,3.6,"WFC","Wells Fargo & Company (WFC)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.1354323993813,49.953333,"up",2,1,0,2,0
-2020,3.6,"WWE","World Wrestling Entertainment, Inc. (WWE)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",42.5369822838593,61.8633333333333,"down10",1,4,0,0,1
-2020,3.6,"ROST","Ross Stores, Inc. (ROST)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",79.8764150829565,117.30952447619,"up10",0,4,0,1,1
+2020,3.6,"T","AT&T Inc. (T)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",36.2243727055034,38.4333331904762,"up10",1,2,1,1,1
+2020,3.6,"UBSI","United Bankshares, Inc. (UBSI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",37.6227410947822,36.945713952381,"down",0,0,3,2,0
+2020,3.6,"ADDYY","adidas AG (ADDYY)
+Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",105.694756240604,168.781428761905,"up10",0,5,0,0,1
+2020,3.6,"MSFT","Microsoft Corporation (MSFT)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",94.8954482158456,163.999045952381,"up10",0,5,0,0,1
+2020,3.6,"TEVA","Teva Pharmaceutical Industries Limited (TEVA)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",30.0819310392135,9.84238095238095,"down10",5,0,0,0,0
+2020,3.6,"AAL","American Airlines Group Inc. (AAL)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",38.6737054883561,27.5642856190476,"down10",3,1,1,0,0
+2020,3.6,"WM","Waste Management, Inc. (WM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",83.9403728867572,118.763334,"up",0,4,0,1,1
+2020,3.6,"AAP","Advance Auto Parts, Inc. (AAP)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",147.886972418024,147.820952,"down",1,2,2,0,0
+2020,3.6,"CVX","Chevron Corporation (CVX)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",110.440072177818,115.090000285714,"down",0,1,2,2,1
+2020,3.6,"VZ","Verizon Communications Inc. (VZ)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",52.7978111684321,59.8328569047619,"up",0,1,1,3,1
+2020,3.6,"WMT","Walmart Inc. (WMT)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",89.6644855794336,116.210952047619,"up",0,3,1,1,1
+2020,3.6,"HRB","H&R Block, Inc. (HRB)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",26.6604071315505,23.8476190952381,"down",1,0,2,2,0
 2020,3.6,"RRGB","Red Robin Gourmet Burgers, Inc. (RRGB)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",50.662259620871,33.8233332380952,"up",3,0,0,2,0
-2020,3.6,"AMZN","Amazon.com, Inc. (AMZN)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1243.49690606713,1884.23761285714,"up",0,3,0,2,1
+2020,3.6,"TGT","Target Corporation (TGT)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",82.904471348242,118.947619571429,"up10",1,3,1,0,1
 2020,3.6,"PCG","PG&E Corporation (PCG)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",40.9263597885073,12.5157142857143,"down10",3,1,0,1,0
 2020,3.6,"NFLX","Netflix, Inc. (NFLX)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",224.382641734833,338.832856666667,"up",0,3,0,2,1
-2020,3.6,"NKE","NIKE, Inc. (NKE)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",71.4152645031725,101.739524190476,"up10",0,3,1,1,1
-2020,3.6,"TM","Toyota Motor Corporation (TM)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",125.531297267515,141.046189952381,"up",1,1,0,3,1
-2020,3.6,"HST","Host Hotels & Resorts, Inc. (HST)
-NYSE - NYSE Delayed Price. Currency in USD","NYSE",18.2532595738633,17.4071426666667,"down",2,1,1,1,0
+2020,3.6,"WWE","World Wrestling Entertainment, Inc. (WWE)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",42.5369822838593,61.8633333333333,"down10",1,4,0,0,1
+2020,3.6,"KGJI","Kingold Jewelry, Inc. (KGJI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",1.31737697358713,1.55285714285714,"up10",2,2,0,1,1
+2020,3.6,"JPM","JPMorgan Chase & Co. (JPM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",97.0635266907344,136.395712666667,"up10",0,3,0,2,1
 2020,3.6,"FFIN","First Financial Bankshares, Inc. (FFIN)
 NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",24.4529351617314,34.4028566190476,"up",0,4,0,1,1
+2020,3.6,"KSS","Kohl's Corporation (KSS)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",53.0735338323716,46.6733336666667,"down10",3,1,1,0,0
+2020,3.6,"C","Citigroup Inc. (C)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",63.6453837411413,79.2495244761905,"up10",1,2,1,1,1
 2020,3.6,"XOM","Exxon Mobil Corporation (XOM)
 NYSE - NYSE Delayed Price. Currency in USD","NYSE",78.7369955725405,67.8219051428571,"down",0,0,4,1,0
-2020,3.6,"UBSI","United Bankshares, Inc. (UBSI)
-NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",37.6227410947822,36.945713952381,"down",0,0,3,2,0
+2020,3.6,"TM","Toyota Motor Corporation (TM)
+NYSE - NYSE Delayed Price. Currency in USD","NYSE",125.531297267515,141.046189952381,"up",1,1,0,3,1
+2020,3.6,"ROST","Ross Stores, Inc. (ROST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",79.8764150829565,117.30952447619,"up10",0,4,0,1,1
+2020,3.6,"INO","Inovio Pharmaceuticals, Inc. (INO)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",5.63565154725015,3.64428571428571,"up10",3,1,0,1,0
+2020,3.6,"COST","Costco Wholesale Corporation (COST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","Nasdaq",207.238222252366,302.823335190476,"up10",0,3,0,2,1
+2020,3.6,"NSANY","Nissan Motor Co., Ltd. (NSANY)
+Other OTC - Other OTC Delayed Price. Currency in USD","Other OTC",17.2846980173222,11.3404761904762,"down10",2,0,2,1,0

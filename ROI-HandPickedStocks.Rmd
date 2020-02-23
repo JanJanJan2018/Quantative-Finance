@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: "2/17/2020"
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 ```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
@@ -555,7 +555,6 @@ Lets see if there are any other outlier dates to examine by looking at the stand
 gg <- ggplot(C_stock, aes(x=C_dailyChange))
 gg <- gg + geom_histogram(binwidth=2, colour="black", 
                           aes(y=..density.., fill=..count..))
-#gg <- gg + scale_fill_gradient("Count", low="#DCDCDC", high="#7C7C7C")
 gg <- gg + stat_function(fun=dnorm,
                          color="red",
                          args=list(mean=mean(C_stock$C_dailyChange), 
@@ -899,8 +898,6 @@ Lets look at the other three stocks that our on a lower scaled value to analyze 
 sub1 <- Value2[,c(18:20,115)]
 sub1tidy <- gather(sub1, 'Stock','Value',1:3)
 
-#min2015 <- subset(StocksSTATS, StocksSTATS$MonthYear=='Jan-2015')
-#m15 <- min2015[1,"ONCY.Close"]
 
 ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
   geom_line(aes(color=Stock))+
@@ -1145,6 +1142,8 @@ stock5yrOrdered$Direction5yr10PercentChange <- ifelse(STC3==1 & stock5yrOrdered$
 
 show1 <- cbind(head(stock5yrOrdered), tail(stock5yrOrdered))
 show1
+
+length(unique(stock5yrOrdered$Stock))
 ```
 
 Lets get these subsets of stocks that within the time span of 2015-2020 increased by more than 10% annually, decreased by 10% or more annually, decreased, or increased. 
@@ -1186,6 +1185,8 @@ Stocks5yrChanges_outerJoin1 <- merge(Stocks5yrChanges_outerJoin,StocksDecrZeroba
 Stocks5yrChanges_outerJoin2 <- merge(Stocks5yrChanges_outerJoin1,StocksIncrZerobase, by.x='Stock', by.y='Stock', all=TRUE)
 
 stock_5yr_stats_2015_2020 <- merge(stock5yrOrdered,Stocks5yrChanges_outerJoin2, by.x='Stock', by.y='Stock', all=TRUE)
+
+length(unique(stock_5yr_stats_2015_2020$Stock))
 ```
 
 Write this file out to analyze those stocks having decreased and increased the most in the last 5 years.
@@ -1198,6 +1199,8 @@ Lets attach the stock name to this data set above by reading in the file with th
 ```{r}
 stockNames <- read.csv('yahooStockBasket.csv', header=T, sep=',', na.strings=c('',' '))
 stock_5yr_stats_2015_2020$Stock <- gsub('[.]Close','', stock_5yr_stats_2015_2020$Stock)
+stockNames$stock <- gsub('-','.', stockNames$stock)
+
 stock_5yr_stats_2015_2020$Stock <- as.factor(stock_5yr_stats_2015_2020$Stock)
 StockNames_STATS_2015_2020 <- merge(stockNames,stock_5yr_stats_2015_2020,
                                     by.x='stock', by.y='Stock')
@@ -1225,6 +1228,8 @@ write.csv(StockNames_STATS_2015_2020, 'StockNames_STATS_2015_2020.csv', row.name
 
 show2 <- rbind(head(StockNames_STATS_2015_2020,3),tail(StockNames_STATS_2015_2020,3))
 show2
+
+length(unique(StockNames_STATS_2015_2020$stock))
 
 ```
 
@@ -1259,88 +1264,208 @@ Make separate portfolios for each of the stocks that increased by more than 10% 
 ```{r}
 sub_D10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesDecr10_5yr > 0)
 
+
+D10_2015 <- subset(sub_D10, sub_D10$Year==2015)
+D10_2020 <- subset(sub_D10, sub_D10$Year==2020)
+
+md10_2015 <- mean(D10_2015$YearMeanValue)
+md10_2020 <- mean(D10_2020$YearMeanValue)
+md10_2015
+md10_2020
+
+ROI_D10 <- md10_2020/md10_2015
+ROI_D10
+
+d10_startValue <- md10_2015*length(unique(D10_2015$stock))
+d10_endValue <- md10_2020*length(unique(D10_2020$stock))
+d10_startValue
+d10_endValue
+```
+
+The above values show the 2015 average stock value of those stocks that decreased more than 10 percent in the last five years more than once was 67 USD. And in 2020 those stocks decreased in value to 66 USD giving it a five year ROI in the last five years of 0.976, or a decline of 2.4 percent in value. The 2015 value of this portfolio of stocks was 2150 USD, and in 2020 the portfolio value of the stocks was 2098 USD showing the dollar decrease over five years.
+
+```{r}
 sub_nvr_D10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesDecr10_5yr == 0)
 
-pMean_sub_D10 <- mean(sub_D10$stock5yrMeans)
-pMean_sub_D10
-pMean_sub_nvr_D10 <- mean(sub_nvr_D10$stock5yrMeans)
-pMean_sub_nvr_D10
-pMean_sub_nvr_D10*length(unique(sub_nvr_D10$stock))
+nD10_2015 <- subset(sub_nvr_D10, sub_nvr_D10$Year==2015)
+nD10_2020 <- subset(sub_nvr_D10, sub_nvr_D10$Year==2020)
+
+mnD10_2015 <- mean(nD10_2015$YearMeanValue)
+mnD10_2020 <- mean(nD10_2020$YearMeanValue)
+mnD10_2015
+mnD10_2020
+
+ROI_nD10 <- mnD10_2020/mnD10_2015
+ROI_nD10
+
+nD10_startValue <- mnD10_2015*length(unique(nD10_2015$stock))
+nD10_endValue <- mnD10_2020*length(unique(nD10_2020$stock))
+nD10_startValue
+nD10_endValue
+
 ```
 
-Lets now do the reverse and look at those stocks that increased more than 10% at least one time in the last five years of 2015-2020 and compare the means.
+The above numbers show the mean stock value of those stocks that never decreased by more than 10 percent in 2015-2020. The 2015 average stock price of these stocks was 109 USD, and in 2020 the average price was 273 USD. This was a ROI of 2.49 or 249 percent, which means it more than doubled in value over the last five years. The 2015 portfolio price of these specific stock were 2293 USD and in 2020 the portfolio price was 5724 USD. This shows that having a stock that never decreases by more than 10 percent in five years could be a good stock to buy.
+
+***
+
+Lets now do the reverse and look at those stocks that increased more than 10% at least three times in the last five years of 2015-2020 and compare the means.
 ```{r}
-sub_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncr10_5yr > 3)
+sub_I10 <- subset(StockNames_STATS_2015_2020, 
+                  StockNames_STATS_2015_2020$nTimesIncr10_5yr > 3)
 
-sub_nvr_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncr10_5yr == 0)
+sub_nvr_I10 <- subset(StockNames_STATS_2015_2020,
+                      StockNames_STATS_2015_2020$nTimesIncr10_5yr == 0)
 
-pMean_sub_I10 <- mean(sub_I10$stock5yrMeans)
-pMean_sub_I10
-pMean_sub_nvr_I10 <- mean(sub_nvr_I10$stock5yrMeans)
-pMean_sub_nvr_I10
-pMean_sub_I10*length(unique(sub_I10$stock))
+m2015 <- subset(sub_I10, sub_I10$Year==2015)
+m2020 <- subset(sub_I10, sub_I10$Year==2020)
+
+pm_2015 <- mean(m2015$YearMeanValue)
+pm_2020 <- mean(m2020$YearMeanValue)
+
+ROI_incr10_3x <- pm_2020/pm_2015
+ROI_incr10_3x
+
+I10_3_startValue <- pm_2015*length(unique(m2015$stock))
+I10_3_endValue <- pm_2020*length(unique(m2020$stock))
+I10_3_startValue
+I10_3_endValue
+
+mn_2015 <- subset(sub_nvr_I10, sub_nvr_I10$Year==2015)
+mn_2020 <- subset(sub_nvr_I10, sub_nvr_I10$Year==2020)
+
+pmn_2015 <- mean(mn_2015$YearMeanValue)
+pmn_2020 <- mean(mn_2020$YearMeanValue)
+
+ROI_nvr10 <- pmn_2020/pmn_2015
+ROI_nvr10
+
+nI10_startValue <- pmn_2015*length(unique(mn_2015$stock))
+nI10_endValue <- pmn_2020*length(unique(mn_2020$stock))
+nI10_startValue
+nI10_endValue
 ```
 
-Now lets look at those stocks that increased at least one time in the last five years but never by more than 10% to compare the portfolio mean to those above that decreased over the last five years but never by more than 10%.
+From the above, we can see that those stocks that never increased by more than 10 percent during the last five years lost almost half their 2015 start value of 502 USD in 2015 and 268 USD in 2020 and having a ROI ratio of 0.53. On the other hand, the stocks that increased by more than 10 percent at least three times during the last five years had a ROI ratio of 2.55, a 2015 portfolio value of 823 USD and a 2020 portfolio value of 2102 USD.
+
+***
+
+Now lets look at those stocks that increased at least one time in the last five years but never by more than 10 percent.
 ```{r}
-sub_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr > 0)
+sub_Iz <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr > 0)
 
-sub_nvr_I10 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr == 0)
+Iz_2015 <- subset(sub_Iz, sub_Iz$Year==2015)
+Iz_2020 <- subset(sub_Iz, sub_Iz$Year==2020)
 
-pMean_sub_I0 <- mean(sub_I10$YearMeanValue)
-pMean_sub_I0
-pMean_sub_nvr_I0 <- mean(sub_nvr_I10$YearMeanValue)
-pMean_sub_nvr_I0
+Iz_2015 <- subset(sub_Iz, sub_Iz$Year==2015)
+Iz_2020 <- subset(sub_Iz, sub_Iz$Year==2020)
+
+m_Iz_2015 <- mean(Iz_2015$YearMeanValue)
+m_Iz_2020 <- mean(Iz_2020$YearMeanValue)
+m_Iz_2015
+m_Iz_2020
+
+ROI_Iz <- m_Iz_2020/m_Iz_2015
+ROI_Iz
+
+p_Iz_2015 <- m_Iz_2015*length(unique(sub_Iz$stock))
+p_Iz_2020 <- m_Iz_2020*length(unique(sub_Iz$stock))
+p_Iz_2015
+p_Iz_2020
+
+```
+
+From the data above, the 2015 average stock price of 100 USD for the stock that had an increasing year at least one time in the last five years but not by more than 10 percent of the last year value. The 2020 average stock price increased to 195 USD, with an ROI of 1.95 or 195 percent. The 2015 portfolio value was 3504 USD and in 2020 the portfolio value increased to 6818 USD. This makes sense that those stocks that increase are good to have as they are making you money, but even if they don't increase by more than 10 percent in any year, when combined with other increasing stock they can nearly double your investment over five years.
+
+***
+Here are the stocks that never increased in the last five years.
+```{r}
+sub_nvr_Iz <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$nTimesIncrFromZero_5yr == 0)
+
+nIz_2015 <- subset(sub_nvr_Iz, sub_nvr_Iz$Year==2015)
+nIz_2020 <- subset(sub_nvr_Iz, sub_nvr_Iz$Year==2020)
+
+m_nIz_2015 <- mean(nIz_2015$YearMeanValue)
+m_nIz_2020 <- mean(nIz_2020$YearMeanValue)
+m_nIz_2015
+m_nIz_2020
+
+ROI_nIz <- m_nIz_2020/m_nIz_2015
+ROI_nIz
+
+nIz_startValue <- m_nIz_2015*length(unique(nIz_2015$stock))
+nIz_endValue <- m_nIz_2020*length(unique(nIz_2020$stock))
+nIz_startValue
+nIz_endValue
+
 
 
 ```
 
-Lets get the portfolio mean value in 2015 and compare to the portfolio mean value in 2020 of all stocks in this set to compare the above values to.
+From the above we have a portfolio of stock that never increased from zero, but might have increased by more than 10 percent.This variable was designed to capture exactly those stocks that did not increase by more than 10 percent but did increase some. This portfolio has a 2015 average stock value of 52 USD and this value increases to 56 USD in 2020 with an ROI of 1.07 or a five year interest of 7 percent. The 2015 portfolio value was 940 USD and in 2020 the portfolio value was 1004 USD.
+***
+
+Lets get the entire 53 stock portfolio mean value in 2015 and compare to the same 53 stock portfolio mean value in 2020.
 ```{r}
 p2015 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$Year==2015)
 p2020 <- subset(StockNames_STATS_2015_2020, StockNames_STATS_2015_2020$Year==2020)
+
 pm2015 <- mean(p2015$YearMeanValue)
 pm2020 <- mean(p2020$YearMeanValue)
 
 pm2015
 pm2020
+
+ROI_all <- pm2020/pm2015
+ROI_all
+
 pm2015*length(unique(StockNames_STATS_2015_2020$stock))
 pm2020*length(unique(StockNames_STATS_2015_2020$stock))
+
+
 ```
 
-The portfolio mean was 73 USD in 2015 and 133 USD in 2020. Knowing this combined with the other last three clues to stock volatility (by analyzing the volatility by year using the number of times the stock has an increase or decrease by 10% during each of the last five years) we can say that all of these stocks without carefully selecting them did increase the whole portfolio in the last five years from 73 USD to 133 USD, but the best set of stocks are the ones that increased at least three times during the last five years more than 10% annually, because the portfolio of that set of stocks was 204 USD average value of the stock with a small portfolio subset for only those stocks at 1432 USD and the subset that never decreased by more than 10% annually over the last five years had an average value of 192 USD and a price for that subset of stocks as a portfolio of 4023 USD.
-
-What would the ROI be for all stocks compared to only those stocks that increased at least three times during the last five years by more than 10 per cent?
+The portfolio mean was 84 USD in 2015 and 147 USD in 2020. The 2015 portfolio was valued at 4443 USD and in 2020 at 7822 USD for all stocks. The ROI is 1.76, which is good because you almost doubled the loan with all 53 of these stocks in five years spanning 2015-2020.
 ```{r}
-incr3_10 <- subset(sub_I10, sub_I10$Year==2015)
-mean_incr3_10 <- mean(incr3_10$YearMeanValue)
-ROI_all <- pm2020/pm2015
-ROI_Incr3_10 <- pMean_sub_I10/mean_incr3_10
-ROI_all
-ROI_Incr3_10
+76/5
 ```
+So, with a return of 76% on top of the value invested in 2015 figuratively for this example, that is 15.2% annual interest earned each of five years. This is called pooling, that the wins over compensate for the losses and it is used in health insurance companies as well as financial portfolios like 401k investment tools.
 
-The **return on investment** is almost doubled over five years selecting all the stocks in this portfolio of stocks that had values from 2007-2020 (done in the beginning is 53 out of 65) with a value of 1.817 or **182 per cent**. While the portfolio with only the stocks that never decreased more than 10% over the last five years had an ROI of 1.74 or **174 per cent**. 
+***
 
-Either way, these stocks returned a profit over the span of the last five years. We could see what the [annual ROI rate](https://www.investopedia.com/terms/a/apr.asp) is knowing the amount of 156 USD for best portfolio and 133 USD for all stocks, compared to the initial value of 73 USD.
+What would the ROI be for all stocks that increased during the last five years by more than 10 per cent?
 ```{r}
-n =365*5
-principalPlusFees <- pMean_sub_nvr_D10
-initial <- pm2015
-apr <- ((principalPlusFees/initial)/n)*365*100
-apr
+incr_10_2015 <- subset(sub_I10, sub_I10$Year==2015)
+mean_incr_10_2015 <- mean(incr_10_2015$YearMeanValue)
+
+incr_10_2020 <- subset(sub_I10, sub_I10$Year==2020)
+mean_incr_10_2020 <- mean(incr_10_2020$YearMeanValue)
+
+mean_incr_10_2015
+mean_incr_10_2020
+
+ROI_Incr_10 <- mean_incr_10_2020/mean_incr_10_2015
+ROI_Incr_10
+
+value2015 <- mean_incr_10_2015*length(unique(sub_I10$stock))
+value2020 <- mean_incr_10_2020*length(unique(sub_I10$stock))
+
+value2015
+value2020
 ```
 
-Using the formula from the web, the apr on this portfolio is 52.25%, which seems really high. This is the average value over the last five years of all the stocks in the subset of the portfolio having never decreased by 10%.
+The **return on investment** is more than doubled to 2102 USD over five years from a value of 823 USD in 2015 by selecting only the stocks in this portfolio of stocks that increased by more than 10% at least once in the last 5 years. The return of the ratio of the mean value in 2020 to 2015 is 2.55, which means the portfolio more than doubled. 
+
+But how do we or how can we know what stocks to select now that will increase many times as long as we have the investment? Can machine learning be built from this data set to find the stocks in this sample that produce good indicating features of other stocks that could be profitable to buy? We will develop this as we progress through this portfolio. We would also want indicators that would tell if certain stocks look like a good prospect but are actually going to be on a steady decline that translates to financial loss as long as you own them.
 
 ***
 
 There are four sets of counts for those that increased more than 10%, decreased more than 10%, increased more than zero but less than 10%, and decreased more than zero but less than 10% within the five year span from 2015-2020. Lets see if there is a better subset of choices for a better market portfolio. 
 
-Lets add a five year poisson column using lambda=(unemployment rate), time=(1), and k=(YearMeanGreaterThan5yrMean).
+Lets add a five year poisson column using lambda=(unemployment rate), time=(nTimesIncr10_5yr), and k=(YearMeanGreaterThan5yrMean).We will use the best subset so far of the stocks that increased by more than 10% annually in at least 3 out of the last five years.
 ```{r}
 ue2 <- stock_5yrs_ue$Annual_UE
-t <- 1
+t <- stock_5yrs_ue$nTimesIncr10_5yr
 k <- stock_5yrs_ue$YearMeanGreaterThan5yrMean
 stock_5yrs_ue$poisson5yrUE <- round((exp(-ue2*t)*(ue2*t)^k)/(factorial(k)),5)
 ```
@@ -1362,47 +1487,38 @@ portCycle <- merge(cycle1,stock_5yrs_ue, by.x='Stock', by.y='stock')
 portCycle_2015 <- subset(portCycle, Year==2015)
 portCycle_2020 <- subset(portCycle, Year==2020)
 
-mean(portCycle_2015$YearMeanValue)
-mean(portCycle_2020$YearMeanValue)
-mean(portCycle$YearMeanValue)
+pc_mean2015 <- mean(portCycle_2015$YearMeanValue)
+pc_mean2020 <- mean(portCycle_2020$YearMeanValue)
+
+pc_mean2015
+pc_mean2020
+
+ROI_pc <- pc_mean2020/pc_mean2015
+ROI_pc
+
+startValue <- pc_mean2015*length(unique(portCycle_2015$Stock))
+endValue <- pc_mean2020*length(unique(portCycle_2020$Stock))
+
+startValue
+endValue
 ```
 
-The above shows that the **cyclical stocks that have highs and lows the time span of the loan aren't great investments**, as these ones only profited $1.70 over five years. We could see if we dropped these stocks if they would make the portfolio better profit wise.
-```{r}
-m1 <- grep('MGM', stock_5yrs_ue$stock)
-m2 <- grep('ONCY', stock_5yrs_ue$stock)
-m3 <- grep('ARWR', stock_5yrs_ue$stock)
-m4 <- grep('S', stock_5yrs_ue$stock)
-m5 <- grep('JBLU', stock_5yrs_ue$stock)
-m6 <- grep('CVX', stock_5yrs_ue$stock)
-m7 <- grep('WFC', stock_5yrs_ue$stock)
-m8 <- grep('HRB', stock_5yrs_ue$stock)
-m9 <- grep('HMC', stock_5yrs_ue$stock)
-m10 <- grep('RRGB', stock_5yrs_ue$stock)
-m11 <- grep('LUV', stock_5yrs_ue$stock)
-m12 <- grep('UBSI', stock_5yrs_ue$stock)
-c3 <- c(m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12)
-stock_5yrs_ue_dropCycle <- stock_5yrs_ue[-c3,]
-mean(stock_5yrs_ue_dropCycle$YearMeanValue)                                   
-```
-The mean of the portfolio without the cyclical stocks is 134 USD. This is not much better than all of the stock in the portfolio of 133 USD.
-
-
-Lets get their poisson values for the cyclical stock, and drop any stock with this median value from our set of stocks, and compare the value of the portfolio after dropping stock with this poisson value.
-```{r}
-summary(portCycle$poisson5yrUE)
-```
-
-The median poisson is 0.02689. Lets drop any stock within the range of 0.025 and 0.03.
-```{r}
-stock_5yrs_ue_drop <- subset(stock_5yrs_ue, stock_5yrs_ue$poisson5yrUE < 0.025 | 
-                               stock_5yrs_ue$poisson5yrUE > 0.03)
-unique(stock_5yrs_ue_drop$stock)
-mean(stock_5yrs_ue_drop$YearMeanValue)
-```
-
-Removing the stock with poisson values in the range of the cyclical stock median value is worse than removing just the cyclical stock at 121 USD portfolio value compared to 134 USD.
+The above shows that the **cyclical stocks that have highs and lows the time span of the loan aren't great investments**, as these stocks started at 435 USD in 2015 but ended with a portfolio value of 455 USD over a five year time span from 2015-2020. The ratio of average stock in 2020 to average stock in 2015 is 1.04, which means it earned 4 perent interest over 5 years or less than 1 percent interest a year. This is equivalent to most bank savings accounts. It is good they at least stayed the same and didn't cause the portfolio to lose money, and we can assume those stocks that do decrease continuously will be the stocks that lose money. We should look at the columns we added earlier that calculated the ROI dollars for each stock and see the average number of times the stock closes at a decreasing value over the span of the original data. Then use those outcomes to rank the stock a poor, average, good, or great stock to buy.
 
 ***
 
-There is more to do and work with after realizing I rushed through it. It will be updated with more accurate information as it develops.
+Lets use the StocksSTATS table with the 230 columns of ROI for each stock from the start in 2007 throughout 2020 and the daily changes for each stock for the same time span. We could add cumulative sum columns to each stock or just plot the daily changes for each of the 53 stocks and see if we notice any patterns and compare the the final recording ROI from the initial investment. Maybe see if some of these stocks are good to jump on, like a wave to increase value of the portfolio, or drop the stock at some point to keep the portfolio from dropping in value.
+```{r}
+dailyChange <- grep('dailyChange',colnames(StocksSTATS))
+DailyChanges <- StocksSTATS[,c(dailyChange,218:222,229)]
+summary(DailyChanges)
+```
+
+```{r}
+dailyChangesColSums <- as.data.frame(colSums(DailyChanges[1:53]))
+colnames(dailyChangesColSums) <- 'avgDailyChange_2007_2020'
+row.names(dailyChangesColSums) <- gsub('_dailyChange','',row.names(dailyChangesColSums))
+head(dailyChangesColSums,5)
+```
+
+
