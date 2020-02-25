@@ -1521,4 +1521,100 @@ row.names(dailyChangesColSums) <- gsub('_dailyChange','',row.names(dailyChangesC
 head(dailyChangesColSums,5)
 ```
 
+The DOW Industrial Jones average was also downloaded from [Yahoo Finance](https://finance.yahoo.com/quote/%5EDJI/history/) to see a bigger picture of these daily changes by adding in the change in the DOW. We will upload it to our data and put the daily change values into a new column with the Close of the DOW daily.
+```{r}
+dow <- read.csv('DOW.csv', sep=',', header=T, na.strings=c('',' '))
+head(dow)
+```
 
+Lets keep the date, close, and volume columns.
+```{r}
+dow1 <- dow[,c(1,5,7)]
+colnames(dow1) <- c('Date','DOW_Daily_Close','DOW_Daily_Volume')
+head(dow1)
+```
+
+Now add in a daily change column to the dow1 table.
+```{r}
+dow_a <- dow1$DOW_Daily_Close
+dow_b <- c(0,dow_a)
+dow_c <- dow_b[1:(length(dow_b)-1)]
+dow1$DOW_Daily_Change <- dow1$DOW_Daily_Close-dow_c
+head(dow1)
+```
+
+Lets attach the daily change of the DOW to the table of daily changes per stock we made earlier and compare.
+```{r}
+dow1$Date <- as.Date(dow1$Date)
+DailyChanges2 <- merge(DailyChanges, dow1, by.x='Date', by.y='Date')
+colnames(DailyChanges2)
+```
+
+Lets add an indicator for increasing or decreasing unemployment rate per month.
+```{r}
+DailyChanges2$lastMonth_UE_rate <-
+  c(DailyChanges2$UE_monthlyRate[1],
+    DailyChanges2$UE_monthlyRate[1:length(DailyChanges2$UE_monthlyRate)-1])
+
+DailyChanges2$increasingMonthly_UE_rate <- ifelse((DailyChanges2$UE_monthlyRate-DailyChanges2$lastMonth_UE_rate) > 0, 1, 0)
+
+```
+
+Save this file to csv.
+```{r}
+write.csv(DailyChanges2, 'DailyChanges_UE_DOW_07_20.csv', row.names=FALSE)
+
+```
+
+Lets see a summary of our date with summaries when the unemployment rate increased the next month and the DOW daily changes increased the next day and separately a subset of the DOW decreasing daily.This will see if the DOW is affected by the increasing unemployment rate or not. And also show which stocks are increasing when the DOW is decreasing and unemployment rate increasing to indicate great public sentiment for those stocks during poor public sentiment about the state of the economy.
+```{r}
+dow_up_ue_up <- subset(DailyChanges2, DailyChanges2$increasingMonthly_UE_rate==1 & 
+                         DailyChanges2$DOW_Daily_Change >= 0)
+
+dow_down_ue_up <- subset(DailyChanges2, DailyChanges2$increasingMonthly_UE_rate==1 & 
+                         DailyChanges2$DOW_Daily_Change < 0)
+
+
+```
+
+Summary of the DOW up and unemployment up:
+```{r}
+summary(dow_up_ue_up)
+
+```
+
+
+Summary of the DOW down and unemployment down:
+```{r}
+summary(dow_down_ue_up)
+
+```
+
+From the above subset of stock daily changes during a time of increasing monthly unemployment rate and decreasing DOW daily value, there are only three stocks that all had increasing daily median and mean values for those time periods: TEVA, WMT, and AAP. There are some stocks that only had median increasing values: HD, XOM, FFIN, GOOG, COST, AMZN, ADDY, PCG, ROST, JNJ, NFLX, DLTR, TJX, and NKE. One stock only had an increasing daily change mean value but not median value: HRB.
+
+
+Lets look at these stocks that increased during decreasing public outlook on economy assumed from decreasing DOW value (losses in investments/future/retirement) and increasing unemployment (more people not working) from month before.
+```{r}
+stocksGood <- subset(stockNames, stockNames$stock == 'TEVA' |
+                       stockNames$stock == 'WMT'|
+                       stockNames$stock == 'AAP'|
+                       stockNames$stock == 'HD'|
+                       stockNames$stock == 'XOM'|
+                       stockNames$stock == 'FFIN'|
+                       stockNames$stock == 'GOOG'|
+                       stockNames$stock == 'COST'|
+                       stockNames$stock == 'AMZN'|
+                       stockNames$stock == 'ADDY'|
+                       stockNames$stock == 'PCG'|
+                       stockNames$stock == 'ROST'|
+                       stockNames$stock == 'JNJ'|
+                       stockNames$stock == 'NFLX'|
+                       stockNames$stock == 'DLTR'|
+                       stockNames$stock == 'TJX'|
+                       stockNames$stock == 'NKE'|
+                       stockNames$stock == 'HRB')
+stocksGood$stockInfo
+
+```
+
+From the above, the stocks of companies that paint a picture of Murphy's Law where anything bad could happen does, it seems investors believe so. Auto parts, cheap department and goods, health and beauty products, Nike sports shoes for people wanting to workout and not spend money to occupy time or to predict an increase in low crime robberies (assumptions made by real person not AI), Google for job searches, Amazon because ever expanding and employing many workers, costco for middle class workers and families, Ross and TJ Maxx for low cost business/dress attire and goods, electric company, fuel, home improvement/repair stores, and low cost movie entertainment at home. 

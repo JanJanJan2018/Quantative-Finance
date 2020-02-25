@@ -2225,6 +2225,361 @@ head(dailyChangesColSums,5)</code></pre>
 ## UBSI                    37.87
 ## HD                     232.02
 ## JPM                    117.69</code></pre>
+<p>The DOW Industrial Jones average was also downloaded from <a href="https://finance.yahoo.com/quote/%5EDJI/history/">Yahoo Finance</a> to see a bigger picture of these daily changes by adding in the change in the DOW. We will upload it to our data and put the daily change values into a new column with the Close of the DOW daily.</p>
+<pre class="r"><code>dow &lt;- read.csv(&#39;DOW.csv&#39;, sep=&#39;,&#39;, header=T, na.strings=c(&#39;&#39;,&#39; &#39;))
+head(dow)</code></pre>
+<pre><code>##         Date     Open     High      Low    Close Adj.Close    Volume
+## 1 2007-01-03 12459.54 12580.35 12404.82 12474.52  12474.52 327200000
+## 2 2007-01-04 12473.16 12510.41 12403.86 12480.69  12480.69 259060000
+## 3 2007-01-05 12480.05 12480.13 12365.41 12398.01  12398.01 235220000
+## 4 2007-01-08 12392.01 12445.92 12337.37 12423.49  12423.49 223500000
+## 5 2007-01-09 12424.77 12466.43 12369.17 12416.60  12416.60 225190000
+## 6 2007-01-10 12417.00 12451.61 12355.63 12442.16  12442.16 226570000</code></pre>
+<p>Lets keep the date, close, and volume columns.</p>
+<pre class="r"><code>dow1 &lt;- dow[,c(1,5,7)]
+colnames(dow1) &lt;- c(&#39;Date&#39;,&#39;DOW_Daily_Close&#39;,&#39;DOW_Daily_Volume&#39;)
+head(dow1)</code></pre>
+<pre><code>##         Date DOW_Daily_Close DOW_Daily_Volume
+## 1 2007-01-03        12474.52        327200000
+## 2 2007-01-04        12480.69        259060000
+## 3 2007-01-05        12398.01        235220000
+## 4 2007-01-08        12423.49        223500000
+## 5 2007-01-09        12416.60        225190000
+## 6 2007-01-10        12442.16        226570000</code></pre>
+<p>Now add in a daily change column to the dow1 table.</p>
+<pre class="r"><code>dow_a &lt;- dow1$DOW_Daily_Close
+dow_b &lt;- c(0,dow_a)
+dow_c &lt;- dow_b[1:(length(dow_b)-1)]
+dow1$DOW_Daily_Change &lt;- dow1$DOW_Daily_Close-dow_c
+head(dow1)</code></pre>
+<pre><code>##         Date DOW_Daily_Close DOW_Daily_Volume DOW_Daily_Change
+## 1 2007-01-03        12474.52        327200000     12474.519531
+## 2 2007-01-04        12480.69        259060000         6.170899
+## 3 2007-01-05        12398.01        235220000       -82.680664
+## 4 2007-01-08        12423.49        223500000        25.480468
+## 5 2007-01-09        12416.60        225190000        -6.890625
+## 6 2007-01-10        12442.16        226570000        25.560547</code></pre>
+<p>Lets attach the daily change of the DOW to the table of daily changes per stock we made earlier and compare.</p>
+<pre class="r"><code>dow1$Date &lt;- as.Date(dow1$Date)
+DailyChanges2 &lt;- merge(DailyChanges, dow1, by.x=&#39;Date&#39;, by.y=&#39;Date&#39;)
+colnames(DailyChanges2)</code></pre>
+<pre><code>##  [1] &quot;Date&quot;               &quot;TGT_dailyChange&quot;    &quot;FTR_dailyChange&quot;   
+##  [4] &quot;UBSI_dailyChange&quot;   &quot;HD_dailyChange&quot;     &quot;JPM_dailyChange&quot;   
+##  [7] &quot;XOM_dailyChange&quot;    &quot;CVX_dailyChange&quot;    &quot;NSANY_dailyChange&quot; 
+## [10] &quot;MGM_dailyChange&quot;    &quot;TEVA_dailyChange&quot;   &quot;HST_dailyChange&quot;   
+## [13] &quot;WFC_dailyChange&quot;    &quot;WWE_dailyChange&quot;    &quot;INO_dailyChange&quot;   
+## [16] &quot;SCE.PB_dailyChange&quot; &quot;FFIN_dailyChange&quot;   &quot;GOOG_dailyChange&quot;  
+## [19] &quot;WM_dailyChange&quot;     &quot;ONCY_dailyChange&quot;   &quot;S_dailyChange&quot;     
+## [22] &quot;F_dailyChange&quot;      &quot;ARWR_dailyChange&quot;   &quot;COST_dailyChange&quot;  
+## [25] &quot;AAL_dailyChange&quot;    &quot;JWN_dailyChange&quot;    &quot;NUS_dailyChange&quot;   
+## [28] &quot;HMC_dailyChange&quot;    &quot;AMZN_dailyChange&quot;   &quot;T_dailyChange&quot;     
+## [31] &quot;HRB_dailyChange&quot;    &quot;RRGB_dailyChange&quot;   &quot;ADDYY_dailyChange&quot; 
+## [34] &quot;PCG_dailyChange&quot;    &quot;ROST_dailyChange&quot;   &quot;JNJ_dailyChange&quot;   
+## [37] &quot;NFLX_dailyChange&quot;   &quot;M_dailyChange&quot;      &quot;KSS_dailyChange&quot;   
+## [40] &quot;DLTR_dailyChange&quot;   &quot;WMT_dailyChange&quot;    &quot;C_dailyChange&quot;     
+## [43] &quot;AAP_dailyChange&quot;    &quot;JBLU_dailyChange&quot;   &quot;MSFT_dailyChange&quot;  
+## [46] &quot;KGJI_dailyChange&quot;   &quot;EPD_dailyChange&quot;    &quot;TJX_dailyChange&quot;   
+## [49] &quot;HOFT_dailyChange&quot;   &quot;LUV_dailyChange&quot;    &quot;NKE_dailyChange&quot;   
+## [52] &quot;TM_dailyChange&quot;     &quot;VZ_dailyChange&quot;     &quot;SIG_dailyChange&quot;   
+## [55] &quot;DayOfWeek&quot;          &quot;Month&quot;              &quot;Year&quot;              
+## [58] &quot;UE_monthlyRate&quot;     &quot;dayOfMonth&quot;         &quot;DOW_Daily_Close&quot;   
+## [61] &quot;DOW_Daily_Volume&quot;   &quot;DOW_Daily_Change&quot;</code></pre>
+<p>Lets add an indicator for increasing or decreasing unemployment rate per month.</p>
+<pre class="r"><code>DailyChanges2$lastMonth_UE_rate &lt;-
+  c(DailyChanges2$UE_monthlyRate[1],
+    DailyChanges2$UE_monthlyRate[1:length(DailyChanges2$UE_monthlyRate)-1])
+
+DailyChanges2$increasingMonthly_UE_rate &lt;- ifelse((DailyChanges2$UE_monthlyRate-DailyChanges2$lastMonth_UE_rate) &gt; 0, 1, 0)</code></pre>
+<p>Save this file to csv.</p>
+<pre class="r"><code>write.csv(DailyChanges2, &#39;DailyChanges_UE_DOW_07_20.csv&#39;, row.names=FALSE)</code></pre>
+<p>Lets see a summary of our date with summaries when the unemployment rate increased the next month and the DOW daily changes increased the next day and separately a subset of the DOW decreasing daily.This will see if the DOW is affected by the increasing unemployment rate or not. And also show which stocks are increasing when the DOW is decreasing and unemployment rate increasing to indicate great public sentiment for those stocks during poor public sentiment about the state of the economy.</p>
+<pre class="r"><code>dow_up_ue_up &lt;- subset(DailyChanges2, DailyChanges2$increasingMonthly_UE_rate==1 &amp; 
+                         DailyChanges2$DOW_Daily_Change &gt;= 0)
+
+dow_down_ue_up &lt;- subset(DailyChanges2, DailyChanges2$increasingMonthly_UE_rate==1 &amp; 
+                         DailyChanges2$DOW_Daily_Change &lt; 0)</code></pre>
+<p>Summary of the DOW up and unemployment up:</p>
+<pre class="r"><code>summary(dow_up_ue_up)</code></pre>
+<pre><code>##       Date            TGT_dailyChange    FTR_dailyChange  UBSI_dailyChange 
+##  Min.   :2007-04-02   Min.   :-46.9000   Min.   :-81.00   Min.   :-10.700  
+##  1st Qu.:2009-04-16   1st Qu.:-13.2650   1st Qu.:-40.95   1st Qu.: -4.000  
+##  Median :2013-01-02   Median : -6.5100   Median : -3.15   Median : -1.120  
+##  Mean   :2013-03-11   Mean   : -0.7819   Mean   : 13.59   Mean   :  0.489  
+##  3rd Qu.:2017-02-15   3rd Qu.:  7.5500   3rd Qu.: 10.20   3rd Qu.:  3.860  
+##  Max.   :2020-01-02   Max.   : 59.9300   Max.   :235.68   Max.   : 34.800  
+##  HD_dailyChange     JPM_dailyChange   XOM_dailyChange   CVX_dailyChange  
+##  Min.   :-198.220   Min.   :-83.210   Min.   :-23.840   Min.   :-40.880  
+##  1st Qu.:  -6.020   1st Qu.: -7.530   1st Qu.: -7.665   1st Qu.:-15.290  
+##  Median :   2.790   Median :  1.840   Median : -2.420   Median :  3.410  
+##  Mean   :  -8.685   Mean   : -2.735   Mean   :  1.085   Mean   : -1.455  
+##  3rd Qu.:  22.855   3rd Qu.:  7.700   3rd Qu.:  6.285   3rd Qu.:  8.180  
+##  Max.   :  41.820   Max.   : 48.240   Max.   : 76.160   Max.   : 74.830  
+##  NSANY_dailyChange  MGM_dailyChange   TEVA_dailyChange  HST_dailyChange   
+##  Min.   :-11.7900   Min.   :-57.280   Min.   :-23.680   Min.   :-13.0103  
+##  1st Qu.: -4.2400   1st Qu.: -8.315   1st Qu.: -6.195   1st Qu.: -4.3800  
+##  Median :  0.2600   Median : -0.780   Median : -1.280   Median :  0.1700  
+##  Mean   :  0.1368   Mean   : -1.060   Mean   :  3.095   Mean   :  0.1865  
+##  3rd Qu.:  2.1000   3rd Qu.:  5.685   3rd Qu.:  9.995   3rd Qu.:  4.6449  
+##  Max.   : 21.5400   Max.   : 71.580   Max.   : 37.410   Max.   : 26.2066  
+##  WFC_dailyChange   WWE_dailyChange   INO_dailyChange    SCE.PB_dailyChange
+##  Min.   :-18.840   Min.   :-55.090   Min.   :-10.8800   Min.   :-878.000  
+##  1st Qu.: -7.195   1st Qu.: -4.690   1st Qu.: -1.8000   1st Qu.:-414.000  
+##  Median : -2.110   Median :  0.290   Median : -1.0000   Median :  16.000  
+##  Mean   : -1.618   Mean   :  1.587   Mean   :  0.3177   Mean   :   6.774  
+##  3rd Qu.:  3.285   3rd Qu.:  4.820   3rd Qu.:  3.2150   3rd Qu.: 362.500  
+##  Max.   : 34.010   Max.   : 67.690   Max.   : 13.3200   Max.   : 857.000  
+##  FFIN_dailyChange   GOOG_dailyChange   WM_dailyChange    ONCY_dailyChange 
+##  Min.   :-27.0050   Min.   :-1170.03   Min.   :-81.960   Min.   :-15.105  
+##  1st Qu.: -0.1725   1st Qu.:  -72.16   1st Qu.: -1.530   1st Qu.: -4.037  
+##  Median :  0.8500   Median :   32.93   Median :  2.970   Median : -0.760  
+##  Mean   : -0.6908   Mean   :  -41.75   Mean   : -2.227   Mean   :  2.146  
+##  3rd Qu.:  3.0767   3rd Qu.:  168.05   3rd Qu.: 10.125   3rd Qu.:  5.035  
+##  Max.   :  9.8400   Max.   :  267.46   Max.   : 34.650   Max.   : 28.690  
+##  S_dailyChange      F_dailyChange    ARWR_dailyChange  COST_dailyChange  
+##  Min.   :-14.8300   Min.   :-5.520   Min.   :-49.500   Min.   :-245.270  
+##  1st Qu.: -4.0250   1st Qu.:-1.775   1st Qu.: -8.215   1st Qu.:  -8.480  
+##  Median : -0.1800   Median :-0.600   Median : -0.470   Median :  12.580  
+##  Mean   :  0.3581   Mean   : 0.129   Mean   :  1.236   Mean   :  -8.776  
+##  3rd Qu.:  1.8500   3rd Qu.: 0.800   3rd Qu.:  9.550   3rd Qu.:  24.215  
+##  Max.   : 19.3000   Max.   : 9.780   Max.   : 49.000   Max.   :  76.860  
+##  AAL_dailyChange    JWN_dailyChange   NUS_dailyChange   HMC_dailyChange  
+##  Min.   :-28.6000   Min.   :-36.350   Min.   :-42.910   Min.   :-9.7300  
+##  1st Qu.: -6.9450   1st Qu.:-16.185   1st Qu.:-13.845   1st Qu.:-4.3500  
+##  Median :  0.0500   Median : -1.520   Median : -2.010   Median :-0.9600  
+##  Mean   : -0.2045   Mean   : -1.158   Mean   : -4.774   Mean   : 0.7997  
+##  3rd Qu.:  5.3500   3rd Qu.:  7.755   3rd Qu.:  4.405   3rd Qu.: 3.1850  
+##  Max.   : 45.0500   Max.   : 53.740   Max.   : 20.330   Max.   :34.6900  
+##  AMZN_dailyChange   T_dailyChange       HRB_dailyChange    RRGB_dailyChange
+##  Min.   :-1939.11   Min.   :-13.89000   Min.   :-14.6300   Min.   :-33.04  
+##  1st Qu.:   -3.79   1st Qu.: -5.51000   1st Qu.: -3.9850   1st Qu.:-19.39  
+##  Median :   40.42   Median : -0.20000   Median : -0.1100   Median :  1.02  
+##  Mean   :  -33.22   Mean   :  0.02839   Mean   : -0.5958   Mean   : -4.03  
+##  3rd Qu.:  216.99   3rd Qu.:  3.72000   3rd Qu.:  2.0500   3rd Qu.:  7.43  
+##  Max.   :  899.08   Max.   : 39.46000   Max.   : 21.2600   Max.   : 39.10  
+##  ADDYY_dailyChange  PCG_dailyChange   ROST_dailyChange    JNJ_dailyChange  
+##  Min.   :-127.610   Min.   :-24.670   Min.   :-104.5000   Min.   :-87.020  
+##  1st Qu.: -12.300   1st Qu.: -2.170   1st Qu.:   0.4012   1st Qu.: -8.945  
+##  Median :   3.770   Median :  0.700   Median :   1.9225   Median :  0.850  
+##  Mean   :  -5.184   Mean   :  3.108   Mean   :  -4.3563   Mean   : -2.412  
+##  3rd Qu.:  16.255   3rd Qu.:  6.950   3rd Qu.:   6.1050   3rd Qu.: 11.580  
+##  Max.   :  44.310   Max.   : 49.440   Max.   :  35.0900   Max.   : 60.100  
+##  NFLX_dailyChange   M_dailyChange      KSS_dailyChange   DLTR_dailyChange 
+##  Min.   :-342.307   Min.   :-34.4400   Min.   :-31.740   Min.   :-95.987  
+##  1st Qu.:  -3.334   1st Qu.:-14.3050   1st Qu.: -9.950   1st Qu.: -3.310  
+##  Median :   2.124   Median :  1.1500   Median : -1.500   Median :  2.647  
+##  Mean   :  -4.954   Mean   : -0.9623   Mean   :  1.922   Mean   : -5.528  
+##  3rd Qu.:  26.558   3rd Qu.: 10.6000   3rd Qu.: 10.290   3rd Qu.:  8.771  
+##  Max.   : 210.520   Max.   : 45.0600   Max.   : 77.490   Max.   : 24.700  
+##  WMT_dailyChange   C_dailyChange      AAP_dailyChange     JBLU_dailyChange 
+##  Min.   :-73.960   Min.   :-294.400   Min.   :-127.1000   Min.   :-9.9600  
+##  1st Qu.: -6.650   1st Qu.: -17.600   1st Qu.:  -4.7650   1st Qu.:-3.5800  
+##  Median :  0.540   Median :  -1.570   Median :   4.3000   Median :-0.0200  
+##  Mean   : -3.403   Mean   :  11.267   Mean   :   0.7365   Mean   :-0.1635  
+##  3rd Qu.:  8.530   3rd Qu.:   9.565   3rd Qu.:  23.3150   3rd Qu.: 1.6400  
+##  Max.   : 47.400   Max.   : 510.500   Max.   :  87.8600   Max.   :11.9000  
+##  MSFT_dailyChange   KGJI_dailyChange  EPD_dailyChange    TJX_dailyChange   
+##  Min.   :-140.490   Min.   :-1.9700   Min.   :-14.5100   Min.   :-52.1600  
+##  1st Qu.:  -4.260   1st Qu.:-0.6050   1st Qu.: -3.1300   1st Qu.: -0.6175  
+##  Median :   6.110   Median :-0.3200   Median : -0.1400   Median :  1.8675  
+##  Mean   :  -3.038   Mean   : 0.2361   Mean   : -0.5506   Mean   : -1.7903  
+##  3rd Qu.:  14.225   3rd Qu.: 0.5200   3rd Qu.:  2.9700   3rd Qu.:  4.8825  
+##  Max.   :  56.190   Max.   : 7.5600   Max.   : 15.8750   Max.   : 21.2150  
+##  HOFT_dailyChange   LUV_dailyChange   NKE_dailyChange   TM_dailyChange   
+##  Min.   :-19.6400   Min.   :-40.830   Min.   :-81.700   Min.   :-41.950  
+##  1st Qu.: -4.4550   1st Qu.: -6.485   1st Qu.: -1.359   1st Qu.:-19.645  
+##  Median : -2.1300   Median : -1.450   Median :  2.765   Median : -6.110  
+##  Mean   : -0.5397   Mean   : -2.059   Mean   : -2.018   Mean   : -2.171  
+##  3rd Qu.:  3.1850   3rd Qu.:  6.880   3rd Qu.: 11.512   3rd Qu.:  4.820  
+##  Max.   : 20.9100   Max.   : 21.740   Max.   : 29.470   Max.   :126.920  
+##  VZ_dailyChange     SIG_dailyChange     DayOfWeek            Month          
+##  Min.   :-20.6356   Min.   :-55.5000   Length:31          Length:31         
+##  1st Qu.: -3.7856   1st Qu.:-19.9650   Class :character   Class :character  
+##  Median : -0.1100   Median : -1.1300   Mode  :character   Mode  :character  
+##  Mean   : -0.1209   Mean   : -0.4039                                        
+##  3rd Qu.:  4.5250   3rd Qu.: 17.5700                                        
+##  Max.   : 35.3161   Max.   : 50.7200                                        
+##       Year      UE_monthlyRate    dayOfMonth    DOW_Daily_Close
+##  Min.   :2007   Min.   :3.600   Min.   :1.000   Min.   : 7762  
+##  1st Qu.:2009   1st Qu.:4.450   1st Qu.:1.000   1st Qu.:11253  
+##  Median :2013   Median :5.100   Median :1.000   Median :13668  
+##  Mean   :2013   Mean   :6.142   Mean   :1.581   Mean   :16184  
+##  3rd Qu.:2016   3rd Qu.:8.500   3rd Qu.:2.000   3rd Qu.:20192  
+##  Max.   :2020   Max.   :9.900   Max.   :4.000   Max.   :28869  
+##  DOW_Daily_Volume    DOW_Daily_Change  lastMonth_UE_rate
+##  Min.   : 74050000   Min.   :  2.471   Min.   :3.500    
+##  1st Qu.:148865000   1st Qu.: 36.360   1st Qu.:4.350    
+##  Median :213700000   Median :114.949   Median :5.000    
+##  Mean   :217756129   Mean   :129.052   Mean   :5.977    
+##  3rd Qu.:307650000   3rd Qu.:200.670   3rd Qu.:8.300    
+##  Max.   :388480000   Max.   :348.580   Max.   :9.800    
+##  increasingMonthly_UE_rate
+##  Min.   :1                
+##  1st Qu.:1                
+##  Median :1                
+##  Mean   :1                
+##  3rd Qu.:1                
+##  Max.   :1</code></pre>
+<p>Summary of the DOW down and unemployment down:</p>
+<pre class="r"><code>summary(dow_down_ue_up)</code></pre>
+<pre><code>##       Date            TGT_dailyChange   FTR_dailyChange   UBSI_dailyChange 
+##  Min.   :2007-12-03   Min.   :-47.520   Min.   :-72.150   Min.   :-16.220  
+##  1st Qu.:2008-10-17   1st Qu.:-20.555   1st Qu.:-53.700   1st Qu.: -5.790  
+##  Median :2009-09-01   Median : -7.550   Median : -5.250   Median : -0.850  
+##  Mean   :2011-04-15   Mean   : -8.380   Mean   :-11.453   Mean   : -3.033  
+##  3rd Qu.:2013-09-02   3rd Qu.: -1.405   3rd Qu.:  2.175   3rd Qu.:  1.535  
+##  Max.   :2019-10-01   Max.   : 22.310   Max.   :192.700   Max.   :  4.450  
+##  HD_dailyChange     JPM_dailyChange   XOM_dailyChange    CVX_dailyChange  
+##  Min.   :-199.420   Min.   :-64.650   Min.   :-19.6700   Min.   :-29.880  
+##  1st Qu.:  -7.195   1st Qu.: -7.430   1st Qu.:-10.5250   1st Qu.:-14.040  
+##  Median :   0.670   Median : -0.300   Median :  0.5000   Median : -5.660  
+##  Mean   :  -6.023   Mean   : -5.855   Mean   : -0.9374   Mean   : -2.875  
+##  3rd Qu.:  11.375   3rd Qu.:  4.255   3rd Qu.:  7.5250   3rd Qu.:  8.705  
+##  Max.   :  55.200   Max.   :  7.560   Max.   : 24.9600   Max.   : 34.630  
+##  NSANY_dailyChange MGM_dailyChange  TEVA_dailyChange  HST_dailyChange  
+##  Min.   :-15.640   Min.   :-73.43   Min.   :-13.220   Min.   :-12.247  
+##  1st Qu.: -7.670   1st Qu.:-53.83   1st Qu.: -3.925   1st Qu.: -9.090  
+##  Median : -3.450   Median : -5.75   Median :  2.760   Median : -2.130  
+##  Mean   : -3.421   Mean   :-18.56   Mean   :  3.083   Mean   : -3.406  
+##  3rd Qu.:  1.000   3rd Qu.:  3.68   3rd Qu.:  6.490   3rd Qu.:  1.055  
+##  Max.   : 10.350   Max.   : 56.48   Max.   : 38.180   Max.   :  4.810  
+##  WFC_dailyChange   WWE_dailyChange   INO_dailyChange   SCE.PB_dailyChange
+##  Min.   :-18.260   Min.   :-55.790   Min.   :-8.8000   Min.   :-879.0    
+##  1st Qu.: -7.755   1st Qu.: -3.205   1st Qu.:-2.6800   1st Qu.:-608.5    
+##  Median : -5.520   Median : -1.320   Median :-1.0000   Median : -58.0    
+##  Mean   : -2.947   Mean   : -3.239   Mean   :-0.1611   Mean   :-103.1    
+##  3rd Qu.:  3.100   3rd Qu.:  0.610   3rd Qu.: 3.0900   3rd Qu.: 285.0    
+##  Max.   :  9.350   Max.   : 15.740   Max.   : 7.2000   Max.   : 729.0    
+##  FFIN_dailyChange   GOOG_dailyChange  WM_dailyChange    ONCY_dailyChange 
+##  Min.   :-24.2067   Min.   :-848.61   Min.   :-84.980   Min.   :-19.950  
+##  1st Qu.: -0.1592   1st Qu.: -60.75   1st Qu.: -3.010   1st Qu.: -8.645  
+##  Median :  1.0133   Median :  25.88   Median : -1.300   Median : -5.700  
+##  Mean   : -0.1642   Mean   : -35.57   Mean   : -2.921   Mean   : -1.166  
+##  3rd Qu.:  1.8629   3rd Qu.:  79.80   3rd Qu.:  3.305   3rd Qu.:  2.708  
+##  Max.   :  3.6650   Max.   : 165.49   Max.   : 25.400   Max.   : 34.010  
+##  S_dailyChange     F_dailyChange    ARWR_dailyChange  COST_dailyChange  
+##  Min.   :-11.980   Min.   :-5.380   Min.   :-31.200   Min.   :-227.820  
+##  1st Qu.:-10.695   1st Qu.:-3.500   1st Qu.:-25.150   1st Qu.: -14.105  
+##  Median : -2.190   Median :-1.710   Median : -5.500   Median :   5.930  
+##  Mean   : -3.012   Mean   :-1.140   Mean   : -9.518   Mean   :  -6.886  
+##  3rd Qu.:  1.510   3rd Qu.: 1.135   3rd Qu.: -0.890   3rd Qu.:  14.720  
+##  Max.   :  9.050   Max.   : 4.780   Max.   : 15.420   Max.   :  55.300  
+##  AAL_dailyChange   JWN_dailyChange   NUS_dailyChange   HMC_dailyChange  
+##  Min.   :-33.490   Min.   :-32.290   Min.   :-75.570   Min.   :-13.200  
+##  1st Qu.: -9.750   1st Qu.:-19.460   1st Qu.: -8.070   1st Qu.: -6.905  
+##  Median : -6.380   Median :-12.070   Median : -1.180   Median : -2.430  
+##  Mean   : -4.933   Mean   : -8.785   Mean   : -3.667   Mean   : -2.399  
+##  3rd Qu.:  3.420   3rd Qu.:  3.345   3rd Qu.:  3.035   3rd Qu.:  1.020  
+##  Max.   : 20.530   Max.   : 12.880   Max.   : 41.580   Max.   :  9.830  
+##  AMZN_dailyChange   T_dailyChange     HRB_dailyChange    RRGB_dailyChange 
+##  Min.   :-1685.38   Min.   :-15.260   Min.   :-10.1000   Min.   :-29.840  
+##  1st Qu.:  -14.44   1st Qu.: -9.550   1st Qu.: -2.5000   1st Qu.:-21.235  
+##  Median :   11.82   Median : -2.150   Median : -0.0300   Median : -7.640  
+##  Mean   :  -58.88   Mean   : -2.689   Mean   :  0.1426   Mean   : -6.002  
+##  3rd Qu.:   57.96   3rd Qu.:  3.460   3rd Qu.:  2.2100   3rd Qu.:  4.840  
+##  Max.   :  254.85   Max.   :  9.980   Max.   : 14.5700   Max.   : 20.720  
+##  ADDYY_dailyChange  PCG_dailyChange    ROST_dailyChange    JNJ_dailyChange   
+##  Min.   :-114.700   Min.   :-36.9100   Min.   :-99.39750   Min.   :-60.6500  
+##  1st Qu.: -14.550   1st Qu.: -6.8350   1st Qu.:  0.06875   1st Qu.: -7.9600  
+##  Median :   0.950   Median :  0.5500   Median :  2.10500   Median :  2.6200  
+##  Mean   :  -4.267   Mean   : -0.7774   Mean   : -2.43053   Mean   : -0.2811  
+##  3rd Qu.:   9.335   3rd Qu.:  2.4800   3rd Qu.:  3.72000   3rd Qu.:  9.0450  
+##  Max.   :  45.600   Max.   : 36.1400   Max.   : 12.96000   Max.   : 31.4200  
+##  NFLX_dailyChange     M_dailyChange     KSS_dailyChange   DLTR_dailyChange  
+##  Min.   :-290.35286   Min.   :-23.290   Min.   :-31.300   Min.   :-91.7233  
+##  1st Qu.:  -0.00286   1st Qu.:-17.480   1st Qu.:-16.285   1st Qu.: -1.3917  
+##  Median :   1.10714   Median :-13.550   Median : -7.260   Median :  3.6000  
+##  Mean   : -12.92707   Mean   : -6.327   Mean   : -7.433   Mean   : -0.2938  
+##  3rd Qu.:   3.03357   3rd Qu.:  5.530   3rd Qu.:  2.655   3rd Qu.:  4.8650  
+##  Max.   :  30.90000   Max.   : 14.980   Max.   : 20.100   Max.   : 28.9500  
+##  WMT_dailyChange   C_dailyChange     AAP_dailyChange    JBLU_dailyChange 
+##  Min.   :-66.390   Min.   :-298.30   Min.   :-102.160   Min.   :-10.390  
+##  1st Qu.: -3.830   1st Qu.:-201.40   1st Qu.:  -5.170   1st Qu.: -4.100  
+##  Median :  5.480   Median : -91.20   Median :   2.260   Median : -0.200  
+##  Mean   :  1.438   Mean   : -97.17   Mean   :   1.378   Mean   : -1.680  
+##  3rd Qu.: 10.335   3rd Qu.:   2.37   3rd Qu.:   7.135   3rd Qu.:  0.445  
+##  Max.   : 17.570   Max.   : 266.25   Max.   :  46.750   Max.   :  2.850  
+##  MSFT_dailyChange   KGJI_dailyChange  EPD_dailyChange    TJX_dailyChange   
+##  Min.   :-104.940   Min.   :-3.7200   Min.   :-12.7250   Min.   :-47.8125  
+##  1st Qu.:  -9.850   1st Qu.:-0.6300   1st Qu.: -3.2000   1st Qu.: -0.2062  
+##  Median :  -1.670   Median :-0.3400   Median : -0.0800   Median :  1.0200  
+##  Mean   :  -5.594   Mean   :-0.4168   Mean   : -0.3142   Mean   : -1.1578  
+##  3rd Qu.:   3.825   3rd Qu.:-0.1200   3rd Qu.:  2.5650   3rd Qu.:  2.5537  
+##  Max.   :  30.260   Max.   : 1.4100   Max.   :  6.8200   Max.   :  5.8875  
+##  HOFT_dailyChange  LUV_dailyChange   NKE_dailyChange   TM_dailyChange  
+##  Min.   :-15.410   Min.   :-38.580   Min.   :-67.750   Min.   :-47.61  
+##  1st Qu.: -5.810   1st Qu.: -3.530   1st Qu.: -2.794   1st Qu.:-30.57  
+##  Median : -1.770   Median : -0.010   Median :  0.765   Median : -7.82  
+##  Mean   : -3.428   Mean   : -1.265   Mean   : -2.084   Mean   :-12.20  
+##  3rd Qu.:  0.075   3rd Qu.:  2.575   3rd Qu.:  2.931   3rd Qu.:  5.45  
+##  Max.   :  4.060   Max.   : 16.720   Max.   : 17.240   Max.   : 19.53  
+##  VZ_dailyChange    SIG_dailyChange    DayOfWeek            Month          
+##  Min.   :-17.933   Min.   :-51.310   Length:19          Length:19         
+##  1st Qu.: -7.713   1st Qu.:-18.580   Class :character   Class :character  
+##  Median : -1.522   Median :-15.490   Mode  :character   Mode  :character  
+##  Mean   : -2.523   Mean   : -3.959                                        
+##  3rd Qu.:  1.765   3rd Qu.: 15.620                                        
+##  Max.   :  9.990   Max.   : 42.810                                        
+##       Year      UE_monthlyRate   dayOfMonth    DOW_Daily_Close
+##  Min.   :2007   Min.   : 3.6   Min.   :1.000   Min.   : 6763  
+##  1st Qu.:2008   1st Qu.: 5.7   1st Qu.:1.000   1st Qu.: 9415  
+##  Median :2009   Median : 6.7   Median :1.000   Median :12290  
+##  Mean   :2011   Mean   : 6.9   Mean   :1.789   Mean   :12912  
+##  3rd Qu.:2014   3rd Qu.: 8.1   3rd Qu.:3.000   3rd Qu.:14973  
+##  Max.   :2019   Max.   :10.0   Max.   :3.000   Max.   :26573  
+##  DOW_Daily_Volume    DOW_Daily_Change  lastMonth_UE_rate
+##  Min.   : 75630000   Min.   :-679.95   Min.   :3.500    
+##  1st Qu.:131975000   1st Qu.:-241.33   1st Qu.:5.550    
+##  Median :199090000   Median : -59.98   Median :6.500    
+##  Mean   :213377895   Mean   :-147.22   Mean   :6.668    
+##  3rd Qu.:263550000   3rd Qu.: -23.12   3rd Qu.:7.750    
+##  Max.   :568670000   Max.   :  -5.18   Max.   :9.800    
+##  increasingMonthly_UE_rate
+##  Min.   :1                
+##  1st Qu.:1                
+##  Median :1                
+##  Mean   :1                
+##  3rd Qu.:1                
+##  Max.   :1</code></pre>
+<p>From the above subset of stock daily changes during a time of increasing monthly unemployment rate and decreasing DOW daily value, there are only three stocks that all had increasing daily median and mean values for those time periods: TEVA, WMT, and AAP. There are some stocks that only had median increasing values: HD, XOM, FFIN, GOOG, COST, AMZN, ADDY, PCG, ROST, JNJ, NFLX, DLTR, TJX, and NKE. One stock only had an increasing daily change mean value but not median value: HRB.</p>
+<p>Lets look at these stocks that increased during decreasing public outlook on economy assumed from decreasing DOW value (losses in investments/future/retirement) and increasing unemployment (more people not working) from month before.</p>
+<pre class="r"><code>stocksGood &lt;- subset(stockNames, stockNames$stock == &#39;TEVA&#39; |
+                       stockNames$stock == &#39;WMT&#39;|
+                       stockNames$stock == &#39;AAP&#39;|
+                       stockNames$stock == &#39;HD&#39;|
+                       stockNames$stock == &#39;XOM&#39;|
+                       stockNames$stock == &#39;FFIN&#39;|
+                       stockNames$stock == &#39;GOOG&#39;|
+                       stockNames$stock == &#39;COST&#39;|
+                       stockNames$stock == &#39;AMZN&#39;|
+                       stockNames$stock == &#39;ADDY&#39;|
+                       stockNames$stock == &#39;PCG&#39;|
+                       stockNames$stock == &#39;ROST&#39;|
+                       stockNames$stock == &#39;JNJ&#39;|
+                       stockNames$stock == &#39;NFLX&#39;|
+                       stockNames$stock == &#39;DLTR&#39;|
+                       stockNames$stock == &#39;TJX&#39;|
+                       stockNames$stock == &#39;NKE&#39;|
+                       stockNames$stock == &#39;HRB&#39;)
+stocksGood$stockInfo</code></pre>
+<pre><code>##  [1] The Home Depot, Inc. (HD)\nNYSE - NYSE Delayed Price. Currency in USD                        
+##  [2] Exxon Mobil Corporation (XOM)\nNYSE - NYSE Delayed Price. Currency in USD                    
+##  [3] Teva Pharmaceutical Industries Limited (TEVA)\nNYSE - NYSE Delayed Price. Currency in USD    
+##  [4] First Financial Bankshares, Inc. (FFIN)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD
+##  [5] Alphabet Inc. (GOOG)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD                   
+##  [6] Costco Wholesale Corporation (COST)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD    
+##  [7] PG&amp;E Corporation (PCG)\nNYSE - NYSE Delayed Price. Currency in USD                           
+##  [8] Dollar Tree, Inc. (DLTR)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD               
+##  [9] NIKE, Inc. (NKE)\nNYSE - NYSE Delayed Price. Currency in USD                                 
+## [10] Amazon.com, Inc. (AMZN)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD                
+## [11] Ross Stores, Inc. (ROST)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD               
+## [12] Walmart Inc. (WMT)\nNYSE - NYSE Delayed Price. Currency in USD                               
+## [13] The TJX Companies, Inc. (TJX)\nNYSE - NYSE Delayed Price. Currency in USD                    
+## [14] Johnson &amp; Johnson (JNJ)\nNYSE - NYSE Delayed Price. Currency in USD                          
+## [15] H&amp;R Block, Inc. (HRB)\nNYSE - NYSE Delayed Price. Currency in USD                            
+## [16] Netflix, Inc. (NFLX)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD                   
+## [17] Advance Auto Parts, Inc. (AAP)\nNYSE - NYSE Delayed Price. Currency in USD                   
+## 65 Levels: adidas AG (ADDYY)\nOther OTC - Other OTC Delayed Price. Currency in USD ...</code></pre>
+<p>From the above, the stocks of companies that paint a picture of Murphy’s Law where anything bad could happen does, it seems investors believe so. Auto parts, cheap department and goods, health and beauty products, Nike sports shoes for people wanting to workout and not spend money to occupy time or to predict an increase in low crime robberies (assumptions made by real person not AI), Google for job searches, Amazon because ever expanding and employing many workers, costco for middle class workers and families, Ross and TJ Maxx for low cost business/dress attire and goods, electric company, fuel, home improvement/repair stores, and low cost movie entertainment at home.</p>
 
 
 
