@@ -1584,11 +1584,14 @@ summary(dow_up_ue_up)
 ```
 
 
+
+
 Summary of the DOW down and unemployment down:
 ```{r}
 summary(dow_down_ue_up)
 
 ```
+
 
 From the above subset of stock daily changes during a time of increasing monthly unemployment rate and decreasing DOW daily value, there are only three stocks that all had increasing daily median and mean values for those time periods: TEVA, WMT, and AAP. There are some stocks that only had median increasing values: HD, XOM, FFIN, GOOG, COST, AMZN, ADDY, PCG, ROST, JNJ, NFLX, DLTR, TJX, and NKE. One stock only had an increasing daily change mean value but not median value: HRB.
 
@@ -1617,4 +1620,155 @@ stocksGood$stockInfo
 
 ```
 
-From the above, the stocks of companies that paint a picture of Murphy's Law where anything bad could happen does, it seems investors believe so. Auto parts, cheap department and goods, health and beauty products, Nike sports shoes for people wanting to workout and not spend money to occupy time or to predict an increase in low crime robberies (assumptions made by real person not AI), Google for job searches, Amazon because ever expanding and employing many workers, costco for middle class workers and families, Ross and TJ Maxx for low cost business/dress attire and goods, electric company, fuel, home improvement/repair stores, and low cost movie entertainment at home. 
+From the above, the stocks of auto parts, cheap department and goods, health and beauty products, Nike sports shoes for people wanting to workout and not spend money to occupy time or to predict an increase in low crime robberies (assumptions made by real person not AI), Google for job searches, Amazon because ever expanding and employing many workers, costco for middle class workers and families, Ross and TJ Maxx for low cost business/dress attire and goods, electric company, fuel, home improvement/repair stores, and low cost movie entertainment at home. 
+
+Split the summaries of each table to show those that have mean positive values.
+```{r, message=FALSE, error=FALSE, warning=FALSE}
+S <- as.data.frame(summary(dow_up_ue_up))
+S1 <- as.data.frame(summary(dow_down_ue_up))
+S <- S[-(1:6),-1]
+S1 <- S1[-(1:6),-1]
+
+S$Freq <- as.character(S$Freq)
+S1$Freq <- as.character(S1$Freq)
+
+s_a <- strsplit(S$Freq, ':')
+s_b <- strsplit(S1$Freq, ':')
+
+S$Stat <- lapply(s_a, '[',1)
+S1$Stat <- lapply(s_b, '[',1)
+
+S$Stat <- as.vector(S$Stat)
+
+S$StatValue <- as.numeric(lapply(s_a, '[',2))
+S1$StatValue <- as.numeric(lapply(s_b, '[',2))
+
+S_mean <- S[grep('Mean', S$Stat),]
+S1_mean <- S1[grep('Mean', S1$Stat),]
+
+Dow_up_ue_up_meanPos <- subset(S_mean, S_mean$StatValue >= 0)
+Dow_down_ue_up_meanPos <- subset(S1_mean, S1_mean$StatValue >= 0)
+
+Dow_up_ue_up_meanPos <- Dow_up_ue_up_meanPos[grep('dailyChange', Dow_up_ue_up_meanPos$Var2),]
+Dow_down_ue_up_meanPos <- Dow_down_ue_up_meanPos[grep('dailyChange',
+                                                      Dow_down_ue_up_meanPos$Var2),]
+colnames(Dow_up_ue_up_meanPos)[1] <- 'DOW_up_UE_up'
+colnames(Dow_down_ue_up_meanPos)[1] <- 'DOW_down_UE_down'
+
+S_Median <- S[grep('Median', S$Stat),]
+S1_Median <- S1[grep('Median', S1$Stat),]
+
+Dow_up_ue_up_MedianPos <- subset(S_Median, S_Median$StatValue >= 0)
+Dow_down_ue_up_MedianPos <- subset(S1_Median, S1_Median$StatValue >= 0)
+
+Dow_up_ue_up_MedianPos <- Dow_up_ue_up_MedianPos[grep('dailyChange', Dow_up_ue_up_MedianPos$Var2),]
+Dow_down_ue_up_MedianPos <- Dow_down_ue_up_MedianPos[grep('dailyChange',
+                                                      Dow_down_ue_up_MedianPos$Var2),]
+colnames(Dow_up_ue_up_MedianPos)[1] <- 'DOW_up_UE_up'
+colnames(Dow_down_ue_up_MedianPos)[1] <- 'DOW_down_UE_down'
+
+```
+
+Write those tables to csv to use as needed. We should test how well the same amount invested in the original 53 stocks over the span from 2007-2020 did to the same amount of money using different weights on those stocks whose value of daily changes was positive for the median and mean values separately when the DOW was up and unemployment was up and also when the DOW was down and unemployment was up. The Stat column is a list and won't print to csv without removing it, and the Freq column also has the statistic being evaluated.
+```{r}
+write.csv(Dow_up_ue_up_meanPos[,-3], 'Dow_up_ue_up_meanPos.csv', row.names=FALSE)
+write.csv(Dow_down_ue_up_meanPos[,-3],'Dow_down_ue_up_meanPos.csv', row.names=FALSE)
+write.csv(Dow_up_ue_up_MedianPos[,-3],'Dow_up_ue_up_MedianPos.csv', row.names=FALSE)
+write.csv(Dow_down_ue_up_MedianPos[,-3],'Dow_down_ue_up_MedianPos.csv', row.names=FALSE)
+```
+
+Now, will make a vector of those stocks that have positive medians and means when the DOW is up or down when unemployment is up.
+```{r}
+Dow_up_med <- as.data.frame(Dow_up_ue_up_MedianPos$DOW_up_UE_up)
+DOW_up_mean <- as.data.frame(Dow_up_ue_up_meanPos$DOW_up_UE_up)
+DOW_down_med <- as.data.frame(Dow_down_ue_up_MedianPos$DOW_down_UE_down)
+DOW_down_mean <- as.data.frame(Dow_down_ue_up_meanPos$DOW_down_UE_down)
+
+colnames(Dow_up_med) <- 'Dow_up_median'
+colnames(DOW_up_mean) <- 'DOW_up_mean'
+colnames(DOW_down_med) <- 'DOW_down_median'
+colnames(DOW_down_mean) <- 'DOW_down_mean'
+
+DOW_up_mean$DOW_up_mean <- gsub('_dailyChange','', DOW_up_mean$DOW_up_mean)
+DOW_down_mean$DOW_down_mean <- gsub('_dailyChange', '', DOW_down_mean$DOW_down_mean)
+Dow_up_med$Dow_up_median <- gsub('_dailyChange', '', Dow_up_med$Dow_up_median)
+DOW_down_med$DOW_down_median <- gsub('_dailyChange', '', DOW_down_med$DOW_down_median)
+```
+
+
+Lets add the values to these subsets of all 53 original stocks.
+```{r}
+StockValues <- Close2
+StockValues <- StockValues[,-c(1,55:58,60:63)]
+
+colnames(StockValues) <- gsub('.Close','', colnames(StockValues))
+StockValues$total <- rowSums(StockValues[1:53])
+
+portfolio53 <- StockValues[order(StockValues$Date,decreasing=FALSE),]
+
+portfolio53 <- portfolio53[c(1,3303),]
+portfolio53
+
+```
+
+```{r}
+profit_all <- 8193-2978
+profit_all
+```
+With all 53 stocks from January 1, 2007 throughout February 14, 2020, the portfoliio initially cost 2978 USD and was valued at 8193 USD at the end of that time span. Lets see how much the portfolio is worth when using only the stocks in our subsets of stocks that had positive values when the DOW was up or down but unemployment was increasing. The profit earned was 5215 USD with this portfolio.
+
+```{r}
+library(tidyr)
+p53 <- gather(StockValues, 'stock','stockValue', 1:53)
+
+```
+
+
+The positive median value stock when the DOW was up and unemployment was up.
+```{r}
+library(dplyr)
+p1 <- merge(Dow_up_med,p53, by.x='Dow_up_median','stock')
+P1 <- p1 %>% group_by(Date) %>% summarise_at(vars(stockValue), sum)
+P1[c(1,3303),]
+```
+
+The initial stock value for the portfolio of stock that had a positive median value when the DOW was up and unemployment was up started at 1294 USD and ended with a value of 7189 USD. Lets weight this portfolio so that we can see the profits in dollars if the initial investment was the same amount as the investment of all 53 stocks.
+```{r}
+P1_i <- P1$stockValue[1]
+P1_l <- P1$stockValue[3303]
+P1_i
+P1_l
+profit1 <- P1_l-P1_i
+profit1
+
+r <- P1_l/P1_i
+r
+
+p53i <- portfolio53$total[1]
+total_P1_profit <- (p53i-P1_i)*r + P1_i*r
+total_P1_profit
+```
+
+
+The positive median value stock when the DOW was down and unemployment was up.
+```{r}
+
+```
+
+
+The positive mean value stock when the DOW was up and unemployment was up.
+```{r}
+
+
+```
+
+
+The positive mean value stock when the DOW was down and unemployment was up.
+```{r}
+
+```
+
+
+
+
+
