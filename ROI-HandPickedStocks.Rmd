@@ -1,11 +1,16 @@
 ---
 title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
-date: "2/17/2020"
+date: 'February 2020'
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
+
+This is a project that is for now analyzing some hand picked stock to see if a program can be written based on the analysis of how certain stocks perform from 2007-2020. It looks at cyclical patterns of highs and lows, adds in the DOW highs and lows, the unemployment highs and lows, then mean and median values of daily changes various date fields for day of the week and month. The idea is to get the best performing stocks, analyze them with subsets of the worst performing stocks, get the specific features of each stock to describe it as a profit or loss forecasted stock to invest in based on its current stats, and more. 
+
+It will then add in the public sentiments for the lows and highs or local minima and maxima of the stock in the best performing set to predict the best time to buy and best to sell respectively, so that you could buy at a low cost and sell at a high cost and keep trading to increase profits of the portfolio.
+
 
 ```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
 library(lubridate)
