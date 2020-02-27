@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: "2/17/2020"
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 ```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
@@ -1718,7 +1718,6 @@ profit_all
 With all 53 stocks from January 1, 2007 throughout February 14, 2020, the portfoliio initially cost 2978 USD and was valued at 8193 USD at the end of that time span. Lets see how much the portfolio is worth when using only the stocks in our subsets of stocks that had positive values when the DOW was up or down but unemployment was increasing. The profit earned was 5215 USD with this portfolio.
 
 ```{r}
-library(tidyr)
 p53 <- gather(StockValues, 'stock','stockValue', 1:53)
 
 ```
@@ -1726,7 +1725,6 @@ p53 <- gather(StockValues, 'stock','stockValue', 1:53)
 
 The positive median value stock when the DOW was up and unemployment was up.
 ```{r}
-library(dplyr)
 p1 <- merge(Dow_up_med,p53, by.x='Dow_up_median','stock')
 P1 <- p1 %>% group_by(Date) %>% summarise_at(vars(stockValue), sum)
 P1[c(1,3303),]
@@ -1741,34 +1739,192 @@ P1_l
 profit1 <- P1_l-P1_i
 profit1
 
-r <- P1_l/P1_i
-r
+r1 <- P1_l/P1_i
+r1
 
 p53i <- portfolio53$total[1]
-total_P1_profit <- (p53i-P1_i)*r + P1_i*r
+p53i
+
+finalValue_P1 <- p53i*r1
+finalValue_P1
+
+total_P1_profit <- finalValue_P1 - p53i
 total_P1_profit
+
+unique(p1$Dow_up_median)
 ```
 
+From the above values, the initial investment was 1294 USD, and the final value of these stock were 7189 USD in our time series. The profit in dollars earned was 5895 USD. The ratio of final value to initial value was 5.55. The total profit if the same investment amount made as with all 53 stocks was made on these stocks (2978 USD) that had a median positive value when the DOW was up and unemployment was increasing took the initial amount times the ratio of final/initial value added to the difference in the initial price invested in all stocks times the ratio of final/initial stock in this portfolio of 26 stocks. The final value of this portfolio is 16539 USD with profits earned of 13561 USD.
+***
 
 The positive median value stock when the DOW was down and unemployment was up.
 ```{r}
+p2 <- merge(DOW_down_med,p53, by.x='DOW_down_median','stock')
+P2 <- p2 %>% group_by(Date) %>% summarise_at(vars(stockValue), sum)
+P2[c(1,3303),]
 
 ```
+```{r}
+P2_i <- P2$stockValue[1]
+P2_l <- P2$stockValue[3303]
+P2_i
+P2_l
 
+profit2 <- P2_l-P2_i
+profit2
+
+r2 <- P2_l/P2_i
+r2
+
+p53i <- portfolio53$total[1]
+p53i
+
+total_P2_Value <- p53i*r2 
+total_P2_Value
+
+total_P2_profit <- total_P2_Value - p53i
+total_P2_profit
+
+unique(p2$DOW_down_median)
+```
+
+The portfolio of stock that had positive median values of daily change when the DOW was down and unemployment was higher than the month before is shown above. There are 17 stocks in this portfolio. The initial value was 741 USD with a final value of 5658 USD and a profit of 4917 USD earned as is. If the same amount was invested in just these stocks as was invested in the entire portfolio of 53 stocks of 2978 USD, then the ratio of final/initial value would be used on adding additional stocks in this portfolio at a ratio of 7.64. The total end value would be 22747 USD with profits earned of 19769 USD.
+
+***
 
 The positive mean value stock when the DOW was up and unemployment was up.
 ```{r}
+p3 <- merge(DOW_down_mean,p53, by.x='DOW_down_mean','stock')
+P3 <- p3 %>% group_by(Date) %>% summarise_at(vars(stockValue), sum)
+P3[c(1,3303),]
 
 
 ```
 
+```{r}
+P3_i <- P3$stockValue[1]
+P3_l <- P3$stockValue[3303]
+P3_i
+P3_l
+
+profit3 <- P3_l-P3_i
+profit3
+
+r3 <- P3_l/P3_i
+r3
+
+p53i <- portfolio53$total[1]
+p53i
+
+total_P3_Value <- (p53i)*r3 
+total_P3_Value
+
+total_P3_profit <- total_P3_Value - p53i
+total_P3_profit
+
+unique(p3$DOW_down_mean)
+```
+
+The above portfolio shows those stocks who had a positive mean value of daily changes when the DOW was down and unemployment was increased more than the month before. There are only four stock in this portfolio. The initial value was 138 USD and the final value was 286 USD. The profits in dollars was 149 USD as is. The ratio of final/initial value is 2.08. When investing the same amount of 2978 USD as was used in the portfolio of 53 stock, the dollars earned were 6192 USD, with profit earned in dollars of 3213 USD.
+
+***
 
 The positive mean value stock when the DOW was down and unemployment was up.
 ```{r}
+p4 <- merge(DOW_up_mean,p53, by.x='DOW_up_mean','stock')
+P4 <- p4 %>% group_by(Date) %>% summarise_at(vars(stockValue), sum)
+P4[c(1,3303),]
 
 ```
 
+```{r}
+P4_i <- P4$stockValue[1]
+P4_l <- P4$stockValue[3303]
+P4_i
+P4_l
 
+profit4 <- P4_l-P4_i
+profit4
+
+r4 <- P4_l/P4_i
+r4
+
+p53i <- portfolio53$total[1]
+p53i
+
+total_P4_Value <- p53i*r4 
+total_P4_Value
+
+total_P4_profit <- total_P4_Value - p53i
+total_P4_profit
+
+unique(p4$DOW_up_mean)
+```
+
+The above shows those stock in the portfolio that had a positive mean daily change when the DOW was up and unemployment was up. There are 20 stocks in this portfolio. The initial value of this portfolio was 1588 USD and the final value was less at 1476 USD. The loss was 112 USD with a final/initial ratio of 0.93. When investing the same amount as the initial portfolio of 2978 USD, the final portfolio value is a loss of 210 USD. 
+
+
+Lets make a data table of this information.
+```{r}
+du1 <- as.data.frame( c(P1_i, P2_i,P3_i,P4_i))
+du2 <- as.data.frame( c(P1_l,P2_l,P3_l,P4_l)) 
+du3 <- as.data.frame(c(length(unique(p1$Dow_up_median)),length(unique(p2$DOW_down_median)),
+         length(unique(p3$DOW_down_mean)), length(unique(p4$DOW_up_mean))))
+du4 <- as.data.frame( c(profit1, profit2, profit3, profit4))
+
+colnames(du1) <- 'initialValue'
+colnames(du2) <- 'finalValue'
+colnames(du3) <- 'numberStocksInPortfolio'
+colnames(du4) <- 'profitInitialValue'
+
+du5 <- as.data.frame(c(p53i,p53i,p53i,p53i))
+colnames(du5) <- 'ifInitialInvestmentAsAll53Made'
+
+du6 <- as.data.frame(c(finalValue_P1, total_P2_Value,total_P3_Value,total_P4_Value))
+colnames(du6) <- 'finalValueIfSame53StockInvestment'
+
+du7 <- as.data.frame(c(total_P1_profit, total_P2_profit, total_P3_profit, total_P4_profit))
+colnames(du7) <- 'totalProfitSame53StockInvestment'
+
+du8 <- as.data.frame(c(r1,r2,r3,r4))
+colnames(du8) <- 'ratioFinal_2_Initial'
+
+DOW_UE <- cbind(du1,du2,du8,du4,du3,du5,du6,du7)
+row.names(DOW_UE) <- c('Dow_up_median','DOW_down_median','DOW_down_mean','DOW_up_mean')
+
+write.csv(DOW_UE, 'DOW_UE.csv', row.names=TRUE)
+
+DOW_UE
+```
+
+
+In summary of evaluating the stocks that had positive mean and median values when the unemployment rate was more than the previous month, but the DOW was either increasing or decreasing on that day from the previous day, the best portfolio of stocks was the one with the highest profit. The return on investment ratio was 7.63 for this portfolio, with an initial investment of 741 USD it returned 5658 USD, but when the same investment amount was distributed to this portfolio as the entire portfolio of 53 stocks of 2978 USD, the profits made were 19769 USD from 2007 through 2020.
+
+The portfolio of stock that performed the worst with a loss of 111 USD on an initial investment of 1588 USD and a final to initial value ratio of 0.93 was the portfolio of stock that had a positive daily change mean value when the DOW was up and unemployment rate up. When this portfolio had the 2978 USD invested in it as the original portfolio of 53 stocks it saw a loss of 210 USD from 2007-2020.
+
+The portfolio of stocks all having a positive median value of daily changes did much better than the positive mean value stock portfolios when the DOW was up or down and unemployment rate increased from the previous month from 2007-2020.
+
+***
+
+The question arises when asked on how to distribute the remaining dollars of the initial investment of the original portfolio of all 53 stocks, when that value you want to invest is 2978 USD but the portfolio of single stocks have a set value of 138-1588 USD for the four portfolios.
+
+We would use an even weighted distribution if we could buy partial stocks, but it is likely we will not be able to. If it is the case that we could distribute the weights of the remaining balance to buy partial stocks then you would take that remaining balance and divide by the number of stock in the portfolio. We could do that now to see how much each of the weights are in investment dollars of each stock.
+```{r}
+DOW_UE$EvenRemainingWeightsUSD <- (DOW_UE$ifInitialInvestmentAsAll53Made-DOW_UE$initialValue)/
+  (DOW_UE$numberStocksInPortfolio)
+DOW_UE$EvenWeightsUSD <- (DOW_UE$ifInitialInvestmentAsAll53Made)/(DOW_UE$numberStocksInPortfolio)
+DOW_UE[,c(1,5,9,10)]
+```
+
+The above table shows even weights after one stock of each is bought and the remaining money from 2978 USD is dispursed equally to each stock in the portfolio in the 'EvenRemainingWeightsUSD' column. The value of the even weights on the amount of dollars to invest in each stock from the total 2978 USD is in the 'EvenWeightUSD' column. 
+
+If you are not allowed to buy partial stocks, then you would have to rank the stocks in each portfolio so that more money is spent on the forecasted higher yielding stock.
+
+***
+
+So, we found a subset of stock in the portfolio that did outstanding, and we want to buy those stocks to make a profit, but we also want to look at the characteristics of those stocks and see what features they have or properties in the data that could make any other stock fit a description of a 'good stock to buy' category. Some features that come to mind are, are they all increasing, are they cyclical, how many local maxima and local minima each of these stocks have, what the sentiment in the internet search engines provide for these stocks, do they market, are they politically motivated such as Nike with the footbal player protesting police abuse of black males, are they part of larger business mergers such as talks of Tmobile getting bought out by Sprint, or how Frontier bought a portion of Verizon, and so on. 
+
+Also, we want to look at this as a careless surfer looking for intervals of small waves to buy close to the local minima on these stocks, ride it out and sell it close to its local maxima to simulate how exploiting the stocks in the short run can lead to more profits. We could all do this and just like this line of code is in 1920s, a depression could follow if we all did this. Like a huge crash. But we're all blind, arrogant data scientists in charge of our own way of thinking and we want to see what happens. So lets do it. Did I lose you on the analogy? Which one? Its ok, you'll find yourself for the next part of this data exploration.
 
 
 

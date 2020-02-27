@@ -2579,7 +2579,320 @@ stocksGood$stockInfo</code></pre>
 ## [16] Netflix, Inc. (NFLX)\nNasdaqGS - NasdaqGS Real Time Price. Currency in USD                   
 ## [17] Advance Auto Parts, Inc. (AAP)\nNYSE - NYSE Delayed Price. Currency in USD                   
 ## 65 Levels: adidas AG (ADDYY)\nOther OTC - Other OTC Delayed Price. Currency in USD ...</code></pre>
-<p>From the above, the stocks of companies that paint a picture of Murphy’s Law where anything bad could happen does, it seems investors believe so. Auto parts, cheap department and goods, health and beauty products, Nike sports shoes for people wanting to workout and not spend money to occupy time or to predict an increase in low crime robberies (assumptions made by real person not AI), Google for job searches, Amazon because ever expanding and employing many workers, costco for middle class workers and families, Ross and TJ Maxx for low cost business/dress attire and goods, electric company, fuel, home improvement/repair stores, and low cost movie entertainment at home.</p>
+<p>From the above, the stocks of auto parts, cheap department and goods, health and beauty products, Nike sports shoes for people wanting to workout and not spend money to occupy time or to predict an increase in low crime robberies (assumptions made by real person not AI), Google for job searches, Amazon because ever expanding and employing many workers, costco for middle class workers and families, Ross and TJ Maxx for low cost business/dress attire and goods, electric company, fuel, home improvement/repair stores, and low cost movie entertainment at home.</p>
+<p>Split the summaries of each table to show those that have mean positive values.</p>
+<pre class="r"><code>S &lt;- as.data.frame(summary(dow_up_ue_up))
+S1 &lt;- as.data.frame(summary(dow_down_ue_up))
+S &lt;- S[-(1:6),-1]
+S1 &lt;- S1[-(1:6),-1]
+
+S$Freq &lt;- as.character(S$Freq)
+S1$Freq &lt;- as.character(S1$Freq)
+
+s_a &lt;- strsplit(S$Freq, &#39;:&#39;)
+s_b &lt;- strsplit(S1$Freq, &#39;:&#39;)
+
+S$Stat &lt;- lapply(s_a, &#39;[&#39;,1)
+S1$Stat &lt;- lapply(s_b, &#39;[&#39;,1)
+
+S$Stat &lt;- as.vector(S$Stat)
+
+S$StatValue &lt;- as.numeric(lapply(s_a, &#39;[&#39;,2))
+S1$StatValue &lt;- as.numeric(lapply(s_b, &#39;[&#39;,2))
+
+S_mean &lt;- S[grep(&#39;Mean&#39;, S$Stat),]
+S1_mean &lt;- S1[grep(&#39;Mean&#39;, S1$Stat),]
+
+Dow_up_ue_up_meanPos &lt;- subset(S_mean, S_mean$StatValue &gt;= 0)
+Dow_down_ue_up_meanPos &lt;- subset(S1_mean, S1_mean$StatValue &gt;= 0)
+
+Dow_up_ue_up_meanPos &lt;- Dow_up_ue_up_meanPos[grep(&#39;dailyChange&#39;, Dow_up_ue_up_meanPos$Var2),]
+Dow_down_ue_up_meanPos &lt;- Dow_down_ue_up_meanPos[grep(&#39;dailyChange&#39;,
+                                                      Dow_down_ue_up_meanPos$Var2),]
+colnames(Dow_up_ue_up_meanPos)[1] &lt;- &#39;DOW_up_UE_up&#39;
+colnames(Dow_down_ue_up_meanPos)[1] &lt;- &#39;DOW_down_UE_down&#39;
+
+S_Median &lt;- S[grep(&#39;Median&#39;, S$Stat),]
+S1_Median &lt;- S1[grep(&#39;Median&#39;, S1$Stat),]
+
+Dow_up_ue_up_MedianPos &lt;- subset(S_Median, S_Median$StatValue &gt;= 0)
+Dow_down_ue_up_MedianPos &lt;- subset(S1_Median, S1_Median$StatValue &gt;= 0)
+
+Dow_up_ue_up_MedianPos &lt;- Dow_up_ue_up_MedianPos[grep(&#39;dailyChange&#39;, Dow_up_ue_up_MedianPos$Var2),]
+Dow_down_ue_up_MedianPos &lt;- Dow_down_ue_up_MedianPos[grep(&#39;dailyChange&#39;,
+                                                      Dow_down_ue_up_MedianPos$Var2),]
+colnames(Dow_up_ue_up_MedianPos)[1] &lt;- &#39;DOW_up_UE_up&#39;
+colnames(Dow_down_ue_up_MedianPos)[1] &lt;- &#39;DOW_down_UE_down&#39;</code></pre>
+<p>Write those tables to csv to use as needed. We should test how well the same amount invested in the original 53 stocks over the span from 2007-2020 did to the same amount of money using different weights on those stocks whose value of daily changes was positive for the median and mean values separately when the DOW was up and unemployment was up and also when the DOW was down and unemployment was up. The Stat column is a list and won’t print to csv without removing it, and the Freq column also has the statistic being evaluated.</p>
+<pre class="r"><code>write.csv(Dow_up_ue_up_meanPos[,-3], &#39;Dow_up_ue_up_meanPos.csv&#39;, row.names=FALSE)
+write.csv(Dow_down_ue_up_meanPos[,-3],&#39;Dow_down_ue_up_meanPos.csv&#39;, row.names=FALSE)
+write.csv(Dow_up_ue_up_MedianPos[,-3],&#39;Dow_up_ue_up_MedianPos.csv&#39;, row.names=FALSE)
+write.csv(Dow_down_ue_up_MedianPos[,-3],&#39;Dow_down_ue_up_MedianPos.csv&#39;, row.names=FALSE)</code></pre>
+<p>Now, will make a vector of those stocks that have positive medians and means when the DOW is up or down when unemployment is up.</p>
+<pre class="r"><code>Dow_up_med &lt;- as.data.frame(Dow_up_ue_up_MedianPos$DOW_up_UE_up)
+DOW_up_mean &lt;- as.data.frame(Dow_up_ue_up_meanPos$DOW_up_UE_up)
+DOW_down_med &lt;- as.data.frame(Dow_down_ue_up_MedianPos$DOW_down_UE_down)
+DOW_down_mean &lt;- as.data.frame(Dow_down_ue_up_meanPos$DOW_down_UE_down)
+
+colnames(Dow_up_med) &lt;- &#39;Dow_up_median&#39;
+colnames(DOW_up_mean) &lt;- &#39;DOW_up_mean&#39;
+colnames(DOW_down_med) &lt;- &#39;DOW_down_median&#39;
+colnames(DOW_down_mean) &lt;- &#39;DOW_down_mean&#39;
+
+DOW_up_mean$DOW_up_mean &lt;- gsub(&#39;_dailyChange&#39;,&#39;&#39;, DOW_up_mean$DOW_up_mean)
+DOW_down_mean$DOW_down_mean &lt;- gsub(&#39;_dailyChange&#39;, &#39;&#39;, DOW_down_mean$DOW_down_mean)
+Dow_up_med$Dow_up_median &lt;- gsub(&#39;_dailyChange&#39;, &#39;&#39;, Dow_up_med$Dow_up_median)
+DOW_down_med$DOW_down_median &lt;- gsub(&#39;_dailyChange&#39;, &#39;&#39;, DOW_down_med$DOW_down_median)</code></pre>
+<p>Lets add the values to these subsets of all 53 original stocks.</p>
+<pre class="r"><code>StockValues &lt;- Close2
+StockValues &lt;- StockValues[,-c(1,55:58,60:63)]
+
+colnames(StockValues) &lt;- gsub(&#39;.Close&#39;,&#39;&#39;, colnames(StockValues))
+StockValues$total &lt;- rowSums(StockValues[1:53])
+
+portfolio53 &lt;- StockValues[order(StockValues$Date,decreasing=FALSE),]
+
+portfolio53 &lt;- portfolio53[c(1,3303),]
+portfolio53</code></pre>
+<pre><code>##               TGT    FTR  UBSI     HD    JPM   XOM    CVX NSANY   MGM  TEVA
+## 2007-01-03  57.18 215.40 39.05  41.07  48.07 74.11  70.97 24.16 57.57 31.26
+## 2020-02-14 116.63   0.57 34.36 245.03 137.46 60.65 110.08  9.46 31.52 12.22
+##                 HST   WFC   WWE   INO SCE.PB      FFIN     GOOG     WM   ONCY
+## 2007-01-03 24.04307 35.74 16.18 13.16    280  6.996666  232.922  37.03 21.945
+## 2020-02-14 16.91000 48.22 44.93  4.15    893 34.580002 1520.740 125.75  2.590
+##                S    F  ARWR   COST  AAL   JWN   NUS  ADDYY   KSS   MSFT   LUV
+## 2007-01-03 19.04 7.51 44.00  52.84 56.3 51.39 18.54  25.00 67.08  29.86 15.52
+## 2020-02-14  8.69 8.10 41.27 318.31 29.2 40.28 30.45 156.11 44.47 185.35 57.97
+##              HMC   PCG  DLTR KGJI       NKE    AMZN     ROST    WMT     TJX
+## 2007-01-03 39.71 47.27 10.23 1.10  12.20875   38.70   7.6225  47.55  7.1675
+## 2020-02-14 26.78 16.20 88.68 1.19 103.54000 2134.87 121.7800 117.89 63.3800
+##                TM     T    JNJ      C    EPD       VZ   HRB       NFLX    AAP
+## 2007-01-03 135.30 34.95  66.40 552.50 14.485 35.30673 23.20   3.801429  35.58
+## 2020-02-14 140.15 38.25 150.13  78.79 26.270 58.51000 22.38 380.399994 133.59
+##             HOFT   SIG  RRGB     M  JBLU       Date    total
+## 2007-01-03 15.47 47.74 35.00 37.51 15.20 2007-01-03 2977.939
+## 2020-02-14 22.25 26.07 35.21 16.67 21.27 2020-02-14 8193.300</code></pre>
+<pre class="r"><code>profit_all &lt;- 8193-2978
+profit_all</code></pre>
+<pre><code>## [1] 5215</code></pre>
+<p>With all 53 stocks from January 1, 2007 throughout February 14, 2020, the portfoliio initially cost 2978 USD and was valued at 8193 USD at the end of that time span. Lets see how much the portfolio is worth when using only the stocks in our subsets of stocks that had positive values when the DOW was up or down but unemployment was increasing. The profit earned was 5215 USD with this portfolio.</p>
+<pre class="r"><code>p53 &lt;- gather(StockValues, &#39;stock&#39;,&#39;stockValue&#39;, 1:53)</code></pre>
+<p>The positive median value stock when the DOW was up and unemployment was up.</p>
+<pre class="r"><code>p1 &lt;- merge(Dow_up_med,p53, by.x=&#39;Dow_up_median&#39;,&#39;stock&#39;)
+P1 &lt;- p1 %&gt;% group_by(Date) %&gt;% summarise_at(vars(stockValue), sum)
+P1[c(1,3303),]</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   Date       stockValue
+##   &lt;date&gt;          &lt;dbl&gt;
+## 1 2007-01-03      1294.
+## 2 2020-02-14      7189.</code></pre>
+<p>The initial stock value for the portfolio of stock that had a positive median value when the DOW was up and unemployment was up started at 1294 USD and ended with a value of 7189 USD. Lets weight this portfolio so that we can see the profits in dollars if the initial investment was the same amount as the investment of all 53 stocks.</p>
+<pre class="r"><code>P1_i &lt;- P1$stockValue[1]
+P1_l &lt;- P1$stockValue[3303]
+P1_i</code></pre>
+<pre><code>## [1] 1294.482</code></pre>
+<pre class="r"><code>P1_l</code></pre>
+<pre><code>## [1] 7189.25</code></pre>
+<pre class="r"><code>profit1 &lt;- P1_l-P1_i
+profit1</code></pre>
+<pre><code>## [1] 5894.768</code></pre>
+<pre class="r"><code>r1 &lt;- P1_l/P1_i
+r1</code></pre>
+<pre><code>## [1] 5.553767</code></pre>
+<pre class="r"><code>p53i &lt;- portfolio53$total[1]
+p53i</code></pre>
+<pre><code>## [1] 2977.939</code></pre>
+<pre class="r"><code>finalValue_P1 &lt;- p53i*r1
+finalValue_P1</code></pre>
+<pre><code>## [1] 16538.78</code></pre>
+<pre class="r"><code>total_P1_profit &lt;- finalValue_P1 - p53i
+total_P1_profit</code></pre>
+<pre><code>## [1] 13560.84</code></pre>
+<pre class="r"><code>unique(p1$Dow_up_median)</code></pre>
+<pre><code>##  [1] &quot;AAL&quot;    &quot;AAP&quot;    &quot;ADDYY&quot;  &quot;AMZN&quot;   &quot;COST&quot;   &quot;CVX&quot;    &quot;DLTR&quot;   &quot;FFIN&quot;  
+##  [9] &quot;GOOG&quot;   &quot;HD&quot;     &quot;HST&quot;    &quot;JNJ&quot;    &quot;JPM&quot;    &quot;M&quot;      &quot;MSFT&quot;   &quot;NFLX&quot;  
+## [17] &quot;NKE&quot;    &quot;NSANY&quot;  &quot;PCG&quot;    &quot;ROST&quot;   &quot;RRGB&quot;   &quot;SCE.PB&quot; &quot;TJX&quot;    &quot;WM&quot;    
+## [25] &quot;WMT&quot;    &quot;WWE&quot;</code></pre>
+<p>From the above values, the initial investment was 1294 USD, and the final value of these stock were 7189 USD in our time series. The profit in dollars earned was 5895 USD. The ratio of final value to initial value was 5.55. The total profit if the same investment amount made as with all 53 stocks was made on these stocks (2978 USD) that had a median positive value when the DOW was up and unemployment was increasing took the initial amount times the ratio of final/initial value added to the difference in the initial price invested in all stocks times the ratio of final/initial stock in this portfolio of 26 stocks. The final value of this portfolio is 16539 USD with profits earned of 13561 USD. ***</p>
+<p>The positive median value stock when the DOW was down and unemployment was up.</p>
+<pre class="r"><code>p2 &lt;- merge(DOW_down_med,p53, by.x=&#39;DOW_down_median&#39;,&#39;stock&#39;)
+P2 &lt;- p2 %&gt;% group_by(Date) %&gt;% summarise_at(vars(stockValue), sum)
+P2[c(1,3303),]</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   Date       stockValue
+##   &lt;date&gt;          &lt;dbl&gt;
+## 1 2007-01-03       741.
+## 2 2020-02-14      5658.</code></pre>
+<pre class="r"><code>P2_i &lt;- P2$stockValue[1]
+P2_l &lt;- P2$stockValue[3303]
+P2_i</code></pre>
+<pre><code>## [1] 740.7288</code></pre>
+<pre class="r"><code>P2_l</code></pre>
+<pre><code>## [1] 5658.1</code></pre>
+<pre class="r"><code>profit2 &lt;- P2_l-P2_i
+profit2</code></pre>
+<pre><code>## [1] 4917.371</code></pre>
+<pre class="r"><code>r2 &lt;- P2_l/P2_i
+r2</code></pre>
+<pre><code>## [1] 7.638558</code></pre>
+<pre class="r"><code>p53i &lt;- portfolio53$total[1]
+p53i</code></pre>
+<pre><code>## [1] 2977.939</code></pre>
+<pre class="r"><code>total_P2_Value &lt;- p53i*r2 
+total_P2_Value</code></pre>
+<pre><code>## [1] 22747.16</code></pre>
+<pre class="r"><code>total_P2_profit &lt;- total_P2_Value - p53i
+total_P2_profit</code></pre>
+<pre><code>## [1] 19769.22</code></pre>
+<pre class="r"><code>unique(p2$DOW_down_median)</code></pre>
+<pre><code>##  [1] &quot;AAP&quot;   &quot;ADDYY&quot; &quot;AMZN&quot;  &quot;COST&quot;  &quot;DLTR&quot;  &quot;FFIN&quot;  &quot;GOOG&quot;  &quot;HD&quot;    &quot;JNJ&quot;  
+## [10] &quot;NFLX&quot;  &quot;NKE&quot;   &quot;PCG&quot;   &quot;ROST&quot;  &quot;TEVA&quot;  &quot;TJX&quot;   &quot;WMT&quot;   &quot;XOM&quot;</code></pre>
+<p>The portfolio of stock that had positive median values of daily change when the DOW was down and unemployment was higher than the month before is shown above. There are 17 stocks in this portfolio. The initial value was 741 USD with a final value of 5658 USD and a profit of 4917 USD earned as is. If the same amount was invested in just these stocks as was invested in the entire portfolio of 53 stocks of 2978 USD, then the ratio of final/initial value would be used on adding additional stocks in this portfolio at a ratio of 7.64. The total end value would be 22747 USD with profits earned of 19769 USD.</p>
+<hr />
+<p>The positive mean value stock when the DOW was up and unemployment was up.</p>
+<pre class="r"><code>p3 &lt;- merge(DOW_down_mean,p53, by.x=&#39;DOW_down_mean&#39;,&#39;stock&#39;)
+P3 &lt;- p3 %&gt;% group_by(Date) %&gt;% summarise_at(vars(stockValue), sum)
+P3[c(1,3303),]</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   Date       stockValue
+##   &lt;date&gt;          &lt;dbl&gt;
+## 1 2007-01-03       138.
+## 2 2020-02-14       286.</code></pre>
+<pre class="r"><code>P3_i &lt;- P3$stockValue[1]
+P3_l &lt;- P3$stockValue[3303]
+P3_i</code></pre>
+<pre><code>## [1] 137.59</code></pre>
+<pre class="r"><code>P3_l</code></pre>
+<pre><code>## [1] 286.08</code></pre>
+<pre class="r"><code>profit3 &lt;- P3_l-P3_i
+profit3</code></pre>
+<pre><code>## [1] 148.49</code></pre>
+<pre class="r"><code>r3 &lt;- P3_l/P3_i
+r3</code></pre>
+<pre><code>## [1] 2.079221</code></pre>
+<pre class="r"><code>p53i &lt;- portfolio53$total[1]
+p53i</code></pre>
+<pre><code>## [1] 2977.939</code></pre>
+<pre class="r"><code>total_P3_Value &lt;- (p53i)*r3 
+total_P3_Value</code></pre>
+<pre><code>## [1] 6191.792</code></pre>
+<pre class="r"><code>total_P3_profit &lt;- total_P3_Value - p53i
+total_P3_profit</code></pre>
+<pre><code>## [1] 3213.853</code></pre>
+<pre class="r"><code>unique(p3$DOW_down_mean)</code></pre>
+<pre><code>## [1] &quot;AAP&quot;  &quot;HRB&quot;  &quot;TEVA&quot; &quot;WMT&quot;</code></pre>
+<p>The above portfolio shows those stocks who had a positive mean value of daily changes when the DOW was down and unemployment was increased more than the month before. There are only four stock in this portfolio. The initial value was 138 USD and the final value was 286 USD. The profits in dollars was 149 USD as is. The ratio of final/initial value is 2.08. When investing the same amount of 2978 USD as was used in the portfolio of 53 stock, the dollars earned were 6192 USD, with profit earned in dollars of 3213 USD.</p>
+<hr />
+<p>The positive mean value stock when the DOW was down and unemployment was up.</p>
+<pre class="r"><code>p4 &lt;- merge(DOW_up_mean,p53, by.x=&#39;DOW_up_mean&#39;,&#39;stock&#39;)
+P4 &lt;- p4 %&gt;% group_by(Date) %&gt;% summarise_at(vars(stockValue), sum)
+P4[c(1,3303),]</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   Date       stockValue
+##   &lt;date&gt;          &lt;dbl&gt;
+## 1 2007-01-03      1588.
+## 2 2020-02-14      1476.</code></pre>
+<pre class="r"><code>P4_i &lt;- P4$stockValue[1]
+P4_l &lt;- P4$stockValue[3303]
+P4_i</code></pre>
+<pre><code>## [1] 1588.048</code></pre>
+<pre class="r"><code>P4_l</code></pre>
+<pre><code>## [1] 1476.17</code></pre>
+<pre class="r"><code>profit4 &lt;- P4_l-P4_i
+profit4</code></pre>
+<pre><code>## [1] -111.8781</code></pre>
+<pre class="r"><code>r4 &lt;- P4_l/P4_i
+r4</code></pre>
+<pre><code>## [1] 0.9295499</code></pre>
+<pre class="r"><code>p53i &lt;- portfolio53$total[1]
+p53i</code></pre>
+<pre><code>## [1] 2977.939</code></pre>
+<pre class="r"><code>total_P4_Value &lt;- p53i*r4 
+total_P4_Value</code></pre>
+<pre><code>## [1] 2768.143</code></pre>
+<pre class="r"><code>total_P4_profit &lt;- total_P4_Value - p53i
+total_P4_profit</code></pre>
+<pre><code>## [1] -209.7959</code></pre>
+<pre class="r"><code>unique(p4$DOW_up_mean)</code></pre>
+<pre><code>##  [1] &quot;AAP&quot;    &quot;ARWR&quot;   &quot;C&quot;      &quot;F&quot;      &quot;FTR&quot;    &quot;HMC&quot;    &quot;HST&quot;    &quot;INO&quot;   
+##  [9] &quot;KGJI&quot;   &quot;KSS&quot;    &quot;NSANY&quot;  &quot;ONCY&quot;   &quot;PCG&quot;    &quot;S&quot;      &quot;SCE.PB&quot; &quot;T&quot;     
+## [17] &quot;TEVA&quot;   &quot;UBSI&quot;   &quot;WWE&quot;    &quot;XOM&quot;</code></pre>
+<p>The above shows those stock in the portfolio that had a positive mean daily change when the DOW was up and unemployment was up. There are 20 stocks in this portfolio. The initial value of this portfolio was 1588 USD and the final value was less at 1476 USD. The loss was 112 USD with a final/initial ratio of 0.93. When investing the same amount as the initial portfolio of 2978 USD, the final portfolio value is a loss of 210 USD.</p>
+<p>Lets make a data table of this information.</p>
+<pre class="r"><code>du1 &lt;- as.data.frame( c(P1_i, P2_i,P3_i,P4_i))
+du2 &lt;- as.data.frame( c(P1_l,P2_l,P3_l,P4_l)) 
+du3 &lt;- as.data.frame(c(length(unique(p1$Dow_up_median)),length(unique(p2$DOW_down_median)),
+         length(unique(p3$DOW_down_mean)), length(unique(p4$DOW_up_mean))))
+du4 &lt;- as.data.frame( c(profit1, profit2, profit3, profit4))
+
+colnames(du1) &lt;- &#39;initialValue&#39;
+colnames(du2) &lt;- &#39;finalValue&#39;
+colnames(du3) &lt;- &#39;numberStocksInPortfolio&#39;
+colnames(du4) &lt;- &#39;profitInitialValue&#39;
+
+du5 &lt;- as.data.frame(c(p53i,p53i,p53i,p53i))
+colnames(du5) &lt;- &#39;ifInitialInvestmentAsAll53Made&#39;
+
+du6 &lt;- as.data.frame(c(finalValue_P1, total_P2_Value,total_P3_Value,total_P4_Value))
+colnames(du6) &lt;- &#39;finalValueIfSame53StockInvestment&#39;
+
+du7 &lt;- as.data.frame(c(total_P1_profit, total_P2_profit, total_P3_profit, total_P4_profit))
+colnames(du7) &lt;- &#39;totalProfitSame53StockInvestment&#39;
+
+du8 &lt;- as.data.frame(c(r1,r2,r3,r4))
+colnames(du8) &lt;- &#39;ratioFinal_2_Initial&#39;
+
+DOW_UE &lt;- cbind(du1,du2,du8,du4,du3,du5,du6,du7)
+row.names(DOW_UE) &lt;- c(&#39;Dow_up_median&#39;,&#39;DOW_down_median&#39;,&#39;DOW_down_mean&#39;,&#39;DOW_up_mean&#39;)
+
+write.csv(DOW_UE, &#39;DOW_UE.csv&#39;, row.names=TRUE)
+
+DOW_UE</code></pre>
+<pre><code>##                 initialValue finalValue ratioFinal_2_Initial profitInitialValue
+## Dow_up_median      1294.4819    7189.25            5.5537665          5894.7682
+## DOW_down_median     740.7288    5658.10            7.6385583          4917.3713
+## DOW_down_mean       137.5900     286.08            2.0792208           148.4900
+## DOW_up_mean        1588.0481    1476.17            0.9295499          -111.8781
+##                 numberStocksInPortfolio ifInitialInvestmentAsAll53Made
+## Dow_up_median                        26                       2977.939
+## DOW_down_median                      17                       2977.939
+## DOW_down_mean                         4                       2977.939
+## DOW_up_mean                          20                       2977.939
+##                 finalValueIfSame53StockInvestment
+## Dow_up_median                           16538.776
+## DOW_down_median                         22747.158
+## DOW_down_mean                            6191.792
+## DOW_up_mean                              2768.143
+##                 totalProfitSame53StockInvestment
+## Dow_up_median                         13560.8372
+## DOW_down_median                       19769.2190
+## DOW_down_mean                          3213.8533
+## DOW_up_mean                            -209.7959</code></pre>
+<p>In summary of evaluating the stocks that had positive mean and median values when the unemployment rate was more than the previous month, but the DOW was either increasing or decreasing on that day from the previous day, the best portfolio of stocks was the one with the highest profit. The return on investment ratio was 7.63 for this portfolio, with an initial investment of 741 USD it returned 5658 USD, but when the same investment amount was distributed to this portfolio as the entire portfolio of 53 stocks of 2978 USD, the profits made were 19769 USD from 2007 through 2020.</p>
+<p>The portfolio of stock that performed the worst with a loss of 111 USD on an initial investment of 1588 USD and a final to initial value ratio of 0.93 was the portfolio of stock that had a positive daily change mean value when the DOW was up and unemployment rate up. When this portfolio had the 2978 USD invested in it as the original portfolio of 53 stocks it saw a loss of 210 USD from 2007-2020.</p>
+<p>The portfolio of stocks all having a positive median value of daily changes did much better than the positive mean value stock portfolios when the DOW was up or down and unemployment rate increased from the previous month from 2007-2020.</p>
+<hr />
+<p>The question arises when asked on how to distribute the remaining dollars of the initial investment of the original portfolio of all 53 stocks, when that value you want to invest is 2978 USD but the portfolio of single stocks have a set value of 138-1588 USD for the four portfolios.</p>
+<p>We would use an even weighted distribution if we could buy partial stocks, but it is likely we will not be able to. If it is the case that we could distribute the weights of the remaining balance to buy partial stocks then you would take that remaining balance and divide by the number of stock in the portfolio. We could do that now to see how much each of the weights are in investment dollars of each stock.</p>
+<pre class="r"><code>DOW_UE$EvenRemainingWeightsUSD &lt;- (DOW_UE$ifInitialInvestmentAsAll53Made-DOW_UE$initialValue)/
+  (DOW_UE$numberStocksInPortfolio)
+DOW_UE$EvenWeightsUSD &lt;- (DOW_UE$ifInitialInvestmentAsAll53Made)/(DOW_UE$numberStocksInPortfolio)
+DOW_UE[,c(1,5,9,10)]</code></pre>
+<pre><code>##                 initialValue numberStocksInPortfolio EvenRemainingWeightsUSD
+## Dow_up_median      1294.4819                      26                64.74834
+## DOW_down_median     740.7288                      17               131.60058
+## DOW_down_mean       137.5900                       4               710.08715
+## DOW_up_mean        1588.0481                      20                69.49453
+##                 EvenWeightsUSD
+## Dow_up_median         114.5361
+## DOW_down_median       175.1729
+## DOW_down_mean         744.4847
+## DOW_up_mean           148.8969</code></pre>
+<p>The above table shows even weights after one stock of each is bought and the remaining money from 2978 USD is dispursed equally to each stock in the portfolio in the ‘EvenRemainingWeightsUSD’ column. The value of the even weights on the amount of dollars to invest in each stock from the total 2978 USD is in the ‘EvenWeightUSD’ column.</p>
+<p>If you are not allowed to buy partial stocks, then you would have to rank the stocks in each portfolio so that more money is spent on the forecasted higher yielding stock.</p>
+<hr />
+<p>So, we found a subset of stock in the portfolio that did outstanding, and we want to buy those stocks to make a profit, but we also want to look at the characteristics of those stocks and see what features they have or properties in the data that could make any other stock fit a description of a ‘good stock to buy’ category. Some features that come to mind are, are they all increasing, are they cyclical, how many local maxima and local minima each of these stocks have, what the sentiment in the internet search engines provide for these stocks, do they market, are they politically motivated such as Nike with the footbal player protesting police abuse of black males, are they part of larger business mergers such as talks of Tmobile getting bought out by Sprint, or how Frontier bought a portion of Verizon, and so on.</p>
+<p>Also, we want to look at this as a careless surfer looking for intervals of small waves to buy close to the local minima on these stocks, ride it out and sell it close to its local maxima to simulate how exploiting the stocks in the short run can lead to more profits. We could all do this and just like this line of code is in 1920s, a depression could follow if we all did this. Like a huge crash. But we’re all blind, arrogant data scientists in charge of our own way of thinking and we want to see what happens. So lets do it. Did I lose you on the analogy? Which one? Its ok, you’ll find yourself for the next part of this data exploration.</p>
 
 
 
