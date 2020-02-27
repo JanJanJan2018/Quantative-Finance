@@ -17,6 +17,10 @@ library(lubridate)
 library(tidyr)
 library(ggplot2)
 library(dplyr)
+library(grid)
+library(gridExtra)
+library(egg)
+library(gtable)
 ```
 
 
@@ -1930,6 +1934,277 @@ If you are not allowed to buy partial stocks, then you would have to rank the st
 So, we found a subset of stock in the portfolio that did outstanding, and we want to buy those stocks to make a profit, but we also want to look at the characteristics of those stocks and see what features they have or properties in the data that could make any other stock fit a description of a 'good stock to buy' category. Some features that come to mind are, are they all increasing, are they cyclical, how many local maxima and local minima each of these stocks have, what the sentiment in the internet search engines provide for these stocks, do they market, are they politically motivated such as Nike with the footbal player protesting police abuse of black males, are they part of larger business mergers such as talks of Tmobile getting bought out by Sprint, or how Frontier bought a portion of Verizon, and so on. 
 
 Also, we want to look at this as a careless surfer looking for intervals of small waves to buy close to the local minima on these stocks, ride it out and sell it close to its local maxima to simulate how exploiting the stocks in the short run can lead to more profits. We could all do this and just like this line of code is in 1920s, a depression could follow if we all did this. Like a huge crash. But we're all blind, arrogant data scientists in charge of our own way of thinking and we want to see what happens. So lets do it. Did I lose you on the analogy? Which one? Its ok, you'll find yourself for the next part of this data exploration.
+
+
+***
+
+Lets look at our 17 stocks belonging to the best subset and see what qualities each stock has by first adding a feature column on the stock brand with an internet search and looking at the local minima and maxima of each stock.
+```{r}
+set17 <- merge(DOW_down_med, stockNames, by.x='DOW_down_median', by.y='stock')
+set17
+```
+
+Lets search these companies and add in a feature that gives the number of results for each company.
+```{r}
+set17$numberSearchReturnMillions <- round(c(0.446, 1.99,541, 0.780, 0.379, 0.0465, 3.51, 0.410, 45.1, 
+                                      4.46, 4.28, 0.00417, 4.11, 0.00392, 2.59, 1.7, 1.14),4)
+
+```
+
+
+```{r}
+closing17 <- Close2[,-c(1,55:58,60)]
+colnames(closing17) <- gsub('.Close','',colnames(closing17))
+colnames(closing17) <- gsub('.PB','', colnames(closing17))
+close17 <- gather(closing17, 'stock','stockValue',1:53)
+Close17 <- merge(DOW_down_med, close17, by.x='DOW_down_median', by.y='stock')
+Close17 <- Close17[order(Close17$Date),]
+
+dow17 <- dow[,-c(2:4,6,7)]
+dow17$Date <- as.Date(dow17$Date)
+colnames(dow17)[2] <- 'DOW_Close'
+Close17_dow <- merge(Close17, dow17, by.x='Date', by.y='Date')
+```
+
+
+```{r}
+aap <- subset(Close17_dow, Close17_dow$DOW_down_median=='AAP' )
+aap1 <- subset(aap, aap$Year==2017|
+                aap$Year==2018|
+                aap$Year==2019)
+
+ggplot(data = aap, aes(x=Year, y=stockValue)) +
+  geom_line()+
+  scale_y_continuous()+
+  scale_fill_brewer(palette="paired") +
+  theme(legend.position="bottom")+
+  ggtitle('AAP Value 2007-2020')+
+  ylab('Dollars')
+```
+The above shows that AAP had a huge drop in 2017 at a local minimum, the other minimum is in 2008 and is the global minimum for this stock. The next chart shows the years 2017-2020 to zoom in on this loss.
+
+```{r}
+annotation1 <- data.frame(
+   x = c(as.Date('2017-11-01'),as.Date('2018-04-04'),as.Date('2019-09-04')),
+   y = c(100,95,120),
+   label = c("Nov 2017", "May 2018","Aug 2019"))
+
+gg1 <- ggplot(data = aap1, aes(x=Date, y=stockValue)) +
+       geom_line()+
+       scale_y_continuous()+
+       scale_fill_brewer(palette="paired") +
+       theme(legend.position="bottom")+
+       ggtitle('AAP 2017-2020')+
+         geom_text(data=annotation1, aes( x=x, y=y, label=label),                 , 
+           color="red", 
+           size=2.5 , angle=90 , fontface="bold")+
+       ylab('Stock Value Dollars')
+gg1
+```
+
+The chart above shows that AAP had a decreasing year in 2017 down to its minimum value in the fourth quarter of the year, then increased throughout 2018 until 2019. There was also another local minima in the third quarter of 2019 for AAP before it began increasing. Something could have happened in the first quarter of 2017 to cause it to decrease and another thing in 2018. We could check the internet for articles around that time. Lets look at the summary stats for this table.
+
+```{r}
+summary(aap1)
+
+```
+
+The above summary statistics show a low unemployment rate for this period of time spanning three years from 2017 to 2020 with unemployment ranging from 3.5 to 4.7. The DOW had closing values ranging from 19732 USD to 28645 USD. Lets plot this date range for the DOW and see if they move together.
+
+
+```{r}
+
+annotation2 <- data.frame(
+   x = c(as.Date('2017-11-01'),as.Date('2018-04-04'),as.Date('2019-09-04')),
+   y = c(21000,22000,24000),
+   label = c("Nov 2017", "May 2018","Aug 2019"))
+
+gg2 <- ggplot(data = aap1, aes(x=Date, y=DOW_Close)) +
+       geom_line()+
+       scale_y_continuous()+
+       scale_fill_brewer(palette="paired") +
+       theme(legend.position="bottom")+
+       ggtitle('DOW 2017-2020')+
+       ylab('DOW Value Dollars')+
+       geom_text(data=annotation2, aes( x=x, y=y, label=label),                 , 
+           color="red", 
+           size=2.5 , angle=90 , fontface="bold")
+gg2
+```
+
+The above chart shows the increasing values of the DOW the same years as the AAP saw a decreasing year in 2017 to its local minimum in the fourth quarter of 2017, and then an increase until 2019 when it stabilized around the same value till 2020. But the DOW increased the time that AAP was decreasing and saw a local minima in the end of 2018 right when AAP reached a smaller local minima and also in the third quarter when AAP also had a local minima.
+
+Lets look at these charts on top of each other.
+```{r}
+grid.arrange(gg1, gg2, nrow = 2)
+
+```
+
+
+
+Lets see what happened in 2017 for AAP and in 2018 to cause it to decrease then increase respectively... just declining sales, plans to expand and open more stores, and public outcry on the sales declines of Advance Auto Parts. So, this could mean that because the DOW was doing great and increasing, investors thought to take their money out of the after market car parts stores, or maybe they thought they were hurting because of Amazon Prime taking their business. Those are some possibilities. When looking at stocks in the [DOW Jones industrial average](https://www.buyupside.com/sample_portfolios/djindustrialsstocks.php), AAP isn't listed as one of these stocks, so it could be that people took their money out of the after markets car parts stock as it was declining and put it into any of the stocks that belong to the DOW, because it increased in value in 2017 while AAP decreased, then they both moved together around and after 2018.
+
+
+```{r}
+aaplog <- aap
+aaplog$logAAP <- log1p(aaplog$stockValue)
+aaplog$logDOW <- log1p(aaplog$DOW_Close)
+
+g1 <- ggplot(data = aaplog, aes(x=Year, y=logAAP)) +
+      geom_line()+
+      scale_y_continuous(limits=c(3,7))+
+      scale_fill_brewer(palette="paired") +
+      theme(legend.position="bottom")+
+      geom_vline(xintercept=c(2008,2017), linetype='dashed', color='red')+
+      ggtitle('log AAP 2007-2020')+
+      ylab('Stock Value Dollars')
+
+g2 <- ggplot(data = aaplog, aes(x=Year, y=logDOW)) +
+      geom_line()+
+      scale_y_continuous(limits=c(5,12))+
+      scale_fill_brewer(palette="paired") +
+      theme(legend.position="bottom")+
+      geom_vline(xintercept=c(2008,2017), linetype='dashed', color='red')+
+      ggtitle('log DOW 2007-2020')+
+      ylab('Stock Value Dollars')
+
+grid.arrange(g1, g2, nrow = 2)
+
+```
+
+The above chart shows the log scale of the value + 1 so that there aren't any natural log errors in scaling. There is also an added few lines to show the years of 2008 and 2017 when AAP had decreasing years in stock value.
+
+***
+
+Lets look at the DOW over the years with the other 16 stocks in this portfolio of stocks that proved most profitable when the DOW was down and unemployment was up using the set of stocks with positive median values under those constraints.
+```{r}
+dROI17 <- Close17_dow %>% group_by(DOW_down_median) %>%
+  summarise_at(vars(stockValue), mean)
+colnames(dROI17)[2] <- 'avgStockValue'
+
+start17 <- subset(Close17_dow, Close17_dow$Date=='2007-01-03')
+final17 <- subset(Close17_dow, Close17_dow$Date=='2020-02-14')
+
+start17 <- start17[order(start17$DOW_down_median),]
+final17 <- final17[order(final17$DOW_down_median),]
+dROI17 <- dROI17[order(dROI17$DOW_down_median),]
+
+DOW_ROI <- as.data.frame(final17$DOW_Close/start17$DOW_Close)
+colnames(DOW_ROI) <- 'DOW_ROI'
+
+colnames(start17)[6] <- 'startValue'
+colnames(final17)[6] <- 'finalValue'
+
+dROI17$startValue <- start17$startValue
+dROI17$finalValue <- final17$finalValue
+dROI17$DOW_ROI <- DOW_ROI$DOW_ROI
+dROI17$stock_ROI <- dROI17$finalValue/dROI17$startValue
+dROI17
+```
+
+Netflix killed the return on investment with more than 100 fold profits. Lets look at Netflix to see the highs and lows of this stock since 2007 and through till 2020.
+```{r}
+nflx <- subset(Close17_dow, Close17_dow$DOW_down_median=='NFLX')
+nflx1 <- subset(nflx, nflx$Year > 2011 & nflx$Year < 2014)
+nflx2 <- subset(nflx, nflx$Year > 2016 & nflx$Year < 2018)
+nflx3 <- subset(nflx, nflx$Year > 2018 & nflx$Year < 2020)
+
+gg3 <- ggplot(data = nflx, aes(x=Date, y=stockValue)) +
+       geom_line()+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('NFLX 2007-2020')+
+       ylab('Stock Value Dollars')
+gg4 <- ggplot(data = nflx1, aes(x=Date, y=stockValue)) +
+       geom_line()+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('NFLX 2011-2014')+
+       ylab('Stock Value Dollars')
+gg5 <- ggplot(data = nflx2, aes(x=Date, y=stockValue)) +
+       geom_line()+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('NFLX 2016-2018')+
+       ylab('Stock Value Dollars')
+gg6 <- ggplot(data = nflx3, aes(x=Date, y=stockValue)) +
+       geom_line()+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('NFLX 2018-2020')+
+       ylab('Stock Value Dollars')
+
+grid.arrange(gg3, gg4, gg5,gg6, nrow = 2)
+
+```
+
+Netflix was certainly a great stock to invest in at around 3 USD in 2007 and at around 325 USD in 2020. We see that Netflix was on the up and up almost its entire course growing to more than 100 times its initial starting value in 2007. There were some lows such as in 2012 there was small dip in the curve, then in July and August-September 2017, and also in the third quarter of 2019. But it still performed amazingly. The stock dreams of riches are made of and conartists use to get more money from people on risky start up penny stocks. But lets put out all we know about Netflix.
+
+- Netflix was first heard from the author of this tutorial in 2003 when some roommate of a guy the author dated bragged about how awesome Netflix is to cost $7/month and you can rent new movies mailed to your home for no additional charge. This roommate also bought a flat screen tv for 7000 USD before they became ubiquitously priced from 200-500 USD five years later.
+
+- The minimum wage for workers around CA in this time period was also about the cost of the Netflix monthly membership. Many tv shows started being options to rent from sources such as premium cable tv shows like Dexter around 2007 or so.
+
+- I pulled the cord on cable due to high costs and got a Netflix membership for around 8-10 USD in about 2014. Which was also around the price of minimum wage at that time.
+
+- cell phones became very great and needed personal items with fast wifi and internet streamings still at a cost that beat cable tv and home phone lines at this same time period.
+
+- Netflix got more innovative, they started adding more Netflix produced shows in 2016 that made memes on instagram and facebook, the top social media platforms of the time in the 2010s like with 'Orange is the New Black' ( I couldn't watch, but saw many memes on).
+
+So, given what you know and what you scanned above, isn't it no surprise that a stock that out competes alternative forms of entertainment, is low cost in price and able to be taken mobile or use anywhere and at any time for next to nothing in cost as an hour of a consumer's 160-200 hour work month if working minimum wage and full time. Maybe its time to add another feature, like federal minimum wage rates to this data. We will in fact do this later, but for now we will add another feature that compares the ROI ration to that of the DOW Jones industrial average, and try to pull the most striking features out of that group. 
+```{r}
+dROI17$stockBeatsDOW <- ifelse(dROI17$stock_ROI > dROI17$DOW_ROI, 'Yes', 'No')
+dROI17[,c(1,7)]
+```
+
+Looking at the above chart of the stocks that beat the DOW in return on investment ratios of final stock value to initial stock value (2007-2020), Exxon Mobil, Johnson & Johnson, Teva Pharmaceuticals Industries, and Pacific Gas and Electric lossed money or had lower returns than that of the DOW. Of note, the pharmaceuticals might make you go on a wild tangent to know which company is supplying us with flu vaccines annually. If so, [Sanofi (SNY)](https://finance.yahoo.com/quote/SNY/) is the US's largest supplier and they aren't in this analysis. But it would be interesting to see when they make the most money, considering we have a CoV-19 flu contagion globally as of Feb. 2020. While, it is safe to say the companies that low income consumers love  or live by did well, such as: Walmart, Adidas, Nike, Home Depot, Netflix, Amazon, Advance Auto Parts, TJ Maxx, Ross, Dollar Tree, and Costco. Costco is more of a middle class or small business store because you have to have cash, or used to have cash or money in your checking account to buy their goods and services with your atm card. They may have changed this. First Financial bank also did well, and it was selected because it was one of the banks available when hand picking these stocks. I don't use it and don't know anyone who does, and that is because I am on the West Coast, and this bank originates out of the East Coast. This could be an indicator that the East Coast is picking up in business and getting more home loans, business loans, etc. Than the more West Coast known banks like Citi, Chase, Bank of America, JP Morgan Chase. As these other banks did not perform well for median positive daily changes in stock prices during increasing unemployment and decreasing DOW values.
+
+Lets plot those four stocks in this portfolio that did worse than the DOW.
+```{r}
+low4 <- subset(Close17_dow, Close17_dow$DOW_down_median == 'JNJ'|
+                  Close17_dow$DOW_down_median == 'PCG'|
+                  Close17_dow$DOW_down_median == 'TEVA'|
+                  Close17_dow$DOW_down_median == 'XOM')
+gg7 <- ggplot(data = low4, aes(x=Date, y=stockValue, group=DOW_down_median)) +
+       geom_line(aes(color=DOW_down_median))+
+       scale_y_continuous()+
+       scale_fill_brewer(palette="paired") +
+
+       theme(legend.position="bottom")+
+       ggtitle('Lowest Stock ROI 2007-2020')+
+       ylab('Stock Value Dollars')
+gg8 <- ggplot(data = low4, aes(x=Date, y=DOW_Close)) +
+       geom_line()+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('DOW Value 2007-2020')+
+       ylab('DOW Value Dollars')
+
+grid.arrange(gg7,gg8, nrow = 2)
+```
+
+From the above charts, It looks like Johnson & Johnson has started to move upward with the DOW starting around 2013. The TEVA stock seems to be negatively correlated with the DOW and Exxon Mobil was positively correlated with the DOW from 2007 to about 2015, then started moving in the opposite direction after 2015. Exxon supplies fuels to automobiles, while PCG supplies electricity to hybrid and electric vehicles in certain US regions. Yet, both started moving opposite directions with the DOW after 2015.
+
+Lets now compare Costco and Walmart to each other and the DOW.
+```{r}
+wal_Cost <- subset(Close17_dow, Close17_dow$DOW_down_median=='WMT' | 
+                     Close17_dow$DOW_down_median=='COST')
+
+gg9 <- ggplot(data = wal_Cost, aes(x=Date, y=stockValue, group=DOW_down_median)) +
+       geom_line(aes(color=DOW_down_median))+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('Walmart and Costco Value 2007-2020')+
+       ylab('Stock Value Dollars')
+
+grid.arrange(gg9,gg8, nrow = 2)
+
+```
+
+It is interesting to note that Costco and the DOW seem to be identical curves for the direction they move while Walmart seems also be increasing when the DOW does but at a much lower rate over time.
+
+
+
+
 
 
 
