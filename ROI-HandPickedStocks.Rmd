@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: 'February 2020'
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 This is a project that is for now analyzing some hand picked stock to see if a program can be written based on the analysis of how certain stocks perform from 2007-2020. It looks at cyclical patterns of highs and lows, adds in the DOW highs and lows, the unemployment highs and lows, then mean and median values of daily changes various date fields for day of the week and month. The idea is to get the best performing stocks, analyze them with subsets of the worst performing stocks, get the specific features of each stock to describe it as a profit or loss forecasted stock to invest in based on its current stats, and more. 
@@ -2167,7 +2167,7 @@ low4 <- subset(Close17_dow, Close17_dow$DOW_down_median == 'JNJ'|
 gg7 <- ggplot(data = low4, aes(x=Date, y=stockValue, group=DOW_down_median)) +
        geom_line(aes(color=DOW_down_median))+
        scale_y_continuous()+
-       scale_fill_brewer(palette="paired") +
+       scale_fill_brewer(palette="Spectral") +
 
        theme(legend.position="bottom")+
        ggtitle('Lowest Stock ROI 2007-2020')+
@@ -2203,8 +2203,158 @@ grid.arrange(gg9,gg8, nrow = 2)
 It is interesting to note that Costco and the DOW seem to be identical curves for the direction they move while Walmart seems also be increasing when the DOW does but at a much lower rate over time.
 
 
+Lets now compare TJ Maxx, Ross, Nike, and Adidas to the DOW.
+```{r}
+Retail <- subset(Close17_dow, Close17_dow$DOW_down_median == 'TJX' |
+                   Close17_dow$DOW_down_median == 'ROST' )
+
+Shoes <- subset(Close17_dow, Close17_dow$DOW_down_median == 'NKE' |
+                   Close17_dow$DOW_down_median == 'ADDYY' )
 
 
+gg10 <- ggplot(data = Retail, aes(x=Date, y=stockValue, group=DOW_down_median)) +
+       geom_line(aes(color=DOW_down_median))+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('Ross, & TJ Maxx Value 2007-2020')+
+       ylab('Stock Value Dollars')
 
+gg11 <- ggplot(data = Shoes, aes(x=Date, y=stockValue, group=DOW_down_median)) +
+       geom_line(aes(color=DOW_down_median))+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('Adidas & Nike Value 2007-2020')+
+       ylab('Stock Value Dollars')
+
+grid.arrange(gg10, gg11, gg8, gg8, nrow =2)
+```
+
+The DOW is plotted below each of the two plots of either Ross & TJ Maxx, or Adidas & Nike.
+Both Ross and Adidas did better than TJ Maxx and Nike. Except, that Nike did do better than Adidas between 2015 and 2016.
+
+Now, lets look at Dollar Tree and Amazon compared to each other and the DOW in this time span.
+```{r}
+DLRv <- subset(Close17_dow, Close17_dow$DOW_down_median == 'DLTR' )
+AMZNv <- subset(Close17_dow, Close17_dow$DOW_down_median == 'AMZN' )
+
+
+gg12 <- ggplot(data = DLRv, aes(x=Date, y=stockValue, group=DOW_down_median)) +
+       geom_line(aes(color=DOW_down_median))+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('Dollar Tree Value 2007-2020')+
+       ylab('Stock Value Dollars')
+
+gg13 <- ggplot(data = AMZNv, aes(x=Date, y=stockValue, group=DOW_down_median)) +
+       geom_line(aes(color=DOW_down_median))+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('Amazon Value 2007-2020')+
+       ylab('Stock Value Dollars')
+
+grid.arrange(gg12, gg13, gg8, gg8, nrow =2)
+```
+
+
+The above charts show Dollar Tree compared to Amazon and both compared to the DOW between 2007 and 2020. The Dollar Tree seems to be cyclical but overall increasing, while Amazon was a steady increase over the years except in 2018 where it had a decrease.
+
+```{r}
+AMZNv2 <- subset(Close17_dow, Close17_dow$Year > 2017 &
+                   Close17_dow$DOW_down_median == 'AMZN')
+
+gg14 <- ggplot(data = AMZNv2, aes(x=Date, y=stockValue)) +
+       geom_line()+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('Amazon Value 2018-2020')+
+       ylab('Stock Value Dollars')
+gg14
+
+```
+
+We see a drop in value of Amazon after September 2018 until about January 2019 when it increases until just before the end of the 2nd quarter in 2019 then it drops in the 1st quarter staying low before increasing to a global maximum in January 2020.
+
+Lets look at Home Depot and Advance Auto parts now.
+```{r}
+HDv <- subset(Close17_dow, Close17_dow$DOW_down_median=='HD' |
+                Close17_dow$DOW_down_median=='AAP')
+
+gg15 <- ggplot(data = HDv, aes(x=Date, y=stockValue, group=DOW_down_median)) +
+       geom_line(aes(color=DOW_down_median))+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('Home Depot & Advance Auto Parts 2007-2020')+
+       ylab('Stock Value Dollars')
+
+grid.arrange(gg15, gg8, nrow =2)
+
+```
+
+The charts above show that Home Depot and the DOW move together by increasing the time span from 2007-2020. Advance Auto Parts showed it had been increasing from 2007-2016, but then declined to a local minimum in the middle of 2017 where it then increased and remained a steady value up to 2020.
+
+Lets also look at Google and First Financial Bankshares.
+```{r}
+ffin <- subset(Close17_dow, Close17_dow$DOW_down_median=='FFIN')
+goog <- subset(Close17_dow, Close17_dow$DOW_down_median=='GOOG')
+
+gg16 <- ggplot(data=ffin, aes(x=Date, y=stockValue, group=DOW_down_median))+
+        geom_line(aes(color=DOW_down_median))+
+        geom_smooth(method = "lm")+
+        #annotate("rect", xmin = 2018, xmax = 2019, ymin = 25, ymax = 40,
+        #alpha = .2)+
+        scale_y_continuous()+
+        theme(legend.position="bottom")+
+        ggtitle('First Financial Bankshares 2007-2020')+
+        ylab('Stock Value Dollars')
+        
+gg17 <- ggplot(data = goog, aes(x=Date, y=stockValue, group=DOW_down_median)) +
+       geom_line(aes(color=DOW_down_median))+
+       geom_smooth(method = "lm")+
+       scale_y_continuous()+
+       theme(legend.position="bottom")+
+       ggtitle('Google 2007-2020')+
+       ylab('Stock Value Dollars')
+
+grid.arrange(gg17, gg16,nrow =2)
+
+```
+
+The above chart shows Google and First Financial Bankshares from 2007-2020. First Financial has many highs and lows between 2015-2020 but is overall increasing, while Google is steadily increasing up till 2017 when it has a few highs and lows until 2020. Both have increased overall as indicated by the linear trendlines added to the two linear plots above for Google and First Financial Bankshares.
+
+We know that some of these plots have time periods that are cyclical, but so far we know that overall, if we want to earn the most on our portfolios we would like to buy low and sell high. These stocks are increasing to rates higher than when they start a cyclical pattern. Lets examine the First Financial Bankshares stock when it sees these cyclical patterns further for some strategy development. There are three peaks or highs for FFIN after about 2017, so lets plot this.
+```{r}
+ffin2 <- subset(ffin, ffin$Year==2018 & ffin$Month=='Jul'|
+                  ffin$Year==2018 & ffin$Month=='Aug'|
+                  ffin$Year==2018 & ffin$Month=='Sep'|
+                  ffin$Year==2018 & ffin$Month=='Oct'|
+                  ffin$Year==2018 & ffin$Month=='Nov'|
+                  ffin$Year==2018 & ffin$Month=='Dec'|
+                  ffin$Year==2019 & ffin$Month=='Jan'|
+                  ffin$Year==2019 & ffin$Month=='Feb'|
+                  ffin$Year==2019 & ffin$Month=='Mar')
+                
+                  
+
+t <- seq(0,15,0.1)
+y <- sin(t)
+ty <- qplot(t,y, geom='path', xlab='time', ylab='Sin(x)')
+
+gg18 <- ggplot(data=ffin2, aes(x=Date, y=stockValue, group=DOW_down_median))+
+        geom_line(aes(color=DOW_down_median))+
+        geom_smooth(method = "lm")+
+        scale_y_continuous()+
+        theme(legend.position="bottom")+
+        ggtitle('FFIN 3 Quarters 2018-2019')+
+        ylab('Stock Value Dollars')
+
+grid.arrange(gg16,gg8,gg18,ty,nrow=2)
+```
+
+The above chart shows the sine curve to illustrate the highs and lows of the daily value changes for the First Financial Bankshares linear plot. If the curve was distorted at certain time intervals startind in the 3rd quarter of 2018 and ending before the 2nd quarter of 2019, this sine curve would show the three waves this stock saw. We are interested in buying at the beginning of the 3rd quarter when the price is low, then selling before the start of the 4th quarter when the stock is high, then buying again when it sees a dip in price after about the 1st month of the 4th quarter, then selling in the middle of the 4th quarter when high, buying at the end of the 4th quarter when low, and selling when high in the middle of the 1st quarter of 2019, and buying when low at the end of the 1st quarter, to maximize profits. 
+
+
+***
+
+These quick analysis of the stock that did well when the DOW was decreasing and unemployment was increasing was interesting to look at. But now, lets look at these stocks and find out if we can indicate when a stock is good by setting a threshold for the number of minimums the stock has and if it decreases by more than its value in the last quarter and also the last two quarters then compare this to the local maxima where it increases to more than a set threshold than it was valued at in the last quarter and also the last two quarters. Count the number of times this happens and compare to the data on the stock ROI. This will require adding in more columns to calculate the daily change compared to a median value of the stock in each quarter. We have the years, the months, and the stock values in the table we are currently using.
 
 
