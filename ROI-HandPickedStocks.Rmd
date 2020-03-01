@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: 'February 2020'
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 This is a project that is for now analyzing some hand picked stock to see if a program can be written based on the analysis of how certain stocks perform from 2007-2020. It looks at cyclical patterns of highs and lows, adds in the DOW highs and lows, the unemployment highs and lows, then mean and median values of daily changes various date fields for day of the week and month. The idea is to get the best performing stocks, analyze them with subsets of the worst performing stocks, get the specific features of each stock to describe it as a profit or loss forecasted stock to invest in based on its current stats, and more. 
@@ -2297,11 +2297,14 @@ Lets also look at Google and First Financial Bankshares.
 ffin <- subset(Close17_dow, Close17_dow$DOW_down_median=='FFIN')
 goog <- subset(Close17_dow, Close17_dow$DOW_down_median=='GOOG')
 
-gg16 <- ggplot(data=ffin, aes(x=Date, y=stockValue, group=DOW_down_median))+
+gg16 <- ggplot(data=ffin, aes(x=as.factor(Date), y=stockValue, group=DOW_down_median))+
         geom_line(aes(color=DOW_down_median))+
         geom_smooth(method = "lm")+
-        #annotate("rect", xmin = 2018, xmax = 2019, ymin = 25, ymax = 40,
-        #alpha = .2)+
+        annotate("rect", xmin = "2018-07-01", xmax = "2019-03-31", ymin = 25, ymax = 35,
+        alpha = .4)+
+        scale_x_discrete(breaks=c("2010-01-04","2015-01-02","2018-01-05",
+                                  "2019-01-03"),
+                         labels=c("2010","2015", "2018","2019"))+
         scale_y_continuous()+
         theme(legend.position="bottom")+
         ggtitle('First Financial Bankshares 2007-2020')+
@@ -2315,7 +2318,7 @@ gg17 <- ggplot(data = goog, aes(x=Date, y=stockValue, group=DOW_down_median)) +
        ggtitle('Google 2007-2020')+
        ylab('Stock Value Dollars')
 
-grid.arrange(gg17, gg16,nrow =2)
+grid.arrange(gg16, gg17,nrow =2)
 
 ```
 
@@ -2347,7 +2350,7 @@ gg18 <- ggplot(data=ffin2, aes(x=Date, y=stockValue, group=DOW_down_median))+
         ggtitle('FFIN 3 Quarters 2018-2019')+
         ylab('Stock Value Dollars')
 
-grid.arrange(gg16,gg8,gg18,ty,nrow=2)
+grid.arrange(gg16,gg18,gg8, ty,nrow=2)
 ```
 
 The above chart shows the sine curve to illustrate the highs and lows of the daily value changes for the First Financial Bankshares linear plot. If the curve was distorted at certain time intervals startind in the 3rd quarter of 2018 and ending before the 2nd quarter of 2019, this sine curve would show the three waves this stock saw. We are interested in buying at the beginning of the 3rd quarter when the price is low, then selling before the start of the 4th quarter when the stock is high, then buying again when it sees a dip in price after about the 1st month of the 4th quarter, then selling in the middle of the 4th quarter when high, buying at the end of the 4th quarter when low, and selling when high in the middle of the 1st quarter of 2019, and buying when low at the end of the 1st quarter, to maximize profits. 
@@ -2356,5 +2359,200 @@ The above chart shows the sine curve to illustrate the highs and lows of the dai
 ***
 
 These quick analysis of the stock that did well when the DOW was decreasing and unemployment was increasing was interesting to look at. But now, lets look at these stocks and find out if we can indicate when a stock is good by setting a threshold for the number of minimums the stock has and if it decreases by more than its value in the last quarter and also the last two quarters then compare this to the local maxima where it increases to more than a set threshold than it was valued at in the last quarter and also the last two quarters. Count the number of times this happens and compare to the data on the stock ROI. This will require adding in more columns to calculate the daily change compared to a median value of the stock in each quarter. We have the years, the months, and the stock values in the table we are currently using.
+
+We can do this by using time lags with the dplyr package. We should already have this package loaded. We have been using for median and mean calculations when grouping by stock.
+The data set we should use could be this one, Close17_dow, or we could spread out the stock names back to being columns and add the stock lags for each stock for 7 days, 30 days, 90 days, and 180 days. Don't get too excited, we have 53 stocks to do this for, or we could just do it with these 17 stocks that made the most profit from having positive median values when unemployment was increasing and the DOW was decreasing. I vote we do the 17.
+***
+
+We are going to create time lags of 7,30,60,90, 120, 150, and 180 days to see if there are any rolling stock values that could indicate when to buy or sell and pin point are threshold values and possibly work this into an automated program later with continuous uploads of these stocks in monitoring our portfolio of stock.
+```{r}
+Close17_dow <- Close17_dow[with(Close17_dow, order(DOW_down_median, Date)),]
+
+Laap <- subset(Close17_dow, Close17_dow$DOW_down_median=='AAP')
+Laddyy <- subset(Close17_dow, Close17_dow$DOW_down_median=='ADDYY')
+Lamzn <- subset(Close17_dow, Close17_dow$DOW_down_median=='AMZN')
+Lcost <- subset(Close17_dow, Close17_dow$DOW_down_median=='COST')
+Ldltr <- subset(Close17_dow, Close17_dow$DOW_down_median=='DLTR')
+Lffin <- subset(Close17_dow, Close17_dow$DOW_down_median=='FFIN')
+Lgoog <- subset(Close17_dow, Close17_dow$DOW_down_median=='GOOG')
+Lhd <- subset(Close17_dow, Close17_dow$DOW_down_median=='HD')
+Ljnj <- subset(Close17_dow, Close17_dow$DOW_down_median=='JNJ')
+Lnflx <- subset(Close17_dow, Close17_dow$DOW_down_median=='NFLX')
+Lnke <- subset(Close17_dow, Close17_dow$DOW_down_median=='NKE')
+Lpcg <- subset(Close17_dow, Close17_dow$DOW_down_median=='PCG')
+Lrost <- subset(Close17_dow, Close17_dow$DOW_down_median=='ROST')
+Lteva <- subset(Close17_dow, Close17_dow$DOW_down_median=='TEVA')
+Ltjx <- subset(Close17_dow, Close17_dow$DOW_down_median=='TJX')
+Lwmt <- subset(Close17_dow, Close17_dow$DOW_down_median=='WMT')
+Lxom <- subset(Close17_dow, Close17_dow$DOW_down_median=='XOM')
+
+aapL7 <- lag(Laap$stockValue,7)
+addyyL7 <- lag(Laddyy$stockValue,7)
+amznL7 <- lag(Lamzn$stockValue,7)
+costL7 <- lag(Lcost$stockValue,7)
+dltrL7 <- lag(Ldltr$stockValue,7)
+ffinL7 <- lag(Lffin$stockValue,7)
+googL7 <- lag(Lgoog$stockValue,7)
+hdL7 <- lag(Lhd$stockValue,7)
+jnjL7 <- lag(Ljnj$stockValue,7)
+nflxL7 <- lag(Lnflx$stockValue,7)
+nkeL7 <- lag(Lnke$stockValue,7)
+pcgL7 <- lag(Lpcg$stockValue,7)
+rostL7 <- lag(Lrost$stockValue,7)
+tevaL7 <- lag(Lteva$stockValue,7)
+tjxL7 <- lag(Ltjx$stockValue,7)
+wmtL7 <- lag(Lwmt$stockValue,7)
+xomL7 <- lag(Lxom$stockValue,7)
+
+Close17_dow$lag7 <- c(aapL7,addyyL7,amznL7,costL7,dltrL7,ffinL7,googL7,
+                                  hdL7,jnjL7,nflxL7,nkeL7,pcgL7,rostL7,tevaL7,
+                                  tjxL7,wmtL7,xomL7)
+
+aapL30 <- lag(Laap$stockValue,30)
+addyyL30 <- lag(Laddyy$stockValue,30)
+amznL30 <- lag(Lamzn$stockValue,30)
+costL30 <- lag(Lcost$stockValue,30)
+dltrL30 <- lag(Ldltr$stockValue,30)
+ffinL30 <- lag(Lffin$stockValue,30)
+googL30 <- lag(Lgoog$stockValue,30)
+hdL30 <- lag(Lhd$stockValue,30)
+jnjL30 <- lag(Ljnj$stockValue,30)
+nflxL30 <- lag(Lnflx$stockValue,30)
+nkeL30 <- lag(Lnke$stockValue,30)
+pcgL30 <- lag(Lpcg$stockValue,30)
+rostL30 <- lag(Lrost$stockValue,30)
+tevaL30 <- lag(Lteva$stockValue,30)
+tjxL30 <- lag(Ltjx$stockValue,30)
+wmtL30 <- lag(Lwmt$stockValue,30)
+xomL30 <- lag(Lxom$stockValue,30)
+
+Close17_dow$lag30 <- c(aapL30,addyyL30,amznL30,costL30,dltrL30,ffinL30,googL30,
+                                  hdL30,jnjL30,nflxL30,nkeL30,pcgL30,rostL30,tevaL30,
+                                  tjxL30,wmtL30,xomL30)
+
+
+aapL60 <- lag(Laap$stockValue,60)
+addyyL60 <- lag(Laddyy$stockValue,60)
+amznL60 <- lag(Lamzn$stockValue,60)
+costL60 <- lag(Lcost$stockValue,60)
+dltrL60 <- lag(Ldltr$stockValue,60)
+ffinL60 <- lag(Lffin$stockValue,60)
+googL60 <- lag(Lgoog$stockValue,60)
+hdL60 <- lag(Lhd$stockValue,60)
+jnjL60 <- lag(Ljnj$stockValue,60)
+nflxL60 <- lag(Lnflx$stockValue,60)
+nkeL60 <- lag(Lnke$stockValue,60)
+pcgL60 <- lag(Lpcg$stockValue,60)
+rostL60 <- lag(Lrost$stockValue,60)
+tevaL60 <- lag(Lteva$stockValue,60)
+tjxL60 <- lag(Ltjx$stockValue,60)
+wmtL60 <- lag(Lwmt$stockValue,60)
+xomL60 <- lag(Lxom$stockValue,60)
+
+Close17_dow$lag60 <- c(aapL60,addyyL60,amznL60,costL60,dltrL60,ffinL60,googL60,
+                                  hdL60,jnjL60,nflxL60,nkeL60,pcgL60,rostL60,tevaL60,
+                                  tjxL60,wmtL60,xomL60)
+
+aapL90 <- lag(Laap$stockValue,90)
+addyyL90 <- lag(Laddyy$stockValue,90)
+amznL90 <- lag(Lamzn$stockValue,90)
+costL90 <- lag(Lcost$stockValue,90)
+dltrL90 <- lag(Ldltr$stockValue,90)
+ffinL90 <- lag(Lffin$stockValue,90)
+googL90 <- lag(Lgoog$stockValue,90)
+hdL90 <- lag(Lhd$stockValue,90)
+jnjL90 <- lag(Ljnj$stockValue,90)
+nflxL90 <- lag(Lnflx$stockValue,90)
+nkeL90 <- lag(Lnke$stockValue,90)
+pcgL90 <- lag(Lpcg$stockValue,90)
+rostL90 <- lag(Lrost$stockValue,90)
+tevaL90 <- lag(Lteva$stockValue,90)
+tjxL90 <- lag(Ltjx$stockValue,90)
+wmtL90 <- lag(Lwmt$stockValue,90)
+xomL90 <- lag(Lxom$stockValue,90)
+
+Close17_dow$lag90 <- c(aapL90,addyyL90,amznL90,costL90,dltrL90,ffinL90,googL90,
+                                  hdL90,jnjL90,nflxL90,nkeL90,pcgL90,rostL90,tevaL90,
+                                  tjxL90,wmtL90,xomL90)
+
+aapL120 <- lag(Laap$stockValue,120)
+addyyL120 <- lag(Laddyy$stockValue,120)
+amznL120 <- lag(Lamzn$stockValue,120)
+costL120 <- lag(Lcost$stockValue,120)
+dltrL120 <- lag(Ldltr$stockValue,120)
+ffinL120 <- lag(Lffin$stockValue,120)
+googL120 <- lag(Lgoog$stockValue,120)
+hdL120 <- lag(Lhd$stockValue,120)
+jnjL120 <- lag(Ljnj$stockValue,120)
+nflxL120 <- lag(Lnflx$stockValue,120)
+nkeL120 <- lag(Lnke$stockValue,120)
+pcgL120 <- lag(Lpcg$stockValue,120)
+rostL120 <- lag(Lrost$stockValue,120)
+tevaL120 <- lag(Lteva$stockValue,120)
+tjxL120 <- lag(Ltjx$stockValue,120)
+wmtL120 <- lag(Lwmt$stockValue,120)
+xomL120 <- lag(Lxom$stockValue,120)
+
+Close17_dow$lag120 <- c(aapL120,addyyL120,amznL120,costL120,dltrL120,ffinL120,googL120,
+                                  hdL120,jnjL120,nflxL120,nkeL120,pcgL120,rostL120,tevaL120,
+                                  tjxL120,wmtL120,xomL120)
+
+aapL150 <- lag(Laap$stockValue,150)
+addyyL150 <- lag(Laddyy$stockValue,150)
+amznL150 <- lag(Lamzn$stockValue,150)
+costL150 <- lag(Lcost$stockValue,150)
+dltrL150 <- lag(Ldltr$stockValue,150)
+ffinL150 <- lag(Lffin$stockValue,150)
+googL150 <- lag(Lgoog$stockValue,150)
+hdL150 <- lag(Lhd$stockValue,150)
+jnjL150 <- lag(Ljnj$stockValue,150)
+nflxL150 <- lag(Lnflx$stockValue,150)
+nkeL150 <- lag(Lnke$stockValue,150)
+pcgL150 <- lag(Lpcg$stockValue,150)
+rostL150 <- lag(Lrost$stockValue,150)
+tevaL150 <- lag(Lteva$stockValue,150)
+tjxL150 <- lag(Ltjx$stockValue,150)
+wmtL150 <- lag(Lwmt$stockValue,150)
+xomL150 <- lag(Lxom$stockValue,150)
+
+Close17_dow$lag150 <- c(aapL150,addyyL150,amznL150,costL150,dltrL150,ffinL150,googL150,
+                                  hdL150,jnjL150,nflxL150,nkeL150,pcgL150,rostL150,tevaL150,
+                                  tjxL150,wmtL150,xomL150)
+
+aapL180 <- lag(Laap$stockValue,180)
+addyyL180 <- lag(Laddyy$stockValue,180)
+amznL180 <- lag(Lamzn$stockValue,180)
+costL180 <- lag(Lcost$stockValue,180)
+dltrL180 <- lag(Ldltr$stockValue,180)
+ffinL180 <- lag(Lffin$stockValue,180)
+googL180 <- lag(Lgoog$stockValue,180)
+hdL180 <- lag(Lhd$stockValue,180)
+jnjL180 <- lag(Ljnj$stockValue,180)
+nflxL180 <- lag(Lnflx$stockValue,180)
+nkeL180 <- lag(Lnke$stockValue,180)
+pcgL180 <- lag(Lpcg$stockValue,180)
+rostL180 <- lag(Lrost$stockValue,180)
+tevaL180 <- lag(Lteva$stockValue,180)
+tjxL180 <- lag(Ltjx$stockValue,180)
+wmtL180 <- lag(Lwmt$stockValue,180)
+xomL180 <- lag(Lxom$stockValue,180)
+
+Close17_dow$lag180 <- c(aapL180,addyyL180,amznL180,costL180,dltrL180,ffinL180,googL180,
+                                  hdL180,jnjL180,nflxL180,nkeL180,pcgL180,rostL180,tevaL180,
+                                  tjxL180,wmtL180,xomL180)
+```
+
+Save this new table by writing it to csv file. Then we will see how many times each stock is lower than 7,30,60,90,120,150, and 180 days prior in stock value prices for each stock. See if we can use this to automate a data set that selects the stock as good or bad to buy, or good or bad to buy/sell. We could also use this information to create a machine learning data set that will use this information for those stocks that are good/bad at certain points in time to predict what its price will be or if it will return a profit. We already know four of these stocks didn't return a profit, but they are in this portfolio of 17 stocks whose median values were positive when the DOW was decreasing and unemployment was increasing. The other 13 stocks returned a profit, and some substantially such as Netflix with 100 fold increased value, and Amazon with 55 fold increased value. 
+```{r}
+write.csv(Close17_dow, 'Close17_dow_lags.csv', row.names=FALSE)
+```
+
+```{r}
+head(Close17_dow,10)
+```
+
+```{r}
+tail(Close17_dow,10)
+```
 
 
