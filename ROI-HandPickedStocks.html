@@ -3565,6 +3565,96 @@ Close17_dow$lag180 &lt;- c(aapL180,addyyL180,amznL180,costL180,dltrL180,ffinL180
 ## 56117 60.73 69.48 68.50 67.98  69.72  77.51  72.61
 ## 56134 59.97 69.78 69.19 68.97  69.57  77.57  72.16
 ## 56151 62.73 70.90 68.52 68.02  67.49  77.63  71.97</code></pre>
+<p>Now create the ratios of current day’s stock value to the lag day stock value. This will allow us to see how these stocks compare to previous days, and get median and average fold change values or ratios.</p>
+<pre class="r"><code>Close17_dow$today2lag7 &lt;- Close17_dow$lag7/Close17_dow$stockValue
+Close17_dow$today2lag30 &lt;- Close17_dow$lag30/Close17_dow$stockValue
+Close17_dow$today2lag60 &lt;- Close17_dow$lag60/Close17_dow$stockValue
+Close17_dow$today2lag90 &lt;- Close17_dow$lag90/Close17_dow$stockValue
+Close17_dow$today2lag120 &lt;- Close17_dow$lag120/Close17_dow$stockValue
+Close17_dow$today2lag150 &lt;- Close17_dow$lag150/Close17_dow$stockValue
+Close17_dow$today2lag180 &lt;- Close17_dow$lag180/Close17_dow$stockValue</code></pre>
+<p>Group by the stock names in this table and add a median value for each lag value.</p>
+<pre class="r"><code>median17today2lag7 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag7), median, na.rm=T)
+median17today2lag30 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag30), median, na.rm=T)
+median17today2lag60 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag60), median, na.rm=T)
+median17today2lag90 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag90), median, na.rm=T)
+median17today2lag120 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag120), median, na.rm=T)
+median17today2lag150 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag150), median, na.rm=T)
+median17today2lag180 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag180), median, na.rm=T)
+
+mediantoday2lags &lt;- cbind(median17today2lag7, median17today2lag30[2], median17today2lag60[2], median17today2lag90[2],
+                    median17today2lag120[2], median17today2lag150[2], median17today2lag180[2])
+colnames(mediantoday2lags)[2:8] &lt;- paste(&#39;median&#39;,colnames(mediantoday2lags)[2:8], sep=&#39;&#39;)
+Close17_dow1 &lt;- merge(Close17_dow, mediantoday2lags, by.x=&#39;DOW_down_median&#39;, by.y=&#39;DOW_down_median&#39;)</code></pre>
+<p>Group by the stock name and now add a mean value. This will be to gather our threshold values to possibly indicate when its good to buy or sell. We will compare this later to the true outcome of each stock.</p>
+<pre class="r"><code>meantoday2lag7 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag7),mean, na.rm=T)
+meantoday2lag30 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag30),mean, na.rm=T)
+meantoday2lag60 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag60),mean, na.rm=T)
+meantoday2lag90 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag90),mean, na.rm=T)
+meantoday2lag120 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag120),mean, na.rm=T)
+meantoday2lag150 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag150),mean, na.rm=T)
+meantoday2lag180 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag180),mean, na.rm=T)
+
+meantoday2lags &lt;- cbind(meantoday2lag7, meantoday2lag30[2], meantoday2lag60[2], meantoday2lag90[2],
+                    meantoday2lag120[2], meantoday2lag150[2], meantoday2lag180[2])
+colnames(meantoday2lags)[2:8] &lt;- paste(&#39;mean&#39;,colnames(meantoday2lags)[2:8], sep=&#39;&#39;)
+Close17_dow2 &lt;- merge(Close17_dow1, meantoday2lags, by.x=&#39;DOW_down_median&#39;, by.y=&#39;DOW_down_median&#39;)</code></pre>
+<p>We should also get the min to know our local minimas in each today2lag.</p>
+<pre class="r"><code>minimumtoday2lag7 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag7),min, na.rm=T)
+minimumtoday2lag30 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag30),min, na.rm=T)
+minimumtoday2lag60 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag60),min, na.rm=T)
+minimumtoday2lag90 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag90),min, na.rm=T)
+minimumtoday2lag120 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag120),min, na.rm=T)
+minimumtoday2lag150 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag150),min, na.rm=T)
+minimumtoday2lag180 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag180),min, na.rm=T)
+
+minimumtoday2lags &lt;- cbind(minimumtoday2lag7, minimumtoday2lag30[2], minimumtoday2lag60[2], minimumtoday2lag90[2],
+                    minimumtoday2lag120[2], minimumtoday2lag150[2], minimumtoday2lag180[2])
+colnames(minimumtoday2lags)[2:8] &lt;- paste(&#39;minimum&#39;,colnames(minimumtoday2lags)[2:8], sep=&#39;&#39;)
+Close17_dow3 &lt;- merge(Close17_dow2, minimumtoday2lags, by.x=&#39;DOW_down_median&#39;, by.y=&#39;DOW_down_median&#39;)</code></pre>
+<p>Lets also add our local maximas by getting the max values for each of these today2lags.</p>
+<pre class="r"><code>maximumtoday2lag7 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag7),max, na.rm=T)
+maximumtoday2lag30 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag30),max, na.rm=T)
+maximumtoday2lag60 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag60),max, na.rm=T)
+maximumtoday2lag90 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag90),max, na.rm=T)
+maximumtoday2lag120 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag120),max, na.rm=T)
+maximumtoday2lag150 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag150),max, na.rm=T)
+maximumtoday2lag180 &lt;- Close17_dow %&gt;% group_by(DOW_down_median) %&gt;%
+  summarise_at(vars(today2lag180),max, na.rm=T)
+
+maximumtoday2lags &lt;- cbind(maximumtoday2lag7, maximumtoday2lag30[2], maximumtoday2lag60[2], maximumtoday2lag90[2],
+                    maximumtoday2lag120[2], maximumtoday2lag150[2], maximumtoday2lag180[2])
+colnames(maximumtoday2lags)[2:8] &lt;- paste(&#39;maximum&#39;,colnames(maximumtoday2lags)[2:8], sep=&#39;&#39;)
+Close17_dow4 &lt;- merge(Close17_dow3, maximumtoday2lags, by.x=&#39;DOW_down_median&#39;, by.y=&#39;DOW_down_median&#39;)</code></pre>
+<p>Write to file</p>
+<pre class="r"><code>write.csv(Close17_dow4, &#39;Close17_dow4_lagStats.csv&#39;, row.names=FALSE)</code></pre>
 
 
 
