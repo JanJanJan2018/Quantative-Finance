@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: 'February 2020'
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 This is a project that is for now analyzing some hand picked stock to see if a program can be written based on the analysis of how certain stocks perform from 2007-2020. It looks at cyclical patterns of highs and lows, adds in the DOW highs and lows, the unemployment highs and lows, then mean and median values of daily changes various date fields for day of the week and month. The idea is to get the best performing stocks, analyze them with subsets of the worst performing stocks, get the specific features of each stock to describe it as a profit or loss forecasted stock to invest in based on its current stats, and more. 
@@ -2679,8 +2679,229 @@ Smaller file of the above, you can rbind() the two together, after importing the
 ```{r}
 Close17_dow4_a <- Close17_dow4[1:28500,]
 Close17_dow4_b <- Close17_dow4[28501:56151,]
-write.csv(Close17_dow4_a, 'Close17_dow4_lagStats_parta.csv', row.names=FALSE)
-write.csv(Close17_dow4_b, 'Close17_dow4_lagStats_partb.csv', row.names=FALSE)
+write.csv(Close17_dow4_a, 'Close17_dow4_lagStats_parta.csv', row.names=TRUE)
+write.csv(Close17_dow4_b, 'Close17_dow4_lagStats_partb.csv', row.names=TRUE)
+```
+
+The fields for the median and mean ratios of todays value to the value 7,30,60,90,120,150, and 180 days prior give some useful information. The minimum and maximum fields give the minimum and maximum ratio values for each group and could also provide some useful information. 
+
+Lets get the median values of the 17 stock in terms of each median lag and mean lag ratio. Then compare. But lets get a summary of those fields first to see the quantiles, that could help us decide which stocks to categorize based on its behavior in time.
+```{r}
+summary(Close17_dow4[22:35])
+
+```
+
+Lets recall which stocks were not returning profits and those that were. There were three stocks that didn't return profits(XOM, TEVA, and PCG), and 14 that did. But only those three and one other stock didn't beat the DOW (JNJ). The table with this information is dROI17.
+```{r}
+dROI17
+```
+
+
+Lets get the median value of the stock_ROI from the dROI17 table.
+```{r}
+medianStockROI <- median(dROI17$stock_ROI)
+medianStockROI
+
+listROI_middle <- dROI17[order(dROI17$stock_ROI)[7:11],]
+listROI_middle$DOW_down_median
+```
+
+
+The above shows us the median value of the return on investment on these 17 stocks is 6.02 or 600% from 2007-2020. The stocks in the middle of this list closest to the median value are the two before the middle and after the middle: FFIN, HD, COST, ADDYY, and GOOG.
+
+```{r}
+listROI_middle
+```
+
+Lets make count variables of these stock and get the values and counts for each time the stock went above or below its price 7, 30, 60, 90, 120, 150, and 180 days prior, and the same for the counts each stock was above those prices. Lets just use the Close17_dow, instead of the added median, mean, min, and max lag value ratios.
+```{r}
+FFIN <- subset(Close17_dow, Close17_dow$DOW_down_median=='FFIN')
+
+ffin7 <- ifelse(FFIN$today2lag7>1, 1,0)
+ffin30 <- ifelse(FFIN$today2lag30>1,1,0)
+ffin60 <- ifelse(FFIN$today2lag60>1,1,0)
+ffin90 <- ifelse(FFIN$today2lag90>1,1,0)
+ffin120 <- ifelse(FFIN$today2lag120>1,1,0)
+ffin150 <- ifelse(FFIN$today2lag150>1,1,0)
+ffin180 <- ifelse(FFIN$today2lag180>1,1,0)
+
+neg7 <- sum(ffin7==0, na.rm=T)
+pos7 <- sum(ffin7==1, na.rm=T)
+
+neg30 <- sum(ffin30==0, na.rm=T)
+pos30 <- sum(ffin30==1, na.rm=T)
+
+neg60 <- sum(ffin60==0, na.rm=T)
+pos60 <- sum(ffin60==1, na.rm=T)
+
+neg90 <- sum(ffin90==0, na.rm=T)
+pos90 <- sum(ffin90==1, na.rm=T)
+
+neg120 <- sum(ffin120==0, na.rm=T)
+pos120 <- sum(ffin120==1, na.rm=T)
+
+neg150 <- sum(ffin150==0, na.rm=T)
+pos150 <- sum(ffin150==1, na.rm=T)
+
+neg180 <- sum(ffin180==0, na.rm=T)
+pos180 <- sum(ffin180==1, na.rm=T)
+
+ffin_counts0 <- as.data.frame(c(neg7,neg30,neg60,neg90,neg120,neg150,neg180))
+ffin_counts1  <- as.data.frame(c(pos7,pos30,pos60,pos90,pos120,pos150,pos180))
+ffin_counts <- cbind(ffin_counts0, ffin_counts1)
+row.names(ffin_counts) <- c('lag7','lag30','lag60','lag90','lag120','lag150','lag180')
+colnames(ffin_counts) <- c('sum_neg_lags','sum_pos_lags')
+
+ffin_counts
+```
+
+From the above chart on the number of days the current value was lower than 7, 30, 60, 90, 120, 150, or 180 days prior to todays's stock value, there were more in each lag than in those days the stocks was higher. There are the fewest number of days the stock increases from 180 days prior's stock value for FFIN stock shown above. This means you have more days to buy low and fewer to sell high. 
+
+We should add a cumulative field or make a cumulative sum variable for each of these seven groups of lags in stock value. This way we can know how many cumulative days there are for each positive or negative value. Are there more frequent days that the stock stays lower in value to its lag price before increasing and how many days does the stock increase before starting to decrease.
+
+
+```{r}
+length(ffin7)
+
+#rm nas or all nas as output from the today2lag7 stock ratio values
+ffin7_a <- ffin7[-c(1:7)]
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for ffin7 <- <- ifelse(FFIN$today2lag7>1, 1,0)
+ffin7_ab <- cumsum(ffin7_a)
+
+ffin7_abc <- as.data.frame(as.factor(ffin7_ab))
+colnames(ffin7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countFFIN <- ffin7_abc %>% group_by(cSum) %>% count(n=n())
+countFFIN <- as.data.frame(countFFIN)
+countFFIN <- countFFIN[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countFFIN$decr_Days <- countFFIN$n-1
+countFFIN <- countFFIN[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countFFIN2 <- subset(countFFIN, countFFIN$decr_Days>0)
+summary(countFFIN2$decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+decr_Days_grouped <- countFFIN2 %>% group_by(decr_Days) %>% count(n=n())
+decr_Days_grouped <- decr_Days_grouped[,-3]
+```
+
+
+The above table countFFIN2 gives the number of days in a row the stock value decreased starting at the cSum variable value. 
+
+The decr_Days_grouped table shows the number of days in a row the stock decreased from 2007-2020, and how many times the stock decreased that many days in a row.
+```{r}
+decr_Days_grouped
+```
+
+From the above chart on the FFIN stock from 2007-2020, it decreased for one day before increasing, exactly 96 times, and it had 10 consecutive days of decreasing exactly 12 times. 
+```{r}
+
+median(decr_Days_grouped$decr_Days)
+```
+The median number of days it decreased consecutively was 12. And the chart above shows it did this exactly three times from 2007-2020. Meaning there were three intervals where this stock, FFIN, decreased for 12 days before increasing. This could be a feature for evaluating whether to buy the stock once, it has decreased for 12 days. We will test it later.
+
+
+
+Now, it would be nice to wrap a way around getting the number of consecutive days the FFIN stock value of each instance compared to the value seven days prior increased. So that we could compare number of days and sets of increasing days to that of the decreasing days. We should be able to do this by changing the original variable that assigned 1 to increasing and instead assigned 1 to decreasing to calculate the days increasing with the same method we used above.
+```{r}
+
+#assign a 1 to decreasing values
+ffin7_b <- ifelse(FFIN$today2lag7>1, 0,1)
+
+#rm NAs
+ffin7_b1 <- ffin7_b[-c(1:7)] 
+
+#counts the 
+ffin7_b2 <- cumsum(ffin7_b1)
+
+ffin7_b3 <- as.data.frame(as.factor(ffin7_b2))
+colnames(ffin7_b3) <- 'cSum'
+
+countFFIN1 <- ffin7_b3 %>% group_by(cSum) %>% count(n=n())
+countFFIN1 <- as.data.frame(countFFIN1)
+countFFIN1 <- countFFIN1[,-3]
+
+countFFIN1$incr_Days <- countFFIN1$n-1
+countFFIN1 <- countFFIN1[,-2]
+
+countFFIN3 <- subset(countFFIN1, countFFIN1$incr_Days>0)
+summary(countFFIN3$incr_Days)
+
+incr_Days_grouped <- countFFIN3 %>% group_by(incr_Days) %>% count(n=n())
+incr_Days_grouped <- incr_Days_grouped[,-3]
+```
+
+There were 26 consecutive days that the stock compared to seven days prior increased, and the median number of consecutive days the stock increased was 3 days in a row. The number of groups or times in this times series from 2007-2020 for FFIN that the stock increased consecutively is shown next.
+```{r}
+incr_Days_grouped
+```
+
+The above chart shows that the stock had 21 sets of consecutive days it increased. FFIN had 10 consecutive days it increased compared to the value 7 days ago, and this happened ten times from 2007-2020. 
+
+
+```{r}
+median(incr_Days_grouped$incr_Days)
+```
+The median number of consecutive days the FFIN stock increased is 11 days, and from the previous chart we know this happened six times from 2007-2020.
+
+
+We can now do this for the other time lags and see if we gain any information by manually making rules to decide a stock's predictability as selling, buying, short and long term returns on investment as profitable, not profitable, or break even. This is just for this stock FFIN, we have to examine the other stock from this table of fold change in today/lag7 stock value for HD, GOOG, ADDYY, and COST stocks. This will grab the useful features of the median return stocks in this portfolio, then we will use the same method on the lowest return stocks and then again on the highest return stock.
+
+Eventually, we will answer:
+
+- how many times did this stock increase compared to the last 7, 30, 60, 90, 120, 150, and 180 days?
+- how many times did this stock decrease compared to the last 7, 30, 60, 90, 120, 150, and 180 days?
+- what is the median stock value fold change of todays/lagN (where N is one of above values)?
+- how many times was this stock below their median value for each lag, and above it?
+- what threshold appears to be the absolute minimum or range of decrease or increase in fold change before the stock increases or decreases?
+- how many times was it below the DOW in fold change by lag? Does the DOW being down or up seem to affect how many consecutive days this stock is up or down?
+- was the DOW high or low when the stock had their max number of consecutive days increasing or decreasing for each lag? Does the DOW seem to impact the number of consecutive days of increase or decrease of the stock? 
+- what was the [federal minimum](https://bebusinessed.com/history/history-of-minimum-wage/) wage of this time period? Does it affect the number of consecutive days the stock increases/decreases? This will be added later if available for our time period.Since 2009 the above link says the minimum wage has been 7.25 USD, although we know some states have higher minimum wages. It was 5.85 USD in 2007 and 6.55 USD in 2008
+- was unemployment increasing or decreasing when the stock increased, decreased, or had more consecutive days of increasing or decreasing value compared to each lag?
+- more questions as they develop.
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
 ```
 
 
