@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: 'February 2020'
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 This is a project that is for now analyzing some hand picked stock to see if a program can be written based on the analysis of how certain stocks perform from 2007-2020. It looks at cyclical patterns of highs and lows, adds in the DOW highs and lows, the unemployment highs and lows, then mean and median values of daily changes various date fields for day of the week and month. The idea is to get the best performing stocks, analyze them with subsets of the worst performing stocks, get the specific features of each stock to describe it as a profit or loss forecasted stock to invest in based on its current stats, and more. 
@@ -21,6 +21,12 @@ library(grid)
 library(gridExtra)
 library(egg)
 library(gtable)
+library(e1071)
+library(caret)
+library(randomForest)
+library(MASS)
+library(gbm)
+
 ```
 
 
@@ -4057,4 +4063,373 @@ dROI17_lag7$ROI_Low_High <- ifelse(dROI17_lag7$stock_ROI <= 6.02, 'Low', 'High')
 dROI17_lag7
 ```
 
+The table we extracted these stock is from the Close2 table.
+```{r}
+colnames(Close2)
+
+```
+
+
 There are 36 more stock in our entire portfolio of stocks with values from 2007-2020 that we could also get these feature characteristics for. But for now lets just add a field to the table we derived these 17 stock from by stock closing value, take the overall return on investment for each of the remaining 36 stocks, and add in the ROI class of 'Low' or 'High' to that table. Then separate into training and testing sets and use machine learning to predict the outcome of the stock being low or high in ROI ratio of start value to final value of the stock according to the initial and final prices of each stock in our time series.
+
+Lets keep only the date field and all the stocks in our Close2 table.
+```{r}
+Close53 <- Close2[,-c(1,55:58,60:63)]
+
+colnames(Close53) <- gsub('.Close','', colnames(Close53))
+colnames(Close53) <- gsub('.PB', '', colnames(Close53))
+colnames(Close53)
+```
+
+Make a mini table of start and final values to get our ROI for each stock.
+```{r}
+Close53_roi <- subset(Close53, Close53$Date=='2007-01-03' |
+                        Close53$Date=='2020-02-14')
+Close53_roi_t <- as.data.frame(t(Close53_roi[1:53]))
+Close53_roi_t$stock_ROI_2007_2020 <- round(Close53_roi_t$`2020-02-14`/Close53_roi_t$`2007-01-03`,2)
+Close53_roi_t$ROI_Low_High_2007_2020 <- ifelse(Close53_roi_t$stock_ROI_2007_2020 <= 6.02, 'Low', 'High')
+Close53_roi_t$stockName <- as.factor(row.names(Close53_roi_t))
+Close53_b <- Close53_roi_t[,-c(1:2)]
+Close53_g <- gather(Close53, 'stockName','stockDayValue',1:53)
+Close53_g$stockName <- as.factor(Close53_g$stockName)
+
+Close53_r <- merge(Close53_g, Close53_b, by.x='stockName', by.y='stockName')
+```
+
+
+We now have a table of the stock from 2007-2020, with the outcome class on the stock based on its daily value in this time period as 'Low' or 'High' ratio of start to final stock value. This measure or threshold was selected by picking the median ROI ratio of the best portfolio of stocks that included 17 of the stocks in our set. That threshold was 6.02 as the ROI of Costco from 2007-2020. Lets put together our data and make two separate data tables for the portfolio of best performing stock in the dROI17_lag7 and the Close53_r data tables. We can subset the Close53_r table by date to see how well any given year of stock information can predict the stock ROI as being low or high.
+
+Change the data types from char to numeric for the stat fields, as this wasn't noticed earlier, and is easier to do this now, then go back to 17 separate coding areas of this script by backtracking.
+```{r}
+dROI17_lag7$medn_cSum_decr_L7 <- as.numeric(dROI17_lag7$medn_cSum_decr_L7)
+dROI17_lag7$Q3_cSum_decr_L7 <- as.numeric(dROI17_lag7$Q3_cSum_decr_L7)
+dROI17_lag7$max_cSum_decr_L7 <- as.numeric(dROI17_lag7$max_cSum_decr_L7)
+dROI17_lag7$medn_cSum_incr_L7 <- as.numeric(dROI17_lag7$medn_cSum_incr_L7)
+dROI17_lag7$Q3_cSum_incr_L7 <- as.numeric(dROI17_lag7$Q3_cSum_incr_L7)
+dROI17_lag7$max_cSum_incr_L7 <- as.numeric(dROI17_lag7$max_cSum_incr_L7)
+
+dROI17_lag7$DOW_down_median <- as.factor(dROI17_lag7$DOW_down_median)
+dROI17_lag7$ROI_Low_High <- as.factor(dROI17_lag7$ROI_Low_High)
+
+```
+
+
+This is a mixed data table of numeric and factor features. Lets remove the stockBeatsDow feature.
+```{r}
+dROI17_lag7_b <- dROI17_lag7[,-7]
+dROI17_lag7_b
+```
+
+
+Lets make the row names of the dROI17_lag7_b table the DOW_down_median factor type feature, then remove that field from the table.
+```{r, warning=FALSE}
+names <- as.character(dROI17_lag7_b$DOW_down_median)
+dROI17_lag7_c <- dROI17_lag7_b[,-1]
+row.names(dROI17_lag7_c) <- names 
+
+dROI17_lag7_d <- round(dROI17_lag7_c[1:11],2)
+row.names(dROI17_lag7_d) <- names
+ROI_17 <- cbind(dROI17_lag7_d, dROI17_lag7_c[12])
+ROI_17
+write.csv(ROI_17, 'ROI_17_ML.csv', row.names=TRUE)
+```
+
+
+We have the machine learning ready table from above for the 17 stocks belonging to the best portfolio of stocks. The other table of the low or high return values on table Close53_r wouldn't be much use to use machine learning on, since the name of the stock is already tied to the class, with the return on investment ratio. The individual stock lags, ratios of today's stock value to the lag value, and the additional stock statistics for cumulative days of increasing and decreasing counts as well as the median, max, and 3rd quantile of each of those cumulative days by lag period to get a bigger picture. This will take twice as many lines of code as already has been produced for these 17, with the 36 other stock in the portfolio of stocks with values between 2007-2020. 
+
+***
+
+
+Lets get started with testing out some machine learning on this small subset of stocks to see how well it can predict a high or low return on investment from 70% training on the remaining 30% testing set of these stocks as samples. We will keep all the variables even if they are redundant and make it easier for the algorithm to predict the class.
+
+```{r}
+set.seed(12356789)
+
+inTrain <- createDataPartition(y=ROI_17$ROI_Low_High, p=0.7, list=FALSE)
+
+trainingSet <- ROI_17[inTrain,]
+testingSet <- ROI_17[-inTrain,]
+
+
+```
+
+
+
+```{r}
+rfMod <- train(ROI_Low_High~., method='rf', data=(trainingSet), 
+               trControl=trainControl(method='cv'), number=5)
+plot(rfMod)
+
+
+```
+
+
+
+
+```{r}
+predRF <- predict(rfMod, testingSet)
+
+predDF <- data.frame(predRF, type=testingSet$ROI_Low_High)
+predDF
+
+sum <- sum(predRF==testingSet$ROI_Low_High) 
+length <- length(testingSet$ROI_Low_High)
+accuracy_rfMod <- (sum/length) 
+accuracy_rfMod
+
+```
+
+
+```{r}
+results <- c(round(accuracy_rfMod,2), round(100,2))
+results <- as.factor(results)
+results <- t(data.frame(results))
+
+colnames(results) <- colnames(predDF)
+Results <- rbind(predDF, results) 
+Results
+
+```
+
+
+```{r}
+knnMod <- train(ROI_Low_High ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+plot(knnMod)
+
+```
+
+
+```{r}
+rpartMod <- train(ROI_Low_High ~ ., method='rpart', tuneLength=7, data=trainingSet) 
+
+```
+
+```{r, message=FALSE, warning=FALSE, error=FALSE}
+glmMod <- train(ROI_Low_High ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r}
+predKNN <- predict(knnMod, testingSet)
+predRPART <- predict(rpartMod, testingSet)
+predGLM <- predict(glmMod, testingSet)
+
+```
+
+
+```{r}
+length=length(testingSet$ROI_Low_High)
+
+sumKNN <- sum(predKNN==testingSet$ROI_Low_High)
+sumRPart <- sum(predRPART==testingSet$ROI_Low_High)
+sumGLM <- sum(predGLM==testingSet$ROI_Low_High)
+
+```
+
+```{r}
+accuracy_KNN <- sumKNN/length 
+accuracy_RPART <- sumRPart/length 
+accuracy_GLM <- sumGLM/length 
+
+```
+
+
+```{r}
+predDF2 <- data.frame(predRF,predKNN,predRPART,predGLM, 
+                      TYPE=testingSet$ROI_Low_High)
+colnames(predDF2) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+
+results <- c(round(accuracy_rfMod,2),  
+             round(accuracy_KNN,2), 
+             round(accuracy_RPART,2),
+             round(accuracy_GLM,2), 
+             round(100,2))
+
+results <- as.factor(results)
+results <- t(data.frame(results))
+colnames(results) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+Results <- rbind(predDF2, results) 
+Results
+
+
+```
+
+The above algorithms of machine learning using the default settings didn't give very accurate predictions. There were only 13 samples to train on, and 4 to test on and the data fluctuates. There are just as many features as samples in the training set and more so in the testing set. What if we remove some of the features? Lets do this and remove the first five features.
+
+
+```{r}
+set.seed(12356789)
+
+ROI_17b <- ROI_17[,-c(1:5)]
+inTrain <- createDataPartition(y=ROI_17b$ROI_Low_High, p=0.7, list=FALSE)
+
+trainingSet <- ROI_17b[inTrain,]
+testingSet <- ROI_17b[-inTrain,]
+
+
+```
+
+
+
+```{r}
+rfMod <- train(ROI_Low_High~., method='rf', data=(trainingSet), 
+               trControl=trainControl(method='cv'), number=5)
+plot(rfMod)
+
+
+```
+
+
+
+
+```{r}
+predRF <- predict(rfMod, testingSet)
+
+predDF <- data.frame(predRF, type=testingSet$ROI_Low_High)
+predDF
+
+sum <- sum(predRF==testingSet$ROI_Low_High) 
+length <- length(testingSet$ROI_Low_High)
+accuracy_rfMod <- (sum/length) 
+accuracy_rfMod
+
+```
+
+
+```{r}
+results <- c(round(accuracy_rfMod,2), round(100,2))
+results <- as.factor(results)
+results <- t(data.frame(results))
+
+colnames(results) <- colnames(predDF)
+Results <- rbind(predDF, results) 
+Results
+
+```
+
+
+```{r}
+knnMod <- train(ROI_Low_High ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+plot(knnMod)
+
+```
+
+
+```{r}
+rpartMod <- train(ROI_Low_High ~ ., method='rpart', tuneLength=7, data=trainingSet) 
+
+```
+
+```{r, message=FALSE, warning=FALSE, error=FALSE}
+glmMod <- train(ROI_Low_High ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r}
+predKNN <- predict(knnMod, testingSet)
+predRPART <- predict(rpartMod, testingSet)
+predGLM <- predict(glmMod, testingSet)
+
+```
+
+
+```{r}
+length=length(testingSet$ROI_Low_High)
+
+sumKNN <- sum(predKNN==testingSet$ROI_Low_High)
+sumRPart <- sum(predRPART==testingSet$ROI_Low_High)
+sumGLM <- sum(predGLM==testingSet$ROI_Low_High)
+
+```
+
+```{r}
+accuracy_KNN <- sumKNN/length 
+accuracy_RPART <- sumRPart/length 
+accuracy_GLM <- sumGLM/length 
+
+```
+
+
+```{r}
+predDF2 <- data.frame(predRF,predKNN,predRPART,predGLM, 
+                      TYPE=testingSet$ROI_Low_High)
+colnames(predDF2) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+
+results <- c(round(accuracy_rfMod,2),  
+             round(accuracy_KNN,2), 
+             round(accuracy_RPART,2),
+             round(accuracy_GLM,2), 
+             round(100,2))
+
+results <- as.factor(results)
+results <- t(data.frame(results))
+colnames(results) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+Results <- rbind(predDF2, results) 
+Results
+
+
+```
+
+The feature removal was better in accuracy than the original data. Based on the number of times the ratio of today's stock values by date to the value seven days ago as increasing, decreasing, the added statistics of max, median, and 3rd quantile all added more information and got rid of noise so that there was one model that scored 100% accuracy and the others only got half right. In the other set, with the average stock values, DOW ROI, and start and final values for the time span 2007-2020, there was one that scored 1/4 and the others got half right. In this case, the GLM or generalized linear model based on linear and logistic regression performed better than the others and got all predictions of the four samples right.
+
+This could mean having these statistics is powerful in predicting the value of the stock as high or low, or that the GLM notices that there is information in the statistical lag information that was used to classify the stock as a high or low return, or both. 
+
+These questions can be answered if making an app where a person asks what stock to predict, the app pulls the data from the internet, for the specified time. The app then gathers the seven day lag information of the stock, gets the fold change of the daily stock values of the stock to the seven day lag, counts the number of times the stock has cumulative days of increasing and decreasing, gets the median value of that range, compares the number of days the stock was increasing last, compared with the last few days ratios to indicate what the set of increase or decrease count is, then returns whether to buy or sell, based on whether the set of days is reaching the median value of days(or 3rd quartile and/or beyond the previous max cumulative days increasing/decreasing) that increase or decrease for a short run profit, figuratively. 
+
+A way to see of Naive Bayes, a GLM model, algorithm to calculate the probabilities of the stock continuing to increase or decrease based on the previous days increase, possibly the day of the month, quarter of the year, and so on, that could return the best probability for continuing to decrease, or continuing to increase. The features would again have to be limited for the best results, but there could be algorithms for all of these questions inside a stock forecast app.
+
+What remains is to add in the other 36 stock lag information and test this same series of machine learning default setting algorithms on that data to see if results improve. And do this for all the lag information of the 30-60-90-120-150-180 lags. Bunch more coding but the methods are above, with time consuming find and replace carefully done. 
+
+To test how well this works for any given quarter year, month, year, etc., these same steps would have to be done to smaller subsets.
+```{r}
+
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
