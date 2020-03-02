@@ -3655,6 +3655,247 @@ colnames(maximumtoday2lags)[2:8] &lt;- paste(&#39;maximum&#39;,colnames(maximumt
 Close17_dow4 &lt;- merge(Close17_dow3, maximumtoday2lags, by.x=&#39;DOW_down_median&#39;, by.y=&#39;DOW_down_median&#39;)</code></pre>
 <p>Write to file</p>
 <pre class="r"><code>write.csv(Close17_dow4, &#39;Close17_dow4_lagStats.csv&#39;, row.names=FALSE)</code></pre>
+<p>Smaller file of the above, you can rbind() the two together, after importing them if needed.</p>
+<pre class="r"><code>Close17_dow4_a &lt;- Close17_dow4[1:28500,]
+Close17_dow4_b &lt;- Close17_dow4[28501:56151,]
+write.csv(Close17_dow4_a, &#39;Close17_dow4_lagStats_parta.csv&#39;, row.names=TRUE)
+write.csv(Close17_dow4_b, &#39;Close17_dow4_lagStats_partb.csv&#39;, row.names=TRUE)</code></pre>
+<p>The fields for the median and mean ratios of todays value to the value 7,30,60,90,120,150, and 180 days prior give some useful information. The minimum and maximum fields give the minimum and maximum ratio values for each group and could also provide some useful information.</p>
+<p>Lets get the median values of the 17 stock in terms of each median lag and mean lag ratio. Then compare. But lets get a summary of those fields first to see the quantiles, that could help us decide which stocks to categorize based on its behavior in time.</p>
+<pre class="r"><code>summary(Close17_dow4[22:35])</code></pre>
+<pre><code>##  mediantoday2lag7 mediantoday2lag30 mediantoday2lag60 mediantoday2lag90
+##  Min.   :0.9897   Min.   :0.9452    Min.   :0.8916    Min.   :0.8493   
+##  1st Qu.:0.9937   1st Qu.:0.9742    1st Qu.:0.9511    1st Qu.:0.9348   
+##  Median :0.9947   Median :0.9787    Median :0.9570    Median :0.9412   
+##  Mean   :0.9951   Mean   :0.9791    Mean   :0.9599    Mean   :0.9454   
+##  3rd Qu.:0.9971   3rd Qu.:0.9893    3rd Qu.:0.9810    3rd Qu.:0.9681   
+##  Max.   :1.0001   Max.   :0.9996    Max.   :1.0061    Max.   :1.0089   
+##  mediantoday2lag120 mediantoday2lag150 mediantoday2lag180 meantoday2lag7  
+##  Min.   :0.8105     Min.   :0.7771     Min.   :0.7388     Min.   :0.9932  
+##  1st Qu.:0.9091     1st Qu.:0.8921     1st Qu.:0.8667     1st Qu.:0.9963  
+##  Median :0.9241     Median :0.9079     Median :0.8928     Median :0.9971  
+##  Mean   :0.9312     Mean   :0.9184     Mean   :0.9023     Mean   :0.9979  
+##  3rd Qu.:0.9630     3rd Qu.:0.9549     3rd Qu.:0.9455     3rd Qu.:0.9985  
+##  Max.   :1.0158     Max.   :1.0208     Max.   :1.0235     Max.   :1.0063  
+##  meantoday2lag30  meantoday2lag60  meantoday2lag90  meantoday2lag120
+##  Min.   :0.9715   Min.   :0.9446   Min.   :0.9185   Min.   :0.8938  
+##  1st Qu.:0.9837   1st Qu.:0.9676   1st Qu.:0.9515   1st Qu.:0.9363  
+##  Median :0.9879   Median :0.9755   Median :0.9624   Median :0.9493  
+##  Mean   :0.9909   Mean   :0.9827   Mean   :0.9748   Mean   :0.9663  
+##  3rd Qu.:0.9935   3rd Qu.:0.9866   3rd Qu.:0.9798   3rd Qu.:0.9728  
+##  Max.   :1.0250   Max.   :1.0588   Max.   :1.0879   Max.   :1.1073  
+##  meantoday2lag150 meantoday2lag180
+##  Min.   :0.8680   Min.   :0.8424  
+##  1st Qu.:0.9220   1st Qu.:0.9075  
+##  Median :0.9358   Median :0.9233  
+##  Mean   :0.9571   Mean   :0.9477  
+##  3rd Qu.:0.9657   3rd Qu.:0.9578  
+##  Max.   :1.1225   Max.   :1.1520</code></pre>
+<p>Lets recall which stocks were not returning profits and those that were. There were three stocks that didn’t return profits(XOM, TEVA, and PCG), and 14 that did. But only those three and one other stock didn’t beat the DOW (JNJ). The table with this information is dROI17.</p>
+<pre class="r"><code>dROI17</code></pre>
+<pre><code>## # A tibble: 17 x 7
+##    DOW_down_median avgStockValue startValue finalValue DOW_ROI stock_ROI
+##    &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+##  1 AAP                      97.3      35.6       134.     2.36     3.75 
+##  2 ADDYY                    58.4      25         156.     2.36     6.24 
+##  3 AMZN                    551.       38.7      2135.     2.36    55.2  
+##  4 COST                    123.       52.8       318.     2.36     6.02 
+##  5 DLTR                     52.8      10.2        88.7    2.36     8.67 
+##  6 FFIN                     14.7       7.00       34.6    2.36     4.94 
+##  7 GOOG                    559.      233.       1521.     2.36     6.53 
+##  8 HD                       90.9      41.1       245.     2.36     5.97 
+##  9 JNJ                      91.1      66.4       150.     2.36     2.26 
+## 10 NFLX                     92.4       3.80      380.     2.36   100.   
+## 11 NKE                      39.7      12.2       104.     2.36     8.48 
+## 12 PCG                      44.1      47.3        16.2    2.36     0.343
+## 13 ROST                     40.8       7.62      122.     2.36    16.0  
+## 14 TEVA                     41.1      31.3        12.2    2.36     0.391
+## 15 TJX                      26.0       7.17       63.4    2.36     8.84 
+## 16 WMT                      69.8      47.5       118.     2.36     2.48 
+## 17 XOM                      81.4      74.1        60.7    2.36     0.818
+## # … with 1 more variable: stockBeatsDOW &lt;chr&gt;</code></pre>
+<p>Lets get the median value of the stock_ROI from the dROI17 table.</p>
+<pre class="r"><code>medianStockROI &lt;- median(dROI17$stock_ROI)
+medianStockROI</code></pre>
+<pre><code>## [1] 6.024035</code></pre>
+<pre class="r"><code>listROI_middle &lt;- dROI17[order(dROI17$stock_ROI)[7:11],]
+listROI_middle$DOW_down_median</code></pre>
+<pre><code>## [1] &quot;FFIN&quot;  &quot;HD&quot;    &quot;COST&quot;  &quot;ADDYY&quot; &quot;GOOG&quot;</code></pre>
+<p>The above shows us the median value of the return on investment on these 17 stocks is 6.02 or 600% from 2007-2020. The stocks in the middle of this list closest to the median value are the two before the middle and after the middle: FFIN, HD, COST, ADDYY, and GOOG.</p>
+<pre class="r"><code>listROI_middle</code></pre>
+<pre><code>## # A tibble: 5 x 7
+##   DOW_down_median avgStockValue startValue finalValue DOW_ROI stock_ROI
+##   &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+## 1 FFIN                     14.7       7.00       34.6    2.36      4.94
+## 2 HD                       90.9      41.1       245.     2.36      5.97
+## 3 COST                    123.       52.8       318.     2.36      6.02
+## 4 ADDYY                    58.4      25         156.     2.36      6.24
+## 5 GOOG                    559.      233.       1521.     2.36      6.53
+## # … with 1 more variable: stockBeatsDOW &lt;chr&gt;</code></pre>
+<p>Lets make count variables of these stock and get the values and counts for each time the stock went above or below its price 7, 30, 60, 90, 120, 150, and 180 days prior, and the same for the counts each stock was above those prices. Lets just use the Close17_dow, instead of the added median, mean, min, and max lag value ratios.</p>
+<pre class="r"><code>FFIN &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;FFIN&#39;)
+
+ffin7 &lt;- ifelse(FFIN$today2lag7&gt;1, 1,0)
+ffin30 &lt;- ifelse(FFIN$today2lag30&gt;1,1,0)
+ffin60 &lt;- ifelse(FFIN$today2lag60&gt;1,1,0)
+ffin90 &lt;- ifelse(FFIN$today2lag90&gt;1,1,0)
+ffin120 &lt;- ifelse(FFIN$today2lag120&gt;1,1,0)
+ffin150 &lt;- ifelse(FFIN$today2lag150&gt;1,1,0)
+ffin180 &lt;- ifelse(FFIN$today2lag180&gt;1,1,0)
+
+neg7 &lt;- sum(ffin7==0, na.rm=T)
+pos7 &lt;- sum(ffin7==1, na.rm=T)
+
+neg30 &lt;- sum(ffin30==0, na.rm=T)
+pos30 &lt;- sum(ffin30==1, na.rm=T)
+
+neg60 &lt;- sum(ffin60==0, na.rm=T)
+pos60 &lt;- sum(ffin60==1, na.rm=T)
+
+neg90 &lt;- sum(ffin90==0, na.rm=T)
+pos90 &lt;- sum(ffin90==1, na.rm=T)
+
+neg120 &lt;- sum(ffin120==0, na.rm=T)
+pos120 &lt;- sum(ffin120==1, na.rm=T)
+
+neg150 &lt;- sum(ffin150==0, na.rm=T)
+pos150 &lt;- sum(ffin150==1, na.rm=T)
+
+neg180 &lt;- sum(ffin180==0, na.rm=T)
+pos180 &lt;- sum(ffin180==1, na.rm=T)
+
+ffin_counts0 &lt;- as.data.frame(c(neg7,neg30,neg60,neg90,neg120,neg150,neg180))
+ffin_counts1  &lt;- as.data.frame(c(pos7,pos30,pos60,pos90,pos120,pos150,pos180))
+ffin_counts &lt;- cbind(ffin_counts0, ffin_counts1)
+row.names(ffin_counts) &lt;- c(&#39;lag7&#39;,&#39;lag30&#39;,&#39;lag60&#39;,&#39;lag90&#39;,&#39;lag120&#39;,&#39;lag150&#39;,&#39;lag180&#39;)
+colnames(ffin_counts) &lt;- c(&#39;sum_neg_lags&#39;,&#39;sum_pos_lags&#39;)
+
+ffin_counts</code></pre>
+<pre><code>##        sum_neg_lags sum_pos_lags
+## lag7           1786         1510
+## lag30          1939         1334
+## lag60          2069         1174
+## lag90          2133         1080
+## lag120         2096         1087
+## lag150         2210          943
+## lag180         2223          900</code></pre>
+<p>From the above chart on the number of days the current value was lower than 7, 30, 60, 90, 120, 150, or 180 days prior to todays’s stock value, there were more in each lag than in those days the stocks was higher. There are the fewest number of days the stock increases from 180 days prior’s stock value for FFIN stock shown above. This means you have more days to buy low and fewer to sell high.</p>
+<p>We should add a cumulative field or make a cumulative sum variable for each of these seven groups of lags in stock value. This way we can know how many cumulative days there are for each positive or negative value. Are there more frequent days that the stock stays lower in value to its lag price before increasing and how many days does the stock increase before starting to decrease.</p>
+<pre class="r"><code>length(ffin7)</code></pre>
+<pre><code>## [1] 3303</code></pre>
+<pre class="r"><code>#rm nas or all nas as output from the today2lag7 stock ratio values
+ffin7_a &lt;- ffin7[-c(1:7)]
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for ffin7 &lt;- &lt;- ifelse(FFIN$today2lag7&gt;1, 1,0)
+ffin7_ab &lt;- cumsum(ffin7_a)
+
+ffin7_abc &lt;- as.data.frame(as.factor(ffin7_ab))
+colnames(ffin7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countFFIN &lt;- ffin7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countFFIN &lt;- as.data.frame(countFFIN)
+countFFIN &lt;- countFFIN[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countFFIN$decr_Days &lt;- countFFIN$n-1
+countFFIN &lt;- countFFIN[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countFFIN2 &lt;- subset(countFFIN, countFFIN$decr_Days&gt;0)
+summary(countFFIN2$decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.347   8.000  38.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+decr_Days_grouped &lt;- countFFIN2 %&gt;% group_by(decr_Days) %&gt;% count(n=n())
+decr_Days_grouped &lt;- decr_Days_grouped[,-3]</code></pre>
+<p>The above table countFFIN2 gives the number of days in a row the stock value decreased starting at the cSum variable value.</p>
+<p>The decr_Days_grouped table shows the number of days in a row the stock decreased from 2007-2020, and how many times the stock decreased that many days in a row.</p>
+<pre class="r"><code>decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 23 x 2
+## # Groups:   decr_Days [23]
+##    decr_Days     n
+##        &lt;dbl&gt; &lt;int&gt;
+##  1         1    96
+##  2         2    54
+##  3         3    28
+##  4         4    22
+##  5         5    11
+##  6         6    13
+##  7         7    20
+##  8         8    21
+##  9         9    10
+## 10        10    12
+## # … with 13 more rows</code></pre>
+<p>From the above chart on the FFIN stock from 2007-2020, it decreased for one day before increasing, exactly 96 times, and it had 10 consecutive days of decreasing exactly 12 times.</p>
+<pre class="r"><code>median(decr_Days_grouped$decr_Days)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<p>The median number of days it decreased consecutively was 12. And the chart above shows it did this exactly three times from 2007-2020. Meaning there were three intervals where this stock, FFIN, decreased for 12 days before increasing. This could be a feature for evaluating whether to buy the stock once, it has decreased for 12 days. We will test it later.</p>
+<p>Now, it would be nice to wrap a way around getting the number of consecutive days the FFIN stock value of each instance compared to the value seven days prior increased. So that we could compare number of days and sets of increasing days to that of the decreasing days. We should be able to do this by changing the original variable that assigned 1 to increasing and instead assigned 1 to decreasing to calculate the days increasing with the same method we used above.</p>
+<pre class="r"><code>#assign a 1 to decreasing values
+ffin7_b &lt;- ifelse(FFIN$today2lag7&gt;1, 0,1)
+
+#rm NAs
+ffin7_b1 &lt;- ffin7_b[-c(1:7)] 
+
+#counts the 
+ffin7_b2 &lt;- cumsum(ffin7_b1)
+
+ffin7_b3 &lt;- as.data.frame(as.factor(ffin7_b2))
+colnames(ffin7_b3) &lt;- &#39;cSum&#39;
+
+countFFIN1 &lt;- ffin7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countFFIN1 &lt;- as.data.frame(countFFIN1)
+countFFIN1 &lt;- countFFIN1[,-3]
+
+countFFIN1$incr_Days &lt;- countFFIN1$n-1
+countFFIN1 &lt;- countFFIN1[,-2]
+
+countFFIN3 &lt;- subset(countFFIN1, countFFIN1$incr_Days&gt;0)
+summary(countFFIN3$incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.504   7.000  26.000</code></pre>
+<pre class="r"><code>incr_Days_grouped &lt;- countFFIN3 %&gt;% group_by(incr_Days) %&gt;% count(n=n())
+incr_Days_grouped &lt;- incr_Days_grouped[,-3]</code></pre>
+<p>There were 26 consecutive days that the stock compared to seven days prior increased, and the median number of consecutive days the stock increased was 3 days in a row. The number of groups or times in this times series from 2007-2020 for FFIN that the stock increased consecutively is shown next.</p>
+<pre class="r"><code>incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 21 x 2
+## # Groups:   incr_Days [21]
+##    incr_Days     n
+##        &lt;dbl&gt; &lt;int&gt;
+##  1         1   112
+##  2         2    50
+##  3         3    32
+##  4         4    28
+##  5         5    13
+##  6         6    12
+##  7         7    22
+##  8         8    10
+##  9         9    12
+## 10        10    10
+## # … with 11 more rows</code></pre>
+<p>The above chart shows that the stock had 21 sets of consecutive days it increased. FFIN had 10 consecutive days it increased compared to the value 7 days ago, and this happened ten times from 2007-2020.</p>
+<pre class="r"><code>median(incr_Days_grouped$incr_Days)</code></pre>
+<pre><code>## [1] 11</code></pre>
+<p>The median number of consecutive days the FFIN stock increased is 11 days, and from the previous chart we know this happened six times from 2007-2020.</p>
+<p>We can now do this for the other time lags and see if we gain any information by manually making rules to decide a stock’s predictability as selling, buying, short and long term returns on investment as profitable, not profitable, or break even. This is just for this stock FFIN, we have to examine the other stock from this table of fold change in today/lag7 stock value for HD, GOOG, ADDYY, and COST stocks. This will grab the useful features of the median return stocks in this portfolio, then we will use the same method on the lowest return stocks and then again on the highest return stock.</p>
+<p>Eventually, we will answer:</p>
+<ul>
+<li>how many times did this stock increase compared to the last 7, 30, 60, 90, 120, 150, and 180 days?</li>
+<li>how many times did this stock decrease compared to the last 7, 30, 60, 90, 120, 150, and 180 days?</li>
+<li>what is the median stock value fold change of todays/lagN (where N is one of above values)?</li>
+<li>how many times was this stock below their median value for each lag, and above it?</li>
+<li>what threshold appears to be the absolute minimum or range of decrease or increase in fold change before the stock increases or decreases?</li>
+<li>how many times was it below the DOW in fold change by lag? Does the DOW being down or up seem to affect how many consecutive days this stock is up or down?</li>
+<li>was the DOW high or low when the stock had their max number of consecutive days increasing or decreasing for each lag? Does the DOW seem to impact the number of consecutive days of increase or decrease of the stock?</li>
+<li>what was the <a href="https://bebusinessed.com/history/history-of-minimum-wage/">federal minimum</a> wage of this time period? Does it affect the number of consecutive days the stock increases/decreases? This will be added later if available for our time period.Since 2009 the above link says the minimum wage has been 7.25 USD, although we know some states have higher minimum wages. It was 5.85 USD in 2007 and 6.55 USD in 2008</li>
+<li>was unemployment increasing or decreasing when the stock increased, decreased, or had more consecutive days of increasing or decreasing value compared to each lag?</li>
+<li>more questions as they develop.</li>
+</ul>
 
 
 
