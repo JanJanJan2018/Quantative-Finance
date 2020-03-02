@@ -3883,19 +3883,1241 @@ incr_Days_grouped &lt;- incr_Days_grouped[,-3]</code></pre>
 <pre><code>## [1] 11</code></pre>
 <p>The median number of consecutive days the FFIN stock increased is 11 days, and from the previous chart we know this happened six times from 2007-2020.</p>
 <p>We can now do this for the other time lags and see if we gain any information by manually making rules to decide a stock’s predictability as selling, buying, short and long term returns on investment as profitable, not profitable, or break even. This is just for this stock FFIN, we have to examine the other stock from this table of fold change in today/lag7 stock value for HD, GOOG, ADDYY, and COST stocks. This will grab the useful features of the median return stocks in this portfolio, then we will use the same method on the lowest return stocks and then again on the highest return stock.</p>
+<hr />
+<hr />
 <p>Eventually, we will answer:</p>
 <ul>
-<li>how many times did this stock increase compared to the last 7, 30, 60, 90, 120, 150, and 180 days?</li>
-<li>how many times did this stock decrease compared to the last 7, 30, 60, 90, 120, 150, and 180 days?</li>
-<li>what is the median stock value fold change of todays/lagN (where N is one of above values)?</li>
-<li>how many times was this stock below their median value for each lag, and above it?</li>
-<li>what threshold appears to be the absolute minimum or range of decrease or increase in fold change before the stock increases or decreases?</li>
-<li>how many times was it below the DOW in fold change by lag? Does the DOW being down or up seem to affect how many consecutive days this stock is up or down?</li>
-<li>was the DOW high or low when the stock had their max number of consecutive days increasing or decreasing for each lag? Does the DOW seem to impact the number of consecutive days of increase or decrease of the stock?</li>
-<li>what was the <a href="https://bebusinessed.com/history/history-of-minimum-wage/">federal minimum</a> wage of this time period? Does it affect the number of consecutive days the stock increases/decreases? This will be added later if available for our time period.Since 2009 the above link says the minimum wage has been 7.25 USD, although we know some states have higher minimum wages. It was 5.85 USD in 2007 and 6.55 USD in 2008</li>
-<li>was unemployment increasing or decreasing when the stock increased, decreased, or had more consecutive days of increasing or decreasing value compared to each lag?</li>
-<li>more questions as they develop.</li>
+<li><p>how many times did this stock increase compared to the last 7, 30, 60, 90, 120, 150, and 180 days?</p></li>
+<li><p>how many times did this stock decrease compared to the last 7, 30, 60, 90, 120, 150, and 180 days?</p></li>
+<li><p>what is the median stock value fold change of todays/lagN (where N is one of above values)?</p></li>
+<li><p>how many times was this stock below their median value for each lag, and above it?</p></li>
+<li><p>what threshold appears to be the absolute minimum or range of decrease or increase in fold change before the stock increases or decreases?</p></li>
+<li><p>how many times was it below the DOW in fold change by lag? Does the DOW being down or up seem to affect how many consecutive days this stock is up or down?</p></li>
+<li><p>was the DOW high or low when the stock had their max number of consecutive days increasing or decreasing for each lag? Does the DOW seem to impact the number of consecutive days of increase or decrease of the stock?</p></li>
+<li><p>what was the <a href="https://bebusinessed.com/history/history-of-minimum-wage/">federal minimum</a> wage of this time period? Does it affect the number of consecutive days the stock increases/decreases? This will be added later if available for our time period.Since 2009 the above link says the minimum wage has been 7.25 USD, although we know some states have higher minimum wages. It was 5.85 USD in 2007 and 6.55 USD in 2008</p></li>
+<li><p>was unemployment increasing or decreasing when the stock increased, decreased, or had more consecutive days of increasing or decreasing value compared to each lag?</p></li>
+<li><p>more questions as they develop.</p></li>
 </ul>
+<hr />
+<hr />
+<p>Lets look again at our 17 stock that were in the best performing subset with return on investment in dollars filtered by those that had positive median daily change stock values when the DOW was down and unemployment higher than the last month. This was in our dROI17 table.</p>
+<pre class="r"><code>listROI &lt;- dROI17[order(dROI17$stock_ROI),]
+
+listROI_low &lt;- listROI[1:6,]
+listROI_middle &lt;- listROI[7:11,]
+listROI_high &lt;- listROI[12:17,]
+
+listROI</code></pre>
+<pre><code>## # A tibble: 17 x 7
+##    DOW_down_median avgStockValue startValue finalValue DOW_ROI stock_ROI
+##    &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+##  1 PCG                      44.1      47.3        16.2    2.36     0.343
+##  2 TEVA                     41.1      31.3        12.2    2.36     0.391
+##  3 XOM                      81.4      74.1        60.7    2.36     0.818
+##  4 JNJ                      91.1      66.4       150.     2.36     2.26 
+##  5 WMT                      69.8      47.5       118.     2.36     2.48 
+##  6 AAP                      97.3      35.6       134.     2.36     3.75 
+##  7 FFIN                     14.7       7.00       34.6    2.36     4.94 
+##  8 HD                       90.9      41.1       245.     2.36     5.97 
+##  9 COST                    123.       52.8       318.     2.36     6.02 
+## 10 ADDYY                    58.4      25         156.     2.36     6.24 
+## 11 GOOG                    559.      233.       1521.     2.36     6.53 
+## 12 NKE                      39.7      12.2       104.     2.36     8.48 
+## 13 DLTR                     52.8      10.2        88.7    2.36     8.67 
+## 14 TJX                      26.0       7.17       63.4    2.36     8.84 
+## 15 ROST                     40.8       7.62      122.     2.36    16.0  
+## 16 AMZN                    551.       38.7      2135.     2.36    55.2  
+## 17 NFLX                     92.4       3.80      380.     2.36   100.   
+## # … with 1 more variable: stockBeatsDOW &lt;chr&gt;</code></pre>
+<p>The low median return on investment ratios of final/start values:</p>
+<pre class="r"><code>listROI_low</code></pre>
+<pre><code>## # A tibble: 6 x 7
+##   DOW_down_median avgStockValue startValue finalValue DOW_ROI stock_ROI
+##   &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+## 1 PCG                      44.1       47.3       16.2    2.36     0.343
+## 2 TEVA                     41.1       31.3       12.2    2.36     0.391
+## 3 XOM                      81.4       74.1       60.7    2.36     0.818
+## 4 JNJ                      91.1       66.4      150.     2.36     2.26 
+## 5 WMT                      69.8       47.5      118.     2.36     2.48 
+## 6 AAP                      97.3       35.6      134.     2.36     3.75 
+## # … with 1 more variable: stockBeatsDOW &lt;chr&gt;</code></pre>
+<p>The middle median return on investment ratios of final/start values that we only evaluated a seven day lag with for number of increasing and decreasing days in this time span of 2007-2020:</p>
+<pre class="r"><code>listROI_middle</code></pre>
+<pre><code>## # A tibble: 5 x 7
+##   DOW_down_median avgStockValue startValue finalValue DOW_ROI stock_ROI
+##   &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+## 1 FFIN                     14.7       7.00       34.6    2.36      4.94
+## 2 HD                       90.9      41.1       245.     2.36      5.97
+## 3 COST                    123.       52.8       318.     2.36      6.02
+## 4 ADDYY                    58.4      25         156.     2.36      6.24
+## 5 GOOG                    559.      233.       1521.     2.36      6.53
+## # … with 1 more variable: stockBeatsDOW &lt;chr&gt;</code></pre>
+<p>The high median return on investment ratios of final/start values:</p>
+<pre class="r"><code>listROI_high</code></pre>
+<pre><code>## # A tibble: 6 x 7
+##   DOW_down_median avgStockValue startValue finalValue DOW_ROI stock_ROI
+##   &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+## 1 NKE                      39.7      12.2       104.     2.36      8.48
+## 2 DLTR                     52.8      10.2        88.7    2.36      8.67
+## 3 TJX                      26.0       7.17       63.4    2.36      8.84
+## 4 ROST                     40.8       7.62      122.     2.36     16.0 
+## 5 AMZN                    551.       38.7      2135.     2.36     55.2 
+## 6 NFLX                     92.4       3.80      380.     2.36    100.  
+## # … with 1 more variable: stockBeatsDOW &lt;chr&gt;</code></pre>
+<p>Now we can add to these tables the number of increasing and decreasing days in this life cycle for each stock by their median number of increasing and decreasing days by lag 7. Lets do this only for lag 7. Later we will do this for lags 30-180 for each stock, to fill in some of those questions we wanted answers to for predicting the return on a stock based on those feature characteristics for each stock. We will know the return on investment and use the remaining stock in our 53 total stocks to categorize the return as low if at least the value of our median ROI of 6.02 as a ratio of final/start values. The other stocks above that value will be high. This will give two classes to predict if the stock will be a low or high stock return buy. For now, lets massage the data enough to get this additional data, then we can wrestle with it into our machine learning data model.</p>
+<hr />
+<p>We need to now get the number of days that each of the other stock increased and decreased as a median value and for the 7 day lag.Lets make this table with default values set before adding each result as we get it for each stock. Lets also add the 3rd quantile to these stock for the top 75% of cumulative sums value in comparing lag 7 fold change of today’s stock value to 7 days ago.</p>
+<pre class="r"><code>dROI17_lag7 &lt;- dROI17
+dROI17_lag7$medn_cSum_decr_L7 &lt;- &#39;median cSum down L7&#39;
+dROI17_lag7$Q3_cSum_decr_L7 &lt;- &#39;3rd Qntl cSum down L7&#39;
+dROI17_lag7$max_cSum_decr_L7 &lt;- &#39;max cSum down L7&#39;
+dROI17_lag7$medn_cSum_incr_L7 &lt;- &#39;median cSum up L7&#39;
+dROI17_lag7$Q3_cSum_incr_L7 &lt;- &#39;3rd Qntl cSun up L7&#39;
+dROI17_lag7$max_cSum_incr_L7 &lt;- &#39;max cSum up L7&#39;</code></pre>
+<p>Lets run the FFIN (First Financial Bankshares) stock again, save the variables, grep it from the last table dROI17_lag7, fill in with our values, and find and replace the stock name with the new stock moving forward.</p>
+<pre class="r"><code>FFIN &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;FFIN&#39;)
+
+#assign a 1 to increasing values
+ffin7 &lt;- ifelse(FFIN$today2lag7&gt;1, 1,0)
+
+ffin7_a &lt;- na.omit(ffin7)
+
+ffin7_ab &lt;- cumsum(ffin7_a)
+
+ffin7_abc &lt;- as.data.frame(as.factor(ffin7_ab))
+colnames(ffin7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countFFIN &lt;- ffin7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countFFIN &lt;- as.data.frame(countFFIN)
+countFFIN &lt;- countFFIN[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countFFIN$decr_Days &lt;- countFFIN$n-1
+countFFIN &lt;- countFFIN[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countFFIN1 &lt;- subset(countFFIN, countFFIN$decr_Days&gt;0)
+summary(countFFIN1$decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.347   8.000  38.000</code></pre>
+<pre class="r"><code>mxffin_d &lt;- max(countFFIN1$decr_Days)
+mdnffin_d &lt;- median(countFFIN1$decr_Days)
+q3ffin_d &lt;- as.numeric(as.character(summary(countFFIN1$decr_Days)[&quot;3rd Qu.&quot;]))</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+ffin7_b &lt;- ifelse(FFIN$today2lag7&gt;1, 0,1)
+
+#rm NAs
+ffin7_b1 &lt;- na.omit(ffin7_b) 
+
+#counts the 
+ffin7_b2 &lt;- cumsum(ffin7_b1)
+
+ffin7_b3 &lt;- as.data.frame(as.factor(ffin7_b2))
+colnames(ffin7_b3) &lt;- &#39;cSum&#39;
+
+countFFIN2 &lt;- ffin7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countFFIN2 &lt;- as.data.frame(countFFIN2)
+countFFIN2 &lt;- countFFIN2[,-3]
+
+countFFIN2$incr_Days &lt;- countFFIN2$n-1
+countFFIN2 &lt;- countFFIN2[,-2]
+
+countFFIN3 &lt;- subset(countFFIN2, countFFIN2$incr_Days&gt;0)
+summary(countFFIN3$incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.504   7.000  26.000</code></pre>
+<pre class="r"><code>mxffin_i &lt;- max(countFFIN3$incr_Days)
+mdnffin_i &lt;- median(countFFIN3$incr_Days)
+q3ffin_i &lt;- as.numeric(as.character(summary(countFFIN3$incr_Days)[&quot;3rd Qu.&quot;]))</code></pre>
+<p>Add these statistics to their respective stock instance in the dROI17_lag7 table.</p>
+<pre class="r"><code>ffin_g &lt;- grep(&#39;FFIN&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[ffin_g,8:13] &lt;- c(mdnffin_d,q3ffin_d,mxffin_d,mdnffin_i,q3ffin_i,mxffin_i)</code></pre>
+<p>GOOG (Google) stats:</p>
+<pre class="r"><code>GOOG &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;GOOG&#39;)
+
+#assign a 1 to increasing values
+goog7&lt;- ifelse(GOOG$today2lag7&gt;1, 1,0)
+
+goog7_a &lt;- na.omit(goog7)
+
+goog7_ab &lt;- cumsum(goog7_a)
+
+goog7_abc &lt;- as.data.frame(as.factor(goog7_ab))
+colnames(goog7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countGOOG &lt;- goog7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countGOOG &lt;- as.data.frame(countGOOG)
+countGOOG &lt;- countGOOG[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countGOOG$decr_Days &lt;- countGOOG$n-1
+countGOOG &lt;- countGOOG[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countGOOG1 &lt;- subset(countGOOG, countGOOG$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countGOOG1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   2.000   6.500   7.576  11.000  39.000</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxgoog_d &lt;- max(countGOOG1$decr_Days)
+mdngoog_d &lt;- median(countGOOG1$decr_Days)
+q3goog_d &lt;- as.numeric(as.character(summary(countGOOG1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+goog7_b &lt;- ifelse(GOOG$today2lag7&gt;1, 0,1)
+
+goog7_b1 &lt;- na.omit(goog7_b)
+
+#counts the 
+goog7_b2 &lt;- cumsum(goog7_b1)
+
+goog7_b3 &lt;- as.data.frame(as.factor(goog7_b2))
+colnames(goog7_b3) &lt;- &#39;cSum&#39;
+
+countGOOG2 &lt;- goog7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countGOOG2 &lt;- as.data.frame(countGOOG2)
+countGOOG2 &lt;- countGOOG2[,-3]
+
+countGOOG2$incr_Days &lt;- countGOOG2$n-1
+countGOOG2 &lt;- countGOOG2[,-2]
+
+countGOOG3 &lt;- subset(countGOOG2, countGOOG2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countGOOG3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   2.000   4.000   5.627   8.000  28.000</code></pre>
+<pre class="r"><code>mxgoog_i &lt;- max(countGOOG3$incr_Days)
+mdngoog_i &lt;- median(countGOOG3$incr_Days)
+q3goog_i &lt;- as.numeric(as.character(summary(countGOOG3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+goog_g &lt;- grep(&#39;GOOG&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[goog_g,8:13] &lt;- c(mdngoog_d,q3goog_d,mxgoog_d,mdngoog_i,q3goog_i,mxgoog_i)</code></pre>
+<p>HD-Home Depot:</p>
+<pre class="r"><code>HD &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;HD&#39;)
+
+#assign a 1 to increasing values
+hd7&lt;- ifelse(HD$today2lag7&gt;1, 1,0)
+
+hd7_a &lt;- na.omit(hd7)
+
+hd7_ab &lt;- cumsum(hd7_a)
+
+hd7_abc &lt;- as.data.frame(as.factor(hd7_ab))
+colnames(hd7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countHD &lt;- hd7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countHD &lt;- as.data.frame(countHD)
+countHD &lt;- countHD[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countHD$decr_Days &lt;- countHD$n-1
+countHD &lt;- countHD[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countHD1 &lt;- subset(countHD, countHD$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countHD1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.486  10.000  30.000</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxhd_d &lt;- max(countHD1$decr_Days)
+mdnhd_d &lt;- median(countHD1$decr_Days)
+q3hd_d &lt;- as.numeric(as.character(summary(countHD1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+hd7_b &lt;- ifelse(HD$today2lag7&gt;1, 0,1)
+
+hd7_b1 &lt;- na.omit(hd7_b)
+
+#counts the 
+hd7_b2 &lt;- cumsum(hd7_b1)
+
+hd7_b3 &lt;- as.data.frame(as.factor(hd7_b2))
+colnames(hd7_b3) &lt;- &#39;cSum&#39;
+
+countHD2 &lt;- hd7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countHD2 &lt;- as.data.frame(countHD2)
+countHD2 &lt;- countHD2[,-3]
+
+countHD2$incr_Days &lt;- countHD2$n-1
+countHD2 &lt;- countHD2[,-2]
+
+countHD3 &lt;- subset(countHD2, countHD2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countHD3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.035   8.000  28.000</code></pre>
+<pre class="r"><code>mxhd_i &lt;- max(countHD3$incr_Days)
+mdnhd_i &lt;- median(countHD3$incr_Days)
+q3hd_i &lt;- as.numeric(as.character(summary(countHD3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+hd_g &lt;- grep(&#39;HD&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[hd_g,8:13] &lt;- c(mdnhd_d,q3hd_d,mxhd_d,mdnhd_i,q3hd_i,mxhd_i)</code></pre>
+<p>JNJ, Johnson &amp; Johnson:</p>
+<pre class="r"><code>JNJ &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;JNJ&#39;)
+
+#assign a 1 to increasing values
+jnj7&lt;- ifelse(JNJ$today2lag7&gt;1, 1,0)
+
+jnj7_a &lt;- na.omit(jnj7)
+
+jnj7_ab &lt;- cumsum(jnj7_a)
+
+jnj7_abc &lt;- as.data.frame(as.factor(jnj7_ab))
+colnames(jnj7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countJNJ &lt;- jnj7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countJNJ &lt;- as.data.frame(countJNJ)
+countJNJ &lt;- countJNJ[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countJNJ$decr_Days &lt;- countJNJ$n-1
+countJNJ &lt;- countJNJ[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countJNJ1 &lt;- subset(countJNJ, countJNJ$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countJNJ1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.139   8.000  36.000</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxjnj_d &lt;- max(countJNJ1$decr_Days)
+mdnjnj_d &lt;- median(countJNJ1$decr_Days)
+q3jnj_d &lt;- as.numeric(as.character(summary(countJNJ1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+jnj7_b &lt;- ifelse(JNJ$today2lag7&gt;1, 0,1)
+
+jnj7_b1 &lt;- na.omit(jnj7_b)
+
+#counts the 
+jnj7_b2 &lt;- cumsum(jnj7_b1)
+
+jnj7_b3 &lt;- as.data.frame(as.factor(jnj7_b2))
+colnames(jnj7_b3) &lt;- &#39;cSum&#39;
+
+countJNJ2 &lt;- jnj7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countJNJ2 &lt;- as.data.frame(countJNJ2)
+countJNJ2 &lt;- countJNJ2[,-3]
+
+countJNJ2$incr_Days &lt;- countJNJ2$n-1
+countJNJ2 &lt;- countJNJ2[,-2]
+
+countJNJ3 &lt;- subset(countJNJ2, countJNJ2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countJNJ3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.051   7.000  33.000</code></pre>
+<pre class="r"><code>mxjnj_i &lt;- max(countJNJ3$incr_Days)
+mdnjnj_i &lt;- median(countJNJ3$incr_Days)
+q3jnj_i &lt;- as.numeric(as.character(summary(countJNJ3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+jnj_g &lt;- grep(&#39;JNJ&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[jnj_g,8:13] &lt;- c(mdnjnj_d,q3jnj_d,mxjnj_d,mdnjnj_i,q3jnj_i,mxjnj_i)</code></pre>
+<p>NFLX, Netflix stats:</p>
+<pre class="r"><code>NFLX &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;NFLX&#39;)
+
+#assign a 1 to increasing values
+nflx7&lt;- ifelse(NFLX$today2lag7&gt;1, 1,0)
+
+nflx7_a &lt;- na.omit(nflx7)
+
+nflx7_ab &lt;- cumsum(nflx7_a)
+
+nflx7_abc &lt;- as.data.frame(as.factor(nflx7_ab))
+colnames(nflx7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countNFLX &lt;- nflx7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countNFLX &lt;- as.data.frame(countNFLX)
+countNFLX &lt;- countNFLX[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countNFLX$decr_Days &lt;- countNFLX$n-1
+countNFLX &lt;- countNFLX[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countNFLX1 &lt;- subset(countNFLX, countNFLX$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countNFLX1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   2.000   5.500   6.896  10.000  37.000</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxnflx_d &lt;- max(countNFLX1$decr_Days)
+mdnnflx_d &lt;- median(countNFLX1$decr_Days)
+q3nflx_d &lt;- as.numeric(as.character(summary(countNFLX1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+nflx7_b &lt;- ifelse(NFLX$today2lag7&gt;1, 0,1)
+
+nflx7_b1 &lt;- na.omit(nflx7_b)
+
+#counts the 
+nflx7_b2 &lt;- cumsum(nflx7_b1)
+
+nflx7_b3 &lt;- as.data.frame(as.factor(nflx7_b2))
+colnames(nflx7_b3) &lt;- &#39;cSum&#39;
+
+countNFLX2 &lt;- nflx7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countNFLX2 &lt;- as.data.frame(countNFLX2)
+countNFLX2 &lt;- countNFLX2[,-3]
+
+countNFLX2$incr_Days &lt;- countNFLX2$n-1
+countNFLX2 &lt;- countNFLX2[,-2]
+
+countNFLX3 &lt;- subset(countNFLX2, countNFLX2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countNFLX3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.307   7.750  25.000</code></pre>
+<pre class="r"><code>mxnflx_i &lt;- max(countNFLX3$incr_Days)
+mdnnflx_i &lt;- median(countNFLX3$incr_Days)
+q3nflx_i &lt;- as.numeric(as.character(summary(countNFLX3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+nflx_g &lt;- grep(&#39;NFLX&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[nflx_g,8:13] &lt;- c(mdnnflx_d,q3nflx_d,mxnflx_d,mdnnflx_i,q3nflx_i,mxnflx_i)</code></pre>
+<p>NKE, Nike stats:</p>
+<pre class="r"><code>NKE &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;NKE&#39;)
+
+#assign a 1 to increasing values
+nke7&lt;- ifelse(NKE$today2lag7&gt;1, 1,0)
+
+nke7_a &lt;- na.omit(nke7)
+
+nke7_ab &lt;- cumsum(nke7_a)
+
+nke7_abc &lt;- as.data.frame(as.factor(nke7_ab))
+colnames(nke7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countNKE &lt;- nke7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countNKE &lt;- as.data.frame(countNKE)
+countNKE &lt;- countNKE[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countNKE$decr_Days &lt;- countNKE$n-1
+countNKE &lt;- countNKE[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countNKE1 &lt;- subset(countNKE, countNKE$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countNKE1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.375   9.000  40.000</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxnke_d &lt;- max(countNKE1$decr_Days)
+mdnnke_d &lt;- median(countNKE1$decr_Days)
+q3nke_d &lt;- as.numeric(as.character(summary(countNKE1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+nke7_b &lt;- ifelse(NKE$today2lag7&gt;1, 0,1)
+
+nke7_b1 &lt;- na.omit(nke7_b)
+
+#counts the 
+nke7_b2 &lt;- cumsum(nke7_b1)
+
+nke7_b3 &lt;- as.data.frame(as.factor(nke7_b2))
+colnames(nke7_b3) &lt;- &#39;cSum&#39;
+
+countNKE2 &lt;- nke7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countNKE2 &lt;- as.data.frame(countNKE2)
+countNKE2 &lt;- countNKE2[,-3]
+
+countNKE2$incr_Days &lt;- countNKE2$n-1
+countNKE2 &lt;- countNKE2[,-2]
+
+countNKE3 &lt;- subset(countNKE2, countNKE2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countNKE3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.773   7.000  22.000</code></pre>
+<pre class="r"><code>mxnke_i &lt;- max(countNKE3$incr_Days)
+mdnnke_i &lt;- median(countNKE3$incr_Days)
+q3nke_i &lt;- as.numeric(as.character(summary(countNKE3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+nke_g &lt;- grep(&#39;NKE&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[nke_g,8:13] &lt;- c(mdnnke_d,q3nke_d,mxnke_d,mdnnke_i,q3nke_i,mxnke_i)</code></pre>
+<p>PCG, Pacific Gas and Electric stats:</p>
+<pre class="r"><code>PCG &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;PCG&#39;)
+
+#assign a 1 to increasing values
+pcg7&lt;- ifelse(PCG$today2lag7&gt;1, 1,0)
+
+pcg7_a &lt;- na.omit(pcg7)
+
+pcg7_ab &lt;- cumsum(pcg7_a)
+
+pcg7_abc &lt;- as.data.frame(as.factor(pcg7_ab))
+colnames(pcg7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countPCG &lt;- pcg7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countPCG &lt;- as.data.frame(countPCG)
+countPCG &lt;- countPCG[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countPCG$decr_Days &lt;- countPCG$n-1
+countPCG &lt;- countPCG[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countPCG1 &lt;- subset(countPCG, countPCG$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countPCG1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.488   7.000  34.000</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxpcg_d &lt;- max(countPCG1$decr_Days)
+mdnpcg_d &lt;- median(countPCG1$decr_Days)
+q3pcg_d &lt;- as.numeric(as.character(summary(countPCG1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+pcg7_b &lt;- ifelse(PCG$today2lag7&gt;1, 0,1)
+
+pcg7_b1 &lt;- na.omit(pcg7_b)
+
+#counts the 
+pcg7_b2 &lt;- cumsum(pcg7_b1)
+
+pcg7_b3 &lt;- as.data.frame(as.factor(pcg7_b2))
+colnames(pcg7_b3) &lt;- &#39;cSum&#39;
+
+countPCG2 &lt;- pcg7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countPCG2 &lt;- as.data.frame(countPCG2)
+countPCG2 &lt;- countPCG2[,-3]
+
+countPCG2$incr_Days &lt;- countPCG2$n-1
+countPCG2 &lt;- countPCG2[,-2]
+
+countPCG3 &lt;- subset(countPCG2, countPCG2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countPCG3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.731   7.000  27.000</code></pre>
+<pre class="r"><code>mxpcg_i &lt;- max(countPCG3$incr_Days)
+mdnpcg_i &lt;- median(countPCG3$incr_Days)
+q3pcg_i &lt;- as.numeric(as.character(summary(countPCG3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+pcg_g &lt;- grep(&#39;PCG&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[pcg_g,8:13] &lt;- c(mdnpcg_d,q3pcg_d,mxpcg_d,mdnpcg_i,q3pcg_i,mxpcg_i)</code></pre>
+<p>ROST, Ross stores stats:</p>
+<pre class="r"><code>ROST &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;ROST&#39;)
+
+#assign a 1 to increasing values
+rost7&lt;- ifelse(ROST$today2lag7&gt;1, 1,0)
+
+rost7_a &lt;- na.omit(rost7)
+
+rost7_ab &lt;- cumsum(rost7_a)
+
+rost7_abc &lt;- as.data.frame(as.factor(rost7_ab))
+colnames(rost7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countROST &lt;- rost7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countROST &lt;- as.data.frame(countROST)
+countROST &lt;- countROST[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countROST$decr_Days &lt;- countROST$n-1
+countROST &lt;- countROST[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countROST1 &lt;- subset(countROST, countROST$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countROST1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.047   9.000  32.000</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxrost_d &lt;- max(countROST1$decr_Days)
+mdnrost_d &lt;- median(countROST1$decr_Days)
+q3rost_d &lt;- as.numeric(as.character(summary(countROST1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+rost7_b &lt;- ifelse(ROST$today2lag7&gt;1, 0,1)
+
+rost7_b1 &lt;- na.omit(rost7_b)
+
+#counts the 
+rost7_b2 &lt;- cumsum(rost7_b1)
+
+rost7_b3 &lt;- as.data.frame(as.factor(rost7_b2))
+colnames(rost7_b3) &lt;- &#39;cSum&#39;
+
+countROST2 &lt;- rost7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countROST2 &lt;- as.data.frame(countROST2)
+countROST2 &lt;- countROST2[,-3]
+
+countROST2$incr_Days &lt;- countROST2$n-1
+countROST2 &lt;- countROST2[,-2]
+
+countROST3 &lt;- subset(countROST2, countROST2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countROST3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   2.000   4.263   7.000  28.000</code></pre>
+<pre class="r"><code>mxrost_i &lt;- max(countROST3$incr_Days)
+mdnrost_i &lt;- median(countROST3$incr_Days)
+q3rost_i &lt;- as.numeric(as.character(summary(countROST3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+rost_g &lt;- grep(&#39;ROST&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[rost_g,8:13] &lt;- c(mdnrost_d,q3rost_d,mxrost_d,mdnrost_i,q3rost_i,mxrost_i)</code></pre>
+<p>TEVA, TEVA Pharmaceuticals stats:</p>
+<pre class="r"><code>TEVA &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;TEVA&#39;)
+
+#assign a 1 to increasing values
+teva7&lt;- ifelse(TEVA$today2lag7&gt;1, 1,0)
+
+teva7_a &lt;- na.omit(teva7)
+
+teva7_ab &lt;- cumsum(teva7_a)
+
+teva7_abc &lt;- as.data.frame(as.factor(teva7_ab))
+colnames(teva7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countTEVA &lt;- teva7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countTEVA &lt;- as.data.frame(countTEVA)
+countTEVA &lt;- countTEVA[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countTEVA$decr_Days &lt;- countTEVA$n-1
+countTEVA &lt;- countTEVA[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countTEVA1 &lt;- subset(countTEVA, countTEVA$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countTEVA1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.583   8.000  30.000</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxteva_d &lt;- max(countTEVA1$decr_Days)
+mdnteva_d &lt;- median(countTEVA1$decr_Days)
+q3teva_d &lt;- as.numeric(as.character(summary(countTEVA1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+teva7_b &lt;- ifelse(TEVA$today2lag7&gt;1, 0,1)
+
+teva7_b1 &lt;- na.omit(teva7_b)
+
+#counts the 
+teva7_b2 &lt;- cumsum(teva7_b1)
+
+teva7_b3 &lt;- as.data.frame(as.factor(teva7_b2))
+colnames(teva7_b3) &lt;- &#39;cSum&#39;
+
+countTEVA2 &lt;- teva7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countTEVA2 &lt;- as.data.frame(countTEVA2)
+countTEVA2 &lt;- countTEVA2[,-3]
+
+countTEVA2$incr_Days &lt;- countTEVA2$n-1
+countTEVA2 &lt;- countTEVA2[,-2]
+
+countTEVA3 &lt;- subset(countTEVA2, countTEVA2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countTEVA3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.605   8.000  32.000</code></pre>
+<pre class="r"><code>mxteva_i &lt;- max(countTEVA3$incr_Days)
+mdnteva_i &lt;- median(countTEVA3$incr_Days)
+q3teva_i &lt;- as.numeric(as.character(summary(countTEVA3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+teva_g &lt;- grep(&#39;TEVA&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[teva_g,8:13] &lt;- c(mdnteva_d,q3teva_d,mxteva_d,mdnteva_i,q3teva_i,mxteva_i)</code></pre>
+<p>TJX, TJ Maxx stores stats:</p>
+<pre class="r"><code>TJX &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;TJX&#39;)
+
+#assign a 1 to increasing values
+tjx7&lt;- ifelse(TJX$today2lag7&gt;1, 1,0)
+
+tjx7_a &lt;- na.omit(tjx7)
+
+tjx7_ab &lt;- cumsum(tjx7_a)
+
+tjx7_abc &lt;- as.data.frame(as.factor(tjx7_ab))
+colnames(tjx7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countTJX &lt;- tjx7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countTJX &lt;- as.data.frame(countTJX)
+countTJX &lt;- countTJX[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countTJX$decr_Days &lt;- countTJX$n-1
+countTJX &lt;- countTJX[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countTJX1 &lt;- subset(countTJX, countTJX$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countTJX1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1.00    1.00    4.00    5.96    8.00   35.00</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxtjx_d &lt;- max(countTJX1$decr_Days)
+mdntjx_d &lt;- median(countTJX1$decr_Days)
+q3tjx_d &lt;- as.numeric(as.character(summary(countTJX1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+tjx7_b &lt;- ifelse(TJX$today2lag7&gt;1, 0,1)
+
+tjx7_b1 &lt;- na.omit(tjx7_b)
+
+#counts the 
+tjx7_b2 &lt;- cumsum(tjx7_b1)
+
+tjx7_b3 &lt;- as.data.frame(as.factor(tjx7_b2))
+colnames(tjx7_b3) &lt;- &#39;cSum&#39;
+
+countTJX2 &lt;- tjx7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countTJX2 &lt;- as.data.frame(countTJX2)
+countTJX2 &lt;- countTJX2[,-3]
+
+countTJX2$incr_Days &lt;- countTJX2$n-1
+countTJX2 &lt;- countTJX2[,-2]
+
+countTJX3 &lt;- subset(countTJX2, countTJX2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countTJX3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   2.000   4.319   7.000  32.000</code></pre>
+<pre class="r"><code>mxtjx_i &lt;- max(countTJX3$incr_Days)
+mdntjx_i &lt;- median(countTJX3$incr_Days)
+q3tjx_i &lt;- as.numeric(as.character(summary(countTJX3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+tjx_g &lt;- grep(&#39;TJX&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[tjx_g,8:13] &lt;- c(mdntjx_d,q3tjx_d,mxtjx_d,mdntjx_i,q3tjx_i,mxtjx_i)</code></pre>
+<p>WMT, Walmart Stores:</p>
+<pre class="r"><code>WMT &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;WMT&#39;)
+
+#assign a 1 to increasing values
+wmt7&lt;- ifelse(WMT$today2lag7&gt;1, 1,0)
+
+wmt7_a &lt;- na.omit(wmt7)
+
+wmt7_ab &lt;- cumsum(wmt7_a)
+
+wmt7_abc &lt;- as.data.frame(as.factor(wmt7_ab))
+colnames(wmt7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countWMT &lt;- wmt7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countWMT &lt;- as.data.frame(countWMT)
+countWMT &lt;- countWMT[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countWMT$decr_Days &lt;- countWMT$n-1
+countWMT &lt;- countWMT[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countWMT1 &lt;- subset(countWMT, countWMT$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countWMT1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.163   8.000  33.000</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxwmt_d &lt;- max(countWMT1$decr_Days)
+mdnwmt_d &lt;- median(countWMT1$decr_Days)
+q3wmt_d &lt;- as.numeric(as.character(summary(countWMT1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+wmt7_b &lt;- ifelse(WMT$today2lag7&gt;1, 0,1)
+
+wmt7_b1 &lt;- na.omit(wmt7_b)
+
+#counts the 
+wmt7_b2 &lt;- cumsum(wmt7_b1)
+
+wmt7_b3 &lt;- as.data.frame(as.factor(wmt7_b2))
+colnames(wmt7_b3) &lt;- &#39;cSum&#39;
+
+countWMT2 &lt;- wmt7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countWMT2 &lt;- as.data.frame(countWMT2)
+countWMT2 &lt;- countWMT2[,-3]
+
+countWMT2$incr_Days &lt;- countWMT2$n-1
+countWMT2 &lt;- countWMT2[,-2]
+
+countWMT3 &lt;- subset(countWMT2, countWMT2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countWMT3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.061   7.000  31.000</code></pre>
+<pre class="r"><code>mxwmt_i &lt;- max(countWMT3$incr_Days)
+mdnwmt_i &lt;- median(countWMT3$incr_Days)
+q3wmt_i &lt;- as.numeric(as.character(summary(countWMT3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+wmt_g &lt;- grep(&#39;WMT&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[wmt_g,8:13] &lt;- c(mdnwmt_d,q3wmt_d,mxwmt_d,mdnwmt_i,q3wmt_i,mxwmt_i)</code></pre>
+<p>XOM, Exxon Mobile gas:</p>
+<pre class="r"><code>XOM &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;XOM&#39;)
+
+#assign a 1 to increasing values
+xom7&lt;- ifelse(XOM$today2lag7&gt;1, 1,0)
+
+xom7_a &lt;- na.omit(xom7)
+
+xom7_ab &lt;- cumsum(xom7_a)
+
+xom7_abc &lt;- as.data.frame(as.factor(xom7_ab))
+colnames(xom7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countXOM &lt;- xom7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countXOM &lt;- as.data.frame(countXOM)
+countXOM &lt;- countXOM[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countXOM$decr_Days &lt;- countXOM$n-1
+countXOM &lt;- countXOM[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countXOM1 &lt;- subset(countXOM, countXOM$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countXOM1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.839   8.000  49.000</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxxom_d &lt;- max(countXOM1$decr_Days)
+mdnxom_d &lt;- median(countXOM1$decr_Days)
+q3xom_d &lt;- as.numeric(as.character(summary(countXOM1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+xom7_b &lt;- ifelse(XOM$today2lag7&gt;1, 0,1)
+
+xom7_b1 &lt;- na.omit(xom7_b)
+
+#counts the 
+xom7_b2 &lt;- cumsum(xom7_b1)
+
+xom7_b3 &lt;- as.data.frame(as.factor(xom7_b2))
+colnames(xom7_b3) &lt;- &#39;cSum&#39;
+
+countXOM2 &lt;- xom7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countXOM2 &lt;- as.data.frame(countXOM2)
+countXOM2 &lt;- countXOM2[,-3]
+
+countXOM2$incr_Days &lt;- countXOM2$n-1
+countXOM2 &lt;- countXOM2[,-2]
+
+countXOM3 &lt;- subset(countXOM2, countXOM2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countXOM3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.984   7.000  28.000</code></pre>
+<pre class="r"><code>mxxom_i &lt;- max(countXOM3$incr_Days)
+mdnxom_i &lt;- median(countXOM3$incr_Days)
+q3xom_i &lt;- as.numeric(as.character(summary(countXOM3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+xom_g &lt;- grep(&#39;XOM&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[xom_g,8:13] &lt;- c(mdnxom_d,q3xom_d,mxxom_d,mdnxom_i,q3xom_i,mxxom_i)</code></pre>
+<p>AAP, Advance Auto Parts:</p>
+<pre class="r"><code>AAP &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;AAP&#39;)
+
+#assign a 1 to increasing values
+aap7&lt;- ifelse(AAP$today2lag7&gt;1, 1,0)
+
+aap7_a &lt;- na.omit(aap7)
+
+aap7_ab &lt;- cumsum(aap7_a)
+
+aap7_abc &lt;- as.data.frame(as.factor(aap7_ab))
+colnames(aap7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countAAP &lt;- aap7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countAAP &lt;- as.data.frame(countAAP)
+countAAP &lt;- countAAP[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countAAP$decr_Days &lt;- countAAP$n-1
+countAAP &lt;- countAAP[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countAAP1 &lt;- subset(countAAP, countAAP$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countAAP1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   6.092   9.000  44.000</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxaap_d &lt;- max(countAAP1$decr_Days)
+mdnaap_d &lt;- median(countAAP1$decr_Days)
+q3aap_d &lt;- as.numeric(as.character(summary(countAAP1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+aap7_b &lt;- ifelse(AAP$today2lag7&gt;1, 0,1)
+
+aap7_b1 &lt;- na.omit(aap7_b)
+
+#counts the 
+aap7_b2 &lt;- cumsum(aap7_b1)
+
+aap7_b3 &lt;- as.data.frame(as.factor(aap7_b2))
+colnames(aap7_b3) &lt;- &#39;cSum&#39;
+
+countAAP2 &lt;- aap7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countAAP2 &lt;- as.data.frame(countAAP2)
+countAAP2 &lt;- countAAP2[,-3]
+
+countAAP2$incr_Days &lt;- countAAP2$n-1
+countAAP2 &lt;- countAAP2[,-2]
+
+countAAP3 &lt;- subset(countAAP2, countAAP2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countAAP3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.154   7.000  30.000</code></pre>
+<pre class="r"><code>mxaap_i &lt;- max(countAAP3$incr_Days)
+mdnaap_i &lt;- median(countAAP3$incr_Days)
+q3aap_i &lt;- as.numeric(as.character(summary(countAAP3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+aap_g &lt;- grep(&#39;AAP&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[aap_g,8:13] &lt;- c(mdnaap_d,q3aap_d,mxaap_d,mdnaap_i,q3aap_i,mxaap_i)</code></pre>
+<p>ADDYY, Adidas Sports Attire and shoes:</p>
+<pre class="r"><code>ADDYY &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;ADDYY&#39;)
+
+#assign a 1 to increasing values
+addyy7&lt;- ifelse(ADDYY$today2lag7&gt;1, 1,0)
+
+addyy7_a &lt;- na.omit(addyy7)
+
+addyy7_ab &lt;- cumsum(addyy7_a)
+
+addyy7_abc &lt;- as.data.frame(as.factor(addyy7_ab))
+colnames(addyy7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countADDYY &lt;- addyy7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countADDYY &lt;- as.data.frame(countADDYY)
+countADDYY &lt;- countADDYY[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countADDYY$decr_Days &lt;- countADDYY$n-1
+countADDYY &lt;- countADDYY[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countADDYY1 &lt;- subset(countADDYY, countADDYY$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countADDYY1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1.00    1.75    5.00    6.67   10.00   35.00</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxaddyy_d &lt;- max(countADDYY1$decr_Days)
+mdnaddyy_d &lt;- median(countADDYY1$decr_Days)
+q3addyy_d &lt;- as.numeric(as.character(summary(countADDYY1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+addyy7_b &lt;- ifelse(ADDYY$today2lag7&gt;1, 0,1)
+
+addyy7_b1 &lt;- na.omit(addyy7_b)
+
+#counts the 
+addyy7_b2 &lt;- cumsum(addyy7_b1)
+
+addyy7_b3 &lt;- as.data.frame(as.factor(addyy7_b2))
+colnames(addyy7_b3) &lt;- &#39;cSum&#39;
+
+countADDYY2 &lt;- addyy7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countADDYY2 &lt;- as.data.frame(countADDYY2)
+countADDYY2 &lt;- countADDYY2[,-3]
+
+countADDYY2$incr_Days &lt;- countADDYY2$n-1
+countADDYY2 &lt;- countADDYY2[,-2]
+
+countADDYY3 &lt;- subset(countADDYY2, countADDYY2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countADDYY3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.249   8.000  25.000</code></pre>
+<pre class="r"><code>mxaddyy_i &lt;- max(countADDYY3$incr_Days)
+mdnaddyy_i &lt;- median(countADDYY3$incr_Days)
+q3addyy_i &lt;- as.numeric(as.character(summary(countADDYY3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+addyy_g &lt;- grep(&#39;ADDYY&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[addyy_g,8:13] &lt;- c(mdnaddyy_d,q3addyy_d,mxaddyy_d,mdnaddyy_i,q3addyy_i,mxaddyy_i)</code></pre>
+<p>AMZN, Amazon:</p>
+<pre class="r"><code>AMZN &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;AMZN&#39;)
+
+#assign a 1 to increasing values
+amzn7&lt;- ifelse(AMZN$today2lag7&gt;1, 1,0)
+
+amzn7_a &lt;- na.omit(amzn7)
+
+amzn7_ab &lt;- cumsum(amzn7_a)
+
+amzn7_abc &lt;- as.data.frame(as.factor(amzn7_ab))
+colnames(amzn7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countAMZN &lt;- amzn7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countAMZN &lt;- as.data.frame(countAMZN)
+countAMZN &lt;- countAMZN[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countAMZN$decr_Days &lt;- countAMZN$n-1
+countAMZN &lt;- countAMZN[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countAMZN1 &lt;- subset(countAMZN, countAMZN$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countAMZN1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   5.000   6.989  11.000  31.000</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxamzn_d &lt;- max(countAMZN1$decr_Days)
+mdnamzn_d &lt;- median(countAMZN1$decr_Days)
+q3amzn_d &lt;- as.numeric(as.character(summary(countAMZN1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+amzn7_b &lt;- ifelse(AMZN$today2lag7&gt;1, 0,1)
+
+amzn7_b1 &lt;- na.omit(amzn7_b)
+
+#counts the 
+amzn7_b2 &lt;- cumsum(amzn7_b1)
+
+amzn7_b3 &lt;- as.data.frame(as.factor(amzn7_b2))
+colnames(amzn7_b3) &lt;- &#39;cSum&#39;
+
+countAMZN2 &lt;- amzn7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countAMZN2 &lt;- as.data.frame(countAMZN2)
+countAMZN2 &lt;- countAMZN2[,-3]
+
+countAMZN2$incr_Days &lt;- countAMZN2$n-1
+countAMZN2 &lt;- countAMZN2[,-2]
+
+countAMZN3 &lt;- subset(countAMZN2, countAMZN2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countAMZN3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.306   8.000  26.000</code></pre>
+<pre class="r"><code>mxamzn_i &lt;- max(countAMZN3$incr_Days)
+mdnamzn_i &lt;- median(countAMZN3$incr_Days)
+q3amzn_i &lt;- as.numeric(as.character(summary(countAMZN3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+amzn_g &lt;- grep(&#39;AMZN&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[amzn_g,8:13] &lt;- c(mdnamzn_d,q3amzn_d,mxamzn_d,mdnamzn_i,q3amzn_i,mxamzn_i)</code></pre>
+<p>COST, Costco Stores:</p>
+<pre class="r"><code>COST &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;COST&#39;)
+
+#assign a 1 to increasing values
+cost7&lt;- ifelse(COST$today2lag7&gt;1, 1,0)
+
+cost7_a &lt;- na.omit(cost7)
+
+cost7_ab &lt;- cumsum(cost7_a)
+
+cost7_abc &lt;- as.data.frame(as.factor(cost7_ab))
+colnames(cost7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countCOST &lt;- cost7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countCOST &lt;- as.data.frame(countCOST)
+countCOST &lt;- countCOST[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countCOST$decr_Days &lt;- countCOST$n-1
+countCOST &lt;- countCOST[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countCOST1 &lt;- subset(countCOST, countCOST$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countCOST1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1.00    1.00    4.00    6.41    9.00   40.00</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxcost_d &lt;- max(countCOST1$decr_Days)
+mdncost_d &lt;- median(countCOST1$decr_Days)
+q3cost_d &lt;- as.numeric(as.character(summary(countCOST1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+cost7_b &lt;- ifelse(COST$today2lag7&gt;1, 0,1)
+
+cost7_b1 &lt;- na.omit(cost7_b)
+
+#counts the 
+cost7_b2 &lt;- cumsum(cost7_b1)
+
+cost7_b3 &lt;- as.data.frame(as.factor(cost7_b2))
+colnames(cost7_b3) &lt;- &#39;cSum&#39;
+
+countCOST2 &lt;- cost7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countCOST2 &lt;- as.data.frame(countCOST2)
+countCOST2 &lt;- countCOST2[,-3]
+
+countCOST2$incr_Days &lt;- countCOST2$n-1
+countCOST2 &lt;- countCOST2[,-2]
+
+countCOST3 &lt;- subset(countCOST2, countCOST2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countCOST3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.776   7.000  45.000</code></pre>
+<pre class="r"><code>mxcost_i &lt;- max(countCOST3$incr_Days)
+mdncost_i &lt;- median(countCOST3$incr_Days)
+q3cost_i &lt;- as.numeric(as.character(summary(countCOST3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+cost_g &lt;- grep(&#39;COST&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[cost_g,8:13] &lt;- c(mdncost_d,q3cost_d,mxcost_d,mdncost_i,q3cost_i,mxcost_i)</code></pre>
+<p>DLTR, Dollar Tree Stores:</p>
+<pre class="r"><code>DLTR &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;DLTR&#39;)
+
+#assign a 1 to increasing values
+dltr7&lt;- ifelse(DLTR$today2lag7&gt;1, 1,0)
+
+dltr7_a &lt;- na.omit(dltr7)
+
+dltr7_ab &lt;- cumsum(dltr7_a)
+
+dltr7_abc &lt;- as.data.frame(as.factor(dltr7_ab))
+colnames(dltr7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countDLTR &lt;- dltr7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countDLTR &lt;- as.data.frame(countDLTR)
+countDLTR &lt;- countDLTR[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countDLTR$decr_Days &lt;- countDLTR$n-1
+countDLTR &lt;- countDLTR[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countDLTR1 &lt;- subset(countDLTR, countDLTR$decr_Days&gt;0)
+print(&#39;Decreasing Consecutive Days&#39;);summary(countDLTR1$decr_Days)</code></pre>
+<pre><code>## [1] &quot;Decreasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##     1.0     1.0     4.0     6.5     9.0    33.0</code></pre>
+<pre class="r"><code>print(&#39;*****************************************************************&#39;)</code></pre>
+<pre><code>## [1] &quot;*****************************************************************&quot;</code></pre>
+<pre class="r"><code>mxdltr_d &lt;- max(countDLTR1$decr_Days)
+mdndltr_d &lt;- median(countDLTR1$decr_Days)
+q3dltr_d &lt;- as.numeric(as.character(summary(countDLTR1$decr_Days)[&quot;3rd Qu.&quot;]))
+
+#assign a 1 to decreasing values
+dltr7_b &lt;- ifelse(DLTR$today2lag7&gt;1, 0,1)
+
+dltr7_b1 &lt;- na.omit(dltr7_b)
+
+#counts the 
+dltr7_b2 &lt;- cumsum(dltr7_b1)
+
+dltr7_b3 &lt;- as.data.frame(as.factor(dltr7_b2))
+colnames(dltr7_b3) &lt;- &#39;cSum&#39;
+
+countDLTR2 &lt;- dltr7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countDLTR2 &lt;- as.data.frame(countDLTR2)
+countDLTR2 &lt;- countDLTR2[,-3]
+
+countDLTR2$incr_Days &lt;- countDLTR2$n-1
+countDLTR2 &lt;- countDLTR2[,-2]
+
+countDLTR3 &lt;- subset(countDLTR2, countDLTR2$incr_Days&gt;0)
+print(&#39;Increasing Consecutive Days&#39;);summary(countDLTR3$incr_Days)</code></pre>
+<pre><code>## [1] &quot;Increasing Consecutive Days&quot;</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.941   7.000  38.000</code></pre>
+<pre class="r"><code>mxdltr_i &lt;- max(countDLTR3$incr_Days)
+mdndltr_i &lt;- median(countDLTR3$incr_Days)
+q3dltr_i &lt;- as.numeric(as.character(summary(countDLTR3$incr_Days)[&quot;3rd Qu.&quot;]))
+
+
+dltr_g &lt;- grep(&#39;DLTR&#39;,dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[dltr_g,8:13] &lt;- c(mdndltr_d,q3dltr_d,mxdltr_d,mdndltr_i,q3dltr_i,mxdltr_i)</code></pre>
+<p>Now that we have our cumulative number of days in lag7 stock value prices that the stock decreases or increases in our best performing stock portfolio of 17 stocks that had positive median stock values when the DOW was down and unemployment up, lets add a field to classify whether the stock is low or high based on the Costco stock ROI of 6.02, which was the median stock ROI of this portfolio.</p>
+<pre class="r"><code>dROI17_lag7$ROI_Low_High &lt;- ifelse(dROI17_lag7$stock_ROI &lt;= 6.02, &#39;Low&#39;, &#39;High&#39;)
+dROI17_lag7</code></pre>
+<pre><code>## # A tibble: 17 x 14
+##    DOW_down_median avgStockValue startValue finalValue DOW_ROI stock_ROI
+##    &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+##  1 AAP                      97.3      35.6       134.     2.36     3.75 
+##  2 ADDYY                    58.4      25         156.     2.36     6.24 
+##  3 AMZN                    551.       38.7      2135.     2.36    55.2  
+##  4 COST                    123.       52.8       318.     2.36     6.02 
+##  5 DLTR                     52.8      10.2        88.7    2.36     8.67 
+##  6 FFIN                     14.7       7.00       34.6    2.36     4.94 
+##  7 GOOG                    559.      233.       1521.     2.36     6.53 
+##  8 HD                       90.9      41.1       245.     2.36     5.97 
+##  9 JNJ                      91.1      66.4       150.     2.36     2.26 
+## 10 NFLX                     92.4       3.80      380.     2.36   100.   
+## 11 NKE                      39.7      12.2       104.     2.36     8.48 
+## 12 PCG                      44.1      47.3        16.2    2.36     0.343
+## 13 ROST                     40.8       7.62      122.     2.36    16.0  
+## 14 TEVA                     41.1      31.3        12.2    2.36     0.391
+## 15 TJX                      26.0       7.17       63.4    2.36     8.84 
+## 16 WMT                      69.8      47.5       118.     2.36     2.48 
+## 17 XOM                      81.4      74.1        60.7    2.36     0.818
+## # … with 8 more variables: stockBeatsDOW &lt;chr&gt;, medn_cSum_decr_L7 &lt;chr&gt;,
+## #   Q3_cSum_decr_L7 &lt;chr&gt;, max_cSum_decr_L7 &lt;chr&gt;, medn_cSum_incr_L7 &lt;chr&gt;,
+## #   Q3_cSum_incr_L7 &lt;chr&gt;, max_cSum_incr_L7 &lt;chr&gt;, ROI_Low_High &lt;chr&gt;</code></pre>
+<p>There are 36 more stock in our entire portfolio of stocks with values from 2007-2020 that we could also get these feature characteristics for. But for now lets just add a field to the table we derived these 17 stock from by stock closing value, take the overall return on investment for each of the remaining 36 stocks, and add in the ROI class of ‘Low’ or ‘High’ to that table. Then separate into training and testing sets and use machine learning to predict the outcome of the stock being low or high in ROI ratio of start value to final value of the stock according to the initial and final prices of each stock in our time series.</p>
 
 
 

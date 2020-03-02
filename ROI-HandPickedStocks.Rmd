@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: 'February 2020'
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 This is a project that is for now analyzing some hand picked stock to see if a program can be written based on the analysis of how certain stocks perform from 2007-2020. It looks at cyclical patterns of highs and lows, adds in the DOW highs and lows, the unemployment highs and lows, then mean and median values of daily changes various date fields for day of the week and month. The idea is to get the best performing stocks, analyze them with subsets of the worst performing stocks, get the specific features of each stock to describe it as a profit or loss forecasted stock to invest in based on its current stats, and more. 
@@ -2856,53 +2856,1205 @@ The median number of consecutive days the FFIN stock increased is 11 days, and f
 
 We can now do this for the other time lags and see if we gain any information by manually making rules to decide a stock's predictability as selling, buying, short and long term returns on investment as profitable, not profitable, or break even. This is just for this stock FFIN, we have to examine the other stock from this table of fold change in today/lag7 stock value for HD, GOOG, ADDYY, and COST stocks. This will grab the useful features of the median return stocks in this portfolio, then we will use the same method on the lowest return stocks and then again on the highest return stock.
 
+***
+***
+
+
 Eventually, we will answer:
 
 - how many times did this stock increase compared to the last 7, 30, 60, 90, 120, 150, and 180 days?
+
 - how many times did this stock decrease compared to the last 7, 30, 60, 90, 120, 150, and 180 days?
+
 - what is the median stock value fold change of todays/lagN (where N is one of above values)?
+
 - how many times was this stock below their median value for each lag, and above it?
+
 - what threshold appears to be the absolute minimum or range of decrease or increase in fold change before the stock increases or decreases?
+
 - how many times was it below the DOW in fold change by lag? Does the DOW being down or up seem to affect how many consecutive days this stock is up or down?
+
 - was the DOW high or low when the stock had their max number of consecutive days increasing or decreasing for each lag? Does the DOW seem to impact the number of consecutive days of increase or decrease of the stock? 
+
 - what was the [federal minimum](https://bebusinessed.com/history/history-of-minimum-wage/) wage of this time period? Does it affect the number of consecutive days the stock increases/decreases? This will be added later if available for our time period.Since 2009 the above link says the minimum wage has been 7.25 USD, although we know some states have higher minimum wages. It was 5.85 USD in 2007 and 6.55 USD in 2008
+
 - was unemployment increasing or decreasing when the stock increased, decreased, or had more consecutive days of increasing or decreasing value compared to each lag?
+
 - more questions as they develop.
+
+***
+***
+
+Lets look again at our 17 stock that were in the best performing subset with return on investment in dollars filtered by those that had positive median daily change stock values when the DOW was down and unemployment higher than the last month. This was in our dROI17 table.
 ```{r}
 
+listROI <- dROI17[order(dROI17$stock_ROI),]
+
+listROI_low <- listROI[1:6,]
+listROI_middle <- listROI[7:11,]
+listROI_high <- listROI[12:17,]
+
+listROI
 ```
 
+The low median return on investment ratios of final/start values:
 ```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
+listROI_low
 ```
 
 
+The middle median return on investment ratios of final/start values that we only evaluated a seven day lag with for number of increasing and decreasing days in this time span of 2007-2020:
+```{r}
+listROI_middle
+```
 
+The high median return on investment ratios of final/start values:
+```{r}
+listROI_high
+```
+
+Now we can add to these tables the number of increasing and decreasing days in this life cycle for each stock by their median number of increasing and decreasing days by lag 7. Lets do this only for lag 7. Later we will do this for lags 30-180 for each stock, to fill in some of those questions we wanted answers to for predicting the return on a stock based on those feature characteristics for each stock. We will know the return on investment and use the remaining stock in our 53 total stocks to categorize the return as low if at least the value of our median ROI of 6.02 as a ratio of final/start values. The other stocks above that value will be high. This will give two classes to predict if the stock will be a low or high stock return buy. For now, lets massage the data enough to get this additional data, then we can wrestle with it into our machine learning data model. 
+
+***
+
+We need to now get the number of days that each of the other stock increased and decreased as a median value and for the 7 day lag.Lets make this table with default values set before adding each result as we get it for each stock. Lets also add the 3rd quantile to these stock for the top 75% of cumulative sums value in comparing lag 7 fold change of today's stock value to 7 days ago.
+```{r}
+dROI17_lag7 <- dROI17
+dROI17_lag7$medn_cSum_decr_L7 <- 'median cSum down L7'
+dROI17_lag7$Q3_cSum_decr_L7 <- '3rd Qntl cSum down L7'
+dROI17_lag7$max_cSum_decr_L7 <- 'max cSum down L7'
+dROI17_lag7$medn_cSum_incr_L7 <- 'median cSum up L7'
+dROI17_lag7$Q3_cSum_incr_L7 <- '3rd Qntl cSun up L7'
+dROI17_lag7$max_cSum_incr_L7 <- 'max cSum up L7'
+```
+
+Lets run the FFIN (First Financial Bankshares) stock again, save the variables, grep it from the last table dROI17_lag7, fill in with our values, and find and replace the stock name with the new stock moving forward.
+```{r}
+FFIN <- subset(Close17_dow, Close17_dow$DOW_down_median=='FFIN')
+
+#assign a 1 to increasing values
+ffin7 <- ifelse(FFIN$today2lag7>1, 1,0)
+
+ffin7_a <- na.omit(ffin7)
+
+ffin7_ab <- cumsum(ffin7_a)
+
+ffin7_abc <- as.data.frame(as.factor(ffin7_ab))
+colnames(ffin7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countFFIN <- ffin7_abc %>% group_by(cSum) %>% count(n=n())
+countFFIN <- as.data.frame(countFFIN)
+countFFIN <- countFFIN[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countFFIN$decr_Days <- countFFIN$n-1
+countFFIN <- countFFIN[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countFFIN1 <- subset(countFFIN, countFFIN$decr_Days>0)
+summary(countFFIN1$decr_Days)
+
+mxffin_d <- max(countFFIN1$decr_Days)
+mdnffin_d <- median(countFFIN1$decr_Days)
+q3ffin_d <- as.numeric(as.character(summary(countFFIN1$decr_Days)["3rd Qu."]))
+```
+
+```{r}
+#assign a 1 to decreasing values
+ffin7_b <- ifelse(FFIN$today2lag7>1, 0,1)
+
+#rm NAs
+ffin7_b1 <- na.omit(ffin7_b) 
+
+#counts the 
+ffin7_b2 <- cumsum(ffin7_b1)
+
+ffin7_b3 <- as.data.frame(as.factor(ffin7_b2))
+colnames(ffin7_b3) <- 'cSum'
+
+countFFIN2 <- ffin7_b3 %>% group_by(cSum) %>% count(n=n())
+countFFIN2 <- as.data.frame(countFFIN2)
+countFFIN2 <- countFFIN2[,-3]
+
+countFFIN2$incr_Days <- countFFIN2$n-1
+countFFIN2 <- countFFIN2[,-2]
+
+countFFIN3 <- subset(countFFIN2, countFFIN2$incr_Days>0)
+summary(countFFIN3$incr_Days)
+
+mxffin_i <- max(countFFIN3$incr_Days)
+mdnffin_i <- median(countFFIN3$incr_Days)
+q3ffin_i <- as.numeric(as.character(summary(countFFIN3$incr_Days)["3rd Qu."]))
+
+
+```
+
+Add these statistics to their respective stock instance in the dROI17_lag7 table.
+```{r}
+ffin_g <- grep('FFIN',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[ffin_g,8:13] <- c(mdnffin_d,q3ffin_d,mxffin_d,mdnffin_i,q3ffin_i,mxffin_i)
+
+```
+
+
+GOOG (Google) stats:
+```{r}
+GOOG <- subset(Close17_dow, Close17_dow$DOW_down_median=='GOOG')
+
+#assign a 1 to increasing values
+goog7<- ifelse(GOOG$today2lag7>1, 1,0)
+
+goog7_a <- na.omit(goog7)
+
+goog7_ab <- cumsum(goog7_a)
+
+goog7_abc <- as.data.frame(as.factor(goog7_ab))
+colnames(goog7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countGOOG <- goog7_abc %>% group_by(cSum) %>% count(n=n())
+countGOOG <- as.data.frame(countGOOG)
+countGOOG <- countGOOG[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countGOOG$decr_Days <- countGOOG$n-1
+countGOOG <- countGOOG[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countGOOG1 <- subset(countGOOG, countGOOG$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countGOOG1$decr_Days)
+print('*****************************************************************')
+
+mxgoog_d <- max(countGOOG1$decr_Days)
+mdngoog_d <- median(countGOOG1$decr_Days)
+q3goog_d <- as.numeric(as.character(summary(countGOOG1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+goog7_b <- ifelse(GOOG$today2lag7>1, 0,1)
+
+goog7_b1 <- na.omit(goog7_b)
+
+#counts the 
+goog7_b2 <- cumsum(goog7_b1)
+
+goog7_b3 <- as.data.frame(as.factor(goog7_b2))
+colnames(goog7_b3) <- 'cSum'
+
+countGOOG2 <- goog7_b3 %>% group_by(cSum) %>% count(n=n())
+countGOOG2 <- as.data.frame(countGOOG2)
+countGOOG2 <- countGOOG2[,-3]
+
+countGOOG2$incr_Days <- countGOOG2$n-1
+countGOOG2 <- countGOOG2[,-2]
+
+countGOOG3 <- subset(countGOOG2, countGOOG2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countGOOG3$incr_Days)
+
+mxgoog_i <- max(countGOOG3$incr_Days)
+mdngoog_i <- median(countGOOG3$incr_Days)
+q3goog_i <- as.numeric(as.character(summary(countGOOG3$incr_Days)["3rd Qu."]))
+
+
+goog_g <- grep('GOOG',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[goog_g,8:13] <- c(mdngoog_d,q3goog_d,mxgoog_d,mdngoog_i,q3goog_i,mxgoog_i)
+
+```
+
+HD-Home Depot:
+```{r}
+HD <- subset(Close17_dow, Close17_dow$DOW_down_median=='HD')
+
+#assign a 1 to increasing values
+hd7<- ifelse(HD$today2lag7>1, 1,0)
+
+hd7_a <- na.omit(hd7)
+
+hd7_ab <- cumsum(hd7_a)
+
+hd7_abc <- as.data.frame(as.factor(hd7_ab))
+colnames(hd7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countHD <- hd7_abc %>% group_by(cSum) %>% count(n=n())
+countHD <- as.data.frame(countHD)
+countHD <- countHD[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countHD$decr_Days <- countHD$n-1
+countHD <- countHD[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countHD1 <- subset(countHD, countHD$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countHD1$decr_Days)
+print('*****************************************************************')
+
+mxhd_d <- max(countHD1$decr_Days)
+mdnhd_d <- median(countHD1$decr_Days)
+q3hd_d <- as.numeric(as.character(summary(countHD1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+hd7_b <- ifelse(HD$today2lag7>1, 0,1)
+
+hd7_b1 <- na.omit(hd7_b)
+
+#counts the 
+hd7_b2 <- cumsum(hd7_b1)
+
+hd7_b3 <- as.data.frame(as.factor(hd7_b2))
+colnames(hd7_b3) <- 'cSum'
+
+countHD2 <- hd7_b3 %>% group_by(cSum) %>% count(n=n())
+countHD2 <- as.data.frame(countHD2)
+countHD2 <- countHD2[,-3]
+
+countHD2$incr_Days <- countHD2$n-1
+countHD2 <- countHD2[,-2]
+
+countHD3 <- subset(countHD2, countHD2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countHD3$incr_Days)
+
+mxhd_i <- max(countHD3$incr_Days)
+mdnhd_i <- median(countHD3$incr_Days)
+q3hd_i <- as.numeric(as.character(summary(countHD3$incr_Days)["3rd Qu."]))
+
+
+hd_g <- grep('HD',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[hd_g,8:13] <- c(mdnhd_d,q3hd_d,mxhd_d,mdnhd_i,q3hd_i,mxhd_i)
+
+```
+
+JNJ, Johnson & Johnson:
+```{r}
+JNJ <- subset(Close17_dow, Close17_dow$DOW_down_median=='JNJ')
+
+#assign a 1 to increasing values
+jnj7<- ifelse(JNJ$today2lag7>1, 1,0)
+
+jnj7_a <- na.omit(jnj7)
+
+jnj7_ab <- cumsum(jnj7_a)
+
+jnj7_abc <- as.data.frame(as.factor(jnj7_ab))
+colnames(jnj7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countJNJ <- jnj7_abc %>% group_by(cSum) %>% count(n=n())
+countJNJ <- as.data.frame(countJNJ)
+countJNJ <- countJNJ[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countJNJ$decr_Days <- countJNJ$n-1
+countJNJ <- countJNJ[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countJNJ1 <- subset(countJNJ, countJNJ$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countJNJ1$decr_Days)
+print('*****************************************************************')
+
+mxjnj_d <- max(countJNJ1$decr_Days)
+mdnjnj_d <- median(countJNJ1$decr_Days)
+q3jnj_d <- as.numeric(as.character(summary(countJNJ1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+jnj7_b <- ifelse(JNJ$today2lag7>1, 0,1)
+
+jnj7_b1 <- na.omit(jnj7_b)
+
+#counts the 
+jnj7_b2 <- cumsum(jnj7_b1)
+
+jnj7_b3 <- as.data.frame(as.factor(jnj7_b2))
+colnames(jnj7_b3) <- 'cSum'
+
+countJNJ2 <- jnj7_b3 %>% group_by(cSum) %>% count(n=n())
+countJNJ2 <- as.data.frame(countJNJ2)
+countJNJ2 <- countJNJ2[,-3]
+
+countJNJ2$incr_Days <- countJNJ2$n-1
+countJNJ2 <- countJNJ2[,-2]
+
+countJNJ3 <- subset(countJNJ2, countJNJ2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countJNJ3$incr_Days)
+
+mxjnj_i <- max(countJNJ3$incr_Days)
+mdnjnj_i <- median(countJNJ3$incr_Days)
+q3jnj_i <- as.numeric(as.character(summary(countJNJ3$incr_Days)["3rd Qu."]))
+
+
+jnj_g <- grep('JNJ',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[jnj_g,8:13] <- c(mdnjnj_d,q3jnj_d,mxjnj_d,mdnjnj_i,q3jnj_i,mxjnj_i)
+
+```
+
+NFLX, Netflix stats:
+```{r}
+NFLX <- subset(Close17_dow, Close17_dow$DOW_down_median=='NFLX')
+
+#assign a 1 to increasing values
+nflx7<- ifelse(NFLX$today2lag7>1, 1,0)
+
+nflx7_a <- na.omit(nflx7)
+
+nflx7_ab <- cumsum(nflx7_a)
+
+nflx7_abc <- as.data.frame(as.factor(nflx7_ab))
+colnames(nflx7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countNFLX <- nflx7_abc %>% group_by(cSum) %>% count(n=n())
+countNFLX <- as.data.frame(countNFLX)
+countNFLX <- countNFLX[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countNFLX$decr_Days <- countNFLX$n-1
+countNFLX <- countNFLX[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countNFLX1 <- subset(countNFLX, countNFLX$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countNFLX1$decr_Days)
+print('*****************************************************************')
+
+mxnflx_d <- max(countNFLX1$decr_Days)
+mdnnflx_d <- median(countNFLX1$decr_Days)
+q3nflx_d <- as.numeric(as.character(summary(countNFLX1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+nflx7_b <- ifelse(NFLX$today2lag7>1, 0,1)
+
+nflx7_b1 <- na.omit(nflx7_b)
+
+#counts the 
+nflx7_b2 <- cumsum(nflx7_b1)
+
+nflx7_b3 <- as.data.frame(as.factor(nflx7_b2))
+colnames(nflx7_b3) <- 'cSum'
+
+countNFLX2 <- nflx7_b3 %>% group_by(cSum) %>% count(n=n())
+countNFLX2 <- as.data.frame(countNFLX2)
+countNFLX2 <- countNFLX2[,-3]
+
+countNFLX2$incr_Days <- countNFLX2$n-1
+countNFLX2 <- countNFLX2[,-2]
+
+countNFLX3 <- subset(countNFLX2, countNFLX2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countNFLX3$incr_Days)
+
+mxnflx_i <- max(countNFLX3$incr_Days)
+mdnnflx_i <- median(countNFLX3$incr_Days)
+q3nflx_i <- as.numeric(as.character(summary(countNFLX3$incr_Days)["3rd Qu."]))
+
+
+nflx_g <- grep('NFLX',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[nflx_g,8:13] <- c(mdnnflx_d,q3nflx_d,mxnflx_d,mdnnflx_i,q3nflx_i,mxnflx_i)
+
+```
+
+
+NKE, Nike stats:
+```{r}
+NKE <- subset(Close17_dow, Close17_dow$DOW_down_median=='NKE')
+
+#assign a 1 to increasing values
+nke7<- ifelse(NKE$today2lag7>1, 1,0)
+
+nke7_a <- na.omit(nke7)
+
+nke7_ab <- cumsum(nke7_a)
+
+nke7_abc <- as.data.frame(as.factor(nke7_ab))
+colnames(nke7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countNKE <- nke7_abc %>% group_by(cSum) %>% count(n=n())
+countNKE <- as.data.frame(countNKE)
+countNKE <- countNKE[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countNKE$decr_Days <- countNKE$n-1
+countNKE <- countNKE[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countNKE1 <- subset(countNKE, countNKE$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countNKE1$decr_Days)
+print('*****************************************************************')
+
+mxnke_d <- max(countNKE1$decr_Days)
+mdnnke_d <- median(countNKE1$decr_Days)
+q3nke_d <- as.numeric(as.character(summary(countNKE1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+nke7_b <- ifelse(NKE$today2lag7>1, 0,1)
+
+nke7_b1 <- na.omit(nke7_b)
+
+#counts the 
+nke7_b2 <- cumsum(nke7_b1)
+
+nke7_b3 <- as.data.frame(as.factor(nke7_b2))
+colnames(nke7_b3) <- 'cSum'
+
+countNKE2 <- nke7_b3 %>% group_by(cSum) %>% count(n=n())
+countNKE2 <- as.data.frame(countNKE2)
+countNKE2 <- countNKE2[,-3]
+
+countNKE2$incr_Days <- countNKE2$n-1
+countNKE2 <- countNKE2[,-2]
+
+countNKE3 <- subset(countNKE2, countNKE2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countNKE3$incr_Days)
+
+mxnke_i <- max(countNKE3$incr_Days)
+mdnnke_i <- median(countNKE3$incr_Days)
+q3nke_i <- as.numeric(as.character(summary(countNKE3$incr_Days)["3rd Qu."]))
+
+
+nke_g <- grep('NKE',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[nke_g,8:13] <- c(mdnnke_d,q3nke_d,mxnke_d,mdnnke_i,q3nke_i,mxnke_i)
+
+```
+
+PCG, Pacific Gas and Electric stats:
+```{r}
+PCG <- subset(Close17_dow, Close17_dow$DOW_down_median=='PCG')
+
+#assign a 1 to increasing values
+pcg7<- ifelse(PCG$today2lag7>1, 1,0)
+
+pcg7_a <- na.omit(pcg7)
+
+pcg7_ab <- cumsum(pcg7_a)
+
+pcg7_abc <- as.data.frame(as.factor(pcg7_ab))
+colnames(pcg7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countPCG <- pcg7_abc %>% group_by(cSum) %>% count(n=n())
+countPCG <- as.data.frame(countPCG)
+countPCG <- countPCG[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countPCG$decr_Days <- countPCG$n-1
+countPCG <- countPCG[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countPCG1 <- subset(countPCG, countPCG$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countPCG1$decr_Days)
+print('*****************************************************************')
+
+mxpcg_d <- max(countPCG1$decr_Days)
+mdnpcg_d <- median(countPCG1$decr_Days)
+q3pcg_d <- as.numeric(as.character(summary(countPCG1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+pcg7_b <- ifelse(PCG$today2lag7>1, 0,1)
+
+pcg7_b1 <- na.omit(pcg7_b)
+
+#counts the 
+pcg7_b2 <- cumsum(pcg7_b1)
+
+pcg7_b3 <- as.data.frame(as.factor(pcg7_b2))
+colnames(pcg7_b3) <- 'cSum'
+
+countPCG2 <- pcg7_b3 %>% group_by(cSum) %>% count(n=n())
+countPCG2 <- as.data.frame(countPCG2)
+countPCG2 <- countPCG2[,-3]
+
+countPCG2$incr_Days <- countPCG2$n-1
+countPCG2 <- countPCG2[,-2]
+
+countPCG3 <- subset(countPCG2, countPCG2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countPCG3$incr_Days)
+
+mxpcg_i <- max(countPCG3$incr_Days)
+mdnpcg_i <- median(countPCG3$incr_Days)
+q3pcg_i <- as.numeric(as.character(summary(countPCG3$incr_Days)["3rd Qu."]))
+
+
+pcg_g <- grep('PCG',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[pcg_g,8:13] <- c(mdnpcg_d,q3pcg_d,mxpcg_d,mdnpcg_i,q3pcg_i,mxpcg_i)
+
+```
+
+
+ROST, Ross stores stats:
+```{r}
+ROST <- subset(Close17_dow, Close17_dow$DOW_down_median=='ROST')
+
+#assign a 1 to increasing values
+rost7<- ifelse(ROST$today2lag7>1, 1,0)
+
+rost7_a <- na.omit(rost7)
+
+rost7_ab <- cumsum(rost7_a)
+
+rost7_abc <- as.data.frame(as.factor(rost7_ab))
+colnames(rost7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countROST <- rost7_abc %>% group_by(cSum) %>% count(n=n())
+countROST <- as.data.frame(countROST)
+countROST <- countROST[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countROST$decr_Days <- countROST$n-1
+countROST <- countROST[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countROST1 <- subset(countROST, countROST$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countROST1$decr_Days)
+print('*****************************************************************')
+
+mxrost_d <- max(countROST1$decr_Days)
+mdnrost_d <- median(countROST1$decr_Days)
+q3rost_d <- as.numeric(as.character(summary(countROST1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+rost7_b <- ifelse(ROST$today2lag7>1, 0,1)
+
+rost7_b1 <- na.omit(rost7_b)
+
+#counts the 
+rost7_b2 <- cumsum(rost7_b1)
+
+rost7_b3 <- as.data.frame(as.factor(rost7_b2))
+colnames(rost7_b3) <- 'cSum'
+
+countROST2 <- rost7_b3 %>% group_by(cSum) %>% count(n=n())
+countROST2 <- as.data.frame(countROST2)
+countROST2 <- countROST2[,-3]
+
+countROST2$incr_Days <- countROST2$n-1
+countROST2 <- countROST2[,-2]
+
+countROST3 <- subset(countROST2, countROST2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countROST3$incr_Days)
+
+mxrost_i <- max(countROST3$incr_Days)
+mdnrost_i <- median(countROST3$incr_Days)
+q3rost_i <- as.numeric(as.character(summary(countROST3$incr_Days)["3rd Qu."]))
+
+
+rost_g <- grep('ROST',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[rost_g,8:13] <- c(mdnrost_d,q3rost_d,mxrost_d,mdnrost_i,q3rost_i,mxrost_i)
+
+```
+
+
+TEVA, TEVA Pharmaceuticals stats:
+```{r}
+TEVA <- subset(Close17_dow, Close17_dow$DOW_down_median=='TEVA')
+
+#assign a 1 to increasing values
+teva7<- ifelse(TEVA$today2lag7>1, 1,0)
+
+teva7_a <- na.omit(teva7)
+
+teva7_ab <- cumsum(teva7_a)
+
+teva7_abc <- as.data.frame(as.factor(teva7_ab))
+colnames(teva7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countTEVA <- teva7_abc %>% group_by(cSum) %>% count(n=n())
+countTEVA <- as.data.frame(countTEVA)
+countTEVA <- countTEVA[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countTEVA$decr_Days <- countTEVA$n-1
+countTEVA <- countTEVA[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countTEVA1 <- subset(countTEVA, countTEVA$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countTEVA1$decr_Days)
+print('*****************************************************************')
+
+mxteva_d <- max(countTEVA1$decr_Days)
+mdnteva_d <- median(countTEVA1$decr_Days)
+q3teva_d <- as.numeric(as.character(summary(countTEVA1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+teva7_b <- ifelse(TEVA$today2lag7>1, 0,1)
+
+teva7_b1 <- na.omit(teva7_b)
+
+#counts the 
+teva7_b2 <- cumsum(teva7_b1)
+
+teva7_b3 <- as.data.frame(as.factor(teva7_b2))
+colnames(teva7_b3) <- 'cSum'
+
+countTEVA2 <- teva7_b3 %>% group_by(cSum) %>% count(n=n())
+countTEVA2 <- as.data.frame(countTEVA2)
+countTEVA2 <- countTEVA2[,-3]
+
+countTEVA2$incr_Days <- countTEVA2$n-1
+countTEVA2 <- countTEVA2[,-2]
+
+countTEVA3 <- subset(countTEVA2, countTEVA2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countTEVA3$incr_Days)
+
+mxteva_i <- max(countTEVA3$incr_Days)
+mdnteva_i <- median(countTEVA3$incr_Days)
+q3teva_i <- as.numeric(as.character(summary(countTEVA3$incr_Days)["3rd Qu."]))
+
+
+teva_g <- grep('TEVA',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[teva_g,8:13] <- c(mdnteva_d,q3teva_d,mxteva_d,mdnteva_i,q3teva_i,mxteva_i)
+
+```
+
+TJX, TJ Maxx stores stats:
+```{r}
+TJX <- subset(Close17_dow, Close17_dow$DOW_down_median=='TJX')
+
+#assign a 1 to increasing values
+tjx7<- ifelse(TJX$today2lag7>1, 1,0)
+
+tjx7_a <- na.omit(tjx7)
+
+tjx7_ab <- cumsum(tjx7_a)
+
+tjx7_abc <- as.data.frame(as.factor(tjx7_ab))
+colnames(tjx7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countTJX <- tjx7_abc %>% group_by(cSum) %>% count(n=n())
+countTJX <- as.data.frame(countTJX)
+countTJX <- countTJX[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countTJX$decr_Days <- countTJX$n-1
+countTJX <- countTJX[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countTJX1 <- subset(countTJX, countTJX$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countTJX1$decr_Days)
+print('*****************************************************************')
+
+mxtjx_d <- max(countTJX1$decr_Days)
+mdntjx_d <- median(countTJX1$decr_Days)
+q3tjx_d <- as.numeric(as.character(summary(countTJX1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+tjx7_b <- ifelse(TJX$today2lag7>1, 0,1)
+
+tjx7_b1 <- na.omit(tjx7_b)
+
+#counts the 
+tjx7_b2 <- cumsum(tjx7_b1)
+
+tjx7_b3 <- as.data.frame(as.factor(tjx7_b2))
+colnames(tjx7_b3) <- 'cSum'
+
+countTJX2 <- tjx7_b3 %>% group_by(cSum) %>% count(n=n())
+countTJX2 <- as.data.frame(countTJX2)
+countTJX2 <- countTJX2[,-3]
+
+countTJX2$incr_Days <- countTJX2$n-1
+countTJX2 <- countTJX2[,-2]
+
+countTJX3 <- subset(countTJX2, countTJX2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countTJX3$incr_Days)
+
+mxtjx_i <- max(countTJX3$incr_Days)
+mdntjx_i <- median(countTJX3$incr_Days)
+q3tjx_i <- as.numeric(as.character(summary(countTJX3$incr_Days)["3rd Qu."]))
+
+
+tjx_g <- grep('TJX',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[tjx_g,8:13] <- c(mdntjx_d,q3tjx_d,mxtjx_d,mdntjx_i,q3tjx_i,mxtjx_i)
+
+```
+
+
+WMT, Walmart Stores:
+```{r}
+WMT <- subset(Close17_dow, Close17_dow$DOW_down_median=='WMT')
+
+#assign a 1 to increasing values
+wmt7<- ifelse(WMT$today2lag7>1, 1,0)
+
+wmt7_a <- na.omit(wmt7)
+
+wmt7_ab <- cumsum(wmt7_a)
+
+wmt7_abc <- as.data.frame(as.factor(wmt7_ab))
+colnames(wmt7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countWMT <- wmt7_abc %>% group_by(cSum) %>% count(n=n())
+countWMT <- as.data.frame(countWMT)
+countWMT <- countWMT[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countWMT$decr_Days <- countWMT$n-1
+countWMT <- countWMT[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countWMT1 <- subset(countWMT, countWMT$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countWMT1$decr_Days)
+print('*****************************************************************')
+
+mxwmt_d <- max(countWMT1$decr_Days)
+mdnwmt_d <- median(countWMT1$decr_Days)
+q3wmt_d <- as.numeric(as.character(summary(countWMT1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+wmt7_b <- ifelse(WMT$today2lag7>1, 0,1)
+
+wmt7_b1 <- na.omit(wmt7_b)
+
+#counts the 
+wmt7_b2 <- cumsum(wmt7_b1)
+
+wmt7_b3 <- as.data.frame(as.factor(wmt7_b2))
+colnames(wmt7_b3) <- 'cSum'
+
+countWMT2 <- wmt7_b3 %>% group_by(cSum) %>% count(n=n())
+countWMT2 <- as.data.frame(countWMT2)
+countWMT2 <- countWMT2[,-3]
+
+countWMT2$incr_Days <- countWMT2$n-1
+countWMT2 <- countWMT2[,-2]
+
+countWMT3 <- subset(countWMT2, countWMT2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countWMT3$incr_Days)
+
+mxwmt_i <- max(countWMT3$incr_Days)
+mdnwmt_i <- median(countWMT3$incr_Days)
+q3wmt_i <- as.numeric(as.character(summary(countWMT3$incr_Days)["3rd Qu."]))
+
+
+wmt_g <- grep('WMT',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[wmt_g,8:13] <- c(mdnwmt_d,q3wmt_d,mxwmt_d,mdnwmt_i,q3wmt_i,mxwmt_i)
+
+```
+
+
+XOM, Exxon Mobile gas:
+```{r}
+XOM <- subset(Close17_dow, Close17_dow$DOW_down_median=='XOM')
+
+#assign a 1 to increasing values
+xom7<- ifelse(XOM$today2lag7>1, 1,0)
+
+xom7_a <- na.omit(xom7)
+
+xom7_ab <- cumsum(xom7_a)
+
+xom7_abc <- as.data.frame(as.factor(xom7_ab))
+colnames(xom7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countXOM <- xom7_abc %>% group_by(cSum) %>% count(n=n())
+countXOM <- as.data.frame(countXOM)
+countXOM <- countXOM[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countXOM$decr_Days <- countXOM$n-1
+countXOM <- countXOM[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countXOM1 <- subset(countXOM, countXOM$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countXOM1$decr_Days)
+print('*****************************************************************')
+
+mxxom_d <- max(countXOM1$decr_Days)
+mdnxom_d <- median(countXOM1$decr_Days)
+q3xom_d <- as.numeric(as.character(summary(countXOM1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+xom7_b <- ifelse(XOM$today2lag7>1, 0,1)
+
+xom7_b1 <- na.omit(xom7_b)
+
+#counts the 
+xom7_b2 <- cumsum(xom7_b1)
+
+xom7_b3 <- as.data.frame(as.factor(xom7_b2))
+colnames(xom7_b3) <- 'cSum'
+
+countXOM2 <- xom7_b3 %>% group_by(cSum) %>% count(n=n())
+countXOM2 <- as.data.frame(countXOM2)
+countXOM2 <- countXOM2[,-3]
+
+countXOM2$incr_Days <- countXOM2$n-1
+countXOM2 <- countXOM2[,-2]
+
+countXOM3 <- subset(countXOM2, countXOM2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countXOM3$incr_Days)
+
+mxxom_i <- max(countXOM3$incr_Days)
+mdnxom_i <- median(countXOM3$incr_Days)
+q3xom_i <- as.numeric(as.character(summary(countXOM3$incr_Days)["3rd Qu."]))
+
+
+xom_g <- grep('XOM',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[xom_g,8:13] <- c(mdnxom_d,q3xom_d,mxxom_d,mdnxom_i,q3xom_i,mxxom_i)
+
+```
+
+
+
+AAP, Advance Auto Parts:
+```{r}
+AAP <- subset(Close17_dow, Close17_dow$DOW_down_median=='AAP')
+
+#assign a 1 to increasing values
+aap7<- ifelse(AAP$today2lag7>1, 1,0)
+
+aap7_a <- na.omit(aap7)
+
+aap7_ab <- cumsum(aap7_a)
+
+aap7_abc <- as.data.frame(as.factor(aap7_ab))
+colnames(aap7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countAAP <- aap7_abc %>% group_by(cSum) %>% count(n=n())
+countAAP <- as.data.frame(countAAP)
+countAAP <- countAAP[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countAAP$decr_Days <- countAAP$n-1
+countAAP <- countAAP[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countAAP1 <- subset(countAAP, countAAP$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countAAP1$decr_Days)
+print('*****************************************************************')
+
+mxaap_d <- max(countAAP1$decr_Days)
+mdnaap_d <- median(countAAP1$decr_Days)
+q3aap_d <- as.numeric(as.character(summary(countAAP1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+aap7_b <- ifelse(AAP$today2lag7>1, 0,1)
+
+aap7_b1 <- na.omit(aap7_b)
+
+#counts the 
+aap7_b2 <- cumsum(aap7_b1)
+
+aap7_b3 <- as.data.frame(as.factor(aap7_b2))
+colnames(aap7_b3) <- 'cSum'
+
+countAAP2 <- aap7_b3 %>% group_by(cSum) %>% count(n=n())
+countAAP2 <- as.data.frame(countAAP2)
+countAAP2 <- countAAP2[,-3]
+
+countAAP2$incr_Days <- countAAP2$n-1
+countAAP2 <- countAAP2[,-2]
+
+countAAP3 <- subset(countAAP2, countAAP2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countAAP3$incr_Days)
+
+mxaap_i <- max(countAAP3$incr_Days)
+mdnaap_i <- median(countAAP3$incr_Days)
+q3aap_i <- as.numeric(as.character(summary(countAAP3$incr_Days)["3rd Qu."]))
+
+
+aap_g <- grep('AAP',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[aap_g,8:13] <- c(mdnaap_d,q3aap_d,mxaap_d,mdnaap_i,q3aap_i,mxaap_i)
+
+```
+
+
+ADDYY, Adidas Sports Attire and shoes:
+```{r}
+ADDYY <- subset(Close17_dow, Close17_dow$DOW_down_median=='ADDYY')
+
+#assign a 1 to increasing values
+addyy7<- ifelse(ADDYY$today2lag7>1, 1,0)
+
+addyy7_a <- na.omit(addyy7)
+
+addyy7_ab <- cumsum(addyy7_a)
+
+addyy7_abc <- as.data.frame(as.factor(addyy7_ab))
+colnames(addyy7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countADDYY <- addyy7_abc %>% group_by(cSum) %>% count(n=n())
+countADDYY <- as.data.frame(countADDYY)
+countADDYY <- countADDYY[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countADDYY$decr_Days <- countADDYY$n-1
+countADDYY <- countADDYY[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countADDYY1 <- subset(countADDYY, countADDYY$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countADDYY1$decr_Days)
+print('*****************************************************************')
+
+mxaddyy_d <- max(countADDYY1$decr_Days)
+mdnaddyy_d <- median(countADDYY1$decr_Days)
+q3addyy_d <- as.numeric(as.character(summary(countADDYY1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+addyy7_b <- ifelse(ADDYY$today2lag7>1, 0,1)
+
+addyy7_b1 <- na.omit(addyy7_b)
+
+#counts the 
+addyy7_b2 <- cumsum(addyy7_b1)
+
+addyy7_b3 <- as.data.frame(as.factor(addyy7_b2))
+colnames(addyy7_b3) <- 'cSum'
+
+countADDYY2 <- addyy7_b3 %>% group_by(cSum) %>% count(n=n())
+countADDYY2 <- as.data.frame(countADDYY2)
+countADDYY2 <- countADDYY2[,-3]
+
+countADDYY2$incr_Days <- countADDYY2$n-1
+countADDYY2 <- countADDYY2[,-2]
+
+countADDYY3 <- subset(countADDYY2, countADDYY2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countADDYY3$incr_Days)
+
+mxaddyy_i <- max(countADDYY3$incr_Days)
+mdnaddyy_i <- median(countADDYY3$incr_Days)
+q3addyy_i <- as.numeric(as.character(summary(countADDYY3$incr_Days)["3rd Qu."]))
+
+
+addyy_g <- grep('ADDYY',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[addyy_g,8:13] <- c(mdnaddyy_d,q3addyy_d,mxaddyy_d,mdnaddyy_i,q3addyy_i,mxaddyy_i)
+
+```
+
+
+AMZN, Amazon:
+```{r}
+AMZN <- subset(Close17_dow, Close17_dow$DOW_down_median=='AMZN')
+
+#assign a 1 to increasing values
+amzn7<- ifelse(AMZN$today2lag7>1, 1,0)
+
+amzn7_a <- na.omit(amzn7)
+
+amzn7_ab <- cumsum(amzn7_a)
+
+amzn7_abc <- as.data.frame(as.factor(amzn7_ab))
+colnames(amzn7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countAMZN <- amzn7_abc %>% group_by(cSum) %>% count(n=n())
+countAMZN <- as.data.frame(countAMZN)
+countAMZN <- countAMZN[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countAMZN$decr_Days <- countAMZN$n-1
+countAMZN <- countAMZN[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countAMZN1 <- subset(countAMZN, countAMZN$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countAMZN1$decr_Days)
+print('*****************************************************************')
+
+mxamzn_d <- max(countAMZN1$decr_Days)
+mdnamzn_d <- median(countAMZN1$decr_Days)
+q3amzn_d <- as.numeric(as.character(summary(countAMZN1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+amzn7_b <- ifelse(AMZN$today2lag7>1, 0,1)
+
+amzn7_b1 <- na.omit(amzn7_b)
+
+#counts the 
+amzn7_b2 <- cumsum(amzn7_b1)
+
+amzn7_b3 <- as.data.frame(as.factor(amzn7_b2))
+colnames(amzn7_b3) <- 'cSum'
+
+countAMZN2 <- amzn7_b3 %>% group_by(cSum) %>% count(n=n())
+countAMZN2 <- as.data.frame(countAMZN2)
+countAMZN2 <- countAMZN2[,-3]
+
+countAMZN2$incr_Days <- countAMZN2$n-1
+countAMZN2 <- countAMZN2[,-2]
+
+countAMZN3 <- subset(countAMZN2, countAMZN2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countAMZN3$incr_Days)
+
+mxamzn_i <- max(countAMZN3$incr_Days)
+mdnamzn_i <- median(countAMZN3$incr_Days)
+q3amzn_i <- as.numeric(as.character(summary(countAMZN3$incr_Days)["3rd Qu."]))
+
+
+amzn_g <- grep('AMZN',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[amzn_g,8:13] <- c(mdnamzn_d,q3amzn_d,mxamzn_d,mdnamzn_i,q3amzn_i,mxamzn_i)
+
+```
+
+
+COST, Costco Stores:
+```{r}
+COST <- subset(Close17_dow, Close17_dow$DOW_down_median=='COST')
+
+#assign a 1 to increasing values
+cost7<- ifelse(COST$today2lag7>1, 1,0)
+
+cost7_a <- na.omit(cost7)
+
+cost7_ab <- cumsum(cost7_a)
+
+cost7_abc <- as.data.frame(as.factor(cost7_ab))
+colnames(cost7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countCOST <- cost7_abc %>% group_by(cSum) %>% count(n=n())
+countCOST <- as.data.frame(countCOST)
+countCOST <- countCOST[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countCOST$decr_Days <- countCOST$n-1
+countCOST <- countCOST[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countCOST1 <- subset(countCOST, countCOST$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countCOST1$decr_Days)
+print('*****************************************************************')
+
+mxcost_d <- max(countCOST1$decr_Days)
+mdncost_d <- median(countCOST1$decr_Days)
+q3cost_d <- as.numeric(as.character(summary(countCOST1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+cost7_b <- ifelse(COST$today2lag7>1, 0,1)
+
+cost7_b1 <- na.omit(cost7_b)
+
+#counts the 
+cost7_b2 <- cumsum(cost7_b1)
+
+cost7_b3 <- as.data.frame(as.factor(cost7_b2))
+colnames(cost7_b3) <- 'cSum'
+
+countCOST2 <- cost7_b3 %>% group_by(cSum) %>% count(n=n())
+countCOST2 <- as.data.frame(countCOST2)
+countCOST2 <- countCOST2[,-3]
+
+countCOST2$incr_Days <- countCOST2$n-1
+countCOST2 <- countCOST2[,-2]
+
+countCOST3 <- subset(countCOST2, countCOST2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countCOST3$incr_Days)
+
+mxcost_i <- max(countCOST3$incr_Days)
+mdncost_i <- median(countCOST3$incr_Days)
+q3cost_i <- as.numeric(as.character(summary(countCOST3$incr_Days)["3rd Qu."]))
+
+
+cost_g <- grep('COST',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[cost_g,8:13] <- c(mdncost_d,q3cost_d,mxcost_d,mdncost_i,q3cost_i,mxcost_i)
+
+```
+
+
+DLTR, Dollar Tree Stores:
+```{r}
+DLTR <- subset(Close17_dow, Close17_dow$DOW_down_median=='DLTR')
+
+#assign a 1 to increasing values
+dltr7<- ifelse(DLTR$today2lag7>1, 1,0)
+
+dltr7_a <- na.omit(dltr7)
+
+dltr7_ab <- cumsum(dltr7_a)
+
+dltr7_abc <- as.data.frame(as.factor(dltr7_ab))
+colnames(dltr7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countDLTR <- dltr7_abc %>% group_by(cSum) %>% count(n=n())
+countDLTR <- as.data.frame(countDLTR)
+countDLTR <- countDLTR[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countDLTR$decr_Days <- countDLTR$n-1
+countDLTR <- countDLTR[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countDLTR1 <- subset(countDLTR, countDLTR$decr_Days>0)
+print('Decreasing Consecutive Days');summary(countDLTR1$decr_Days)
+print('*****************************************************************')
+
+mxdltr_d <- max(countDLTR1$decr_Days)
+mdndltr_d <- median(countDLTR1$decr_Days)
+q3dltr_d <- as.numeric(as.character(summary(countDLTR1$decr_Days)["3rd Qu."]))
+
+#assign a 1 to decreasing values
+dltr7_b <- ifelse(DLTR$today2lag7>1, 0,1)
+
+dltr7_b1 <- na.omit(dltr7_b)
+
+#counts the 
+dltr7_b2 <- cumsum(dltr7_b1)
+
+dltr7_b3 <- as.data.frame(as.factor(dltr7_b2))
+colnames(dltr7_b3) <- 'cSum'
+
+countDLTR2 <- dltr7_b3 %>% group_by(cSum) %>% count(n=n())
+countDLTR2 <- as.data.frame(countDLTR2)
+countDLTR2 <- countDLTR2[,-3]
+
+countDLTR2$incr_Days <- countDLTR2$n-1
+countDLTR2 <- countDLTR2[,-2]
+
+countDLTR3 <- subset(countDLTR2, countDLTR2$incr_Days>0)
+print('Increasing Consecutive Days');summary(countDLTR3$incr_Days)
+
+mxdltr_i <- max(countDLTR3$incr_Days)
+mdndltr_i <- median(countDLTR3$incr_Days)
+q3dltr_i <- as.numeric(as.character(summary(countDLTR3$incr_Days)["3rd Qu."]))
+
+
+dltr_g <- grep('DLTR',dROI17_lag7$DOW_down_median)
+
+dROI17_lag7[dltr_g,8:13] <- c(mdndltr_d,q3dltr_d,mxdltr_d,mdndltr_i,q3dltr_i,mxdltr_i)
+
+```
+
+Now that we have our cumulative number of days in lag7 stock value prices that the stock decreases or increases in our best performing stock portfolio of 17 stocks that had positive median stock values when the DOW was down and unemployment up, lets add a field to classify whether the stock is low or high based on the Costco stock ROI of 6.02, which was the median stock ROI of this portfolio.
+```{r}
+dROI17_lag7$ROI_Low_High <- ifelse(dROI17_lag7$stock_ROI <= 6.02, 'Low', 'High')
+dROI17_lag7
+```
+
+There are 36 more stock in our entire portfolio of stocks with values from 2007-2020 that we could also get these feature characteristics for. But for now lets just add a field to the table we derived these 17 stock from by stock closing value, take the overall return on investment for each of the remaining 36 stocks, and add in the ROI class of 'Low' or 'High' to that table. Then separate into training and testing sets and use machine learning to predict the outcome of the stock being low or high in ROI ratio of start value to final value of the stock according to the initial and final prices of each stock in our time series.
