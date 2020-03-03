@@ -5873,7 +5873,49 @@ Results</code></pre>
 <p>These questions can be answered if making an app where a person asks what stock to predict, the app pulls the data from the internet, for the specified time. The app then gathers the seven day lag information of the stock, gets the fold change of the daily stock values of the stock to the seven day lag, counts the number of times the stock has cumulative days of increasing and decreasing, gets the median value of that range, compares the number of days the stock was increasing last, compared with the last few days ratios to indicate what the set of increase or decrease count is, then returns whether to buy or sell, based on whether the set of days is reaching the median value of days(or 3rd quartile and/or beyond the previous max cumulative days increasing/decreasing) that increase or decrease for a short run profit, figuratively.</p>
 <p>A way to see of Naive Bayes, a GLM model, algorithm to calculate the probabilities of the stock continuing to increase or decrease based on the previous days increase, possibly the day of the month, quarter of the year, and so on, that could return the best probability for continuing to decrease, or continuing to increase. The features would again have to be limited for the best results, but there could be algorithms for all of these questions inside a stock forecast app.</p>
 <p>What remains is to add in the other 36 stock lag information and test this same series of machine learning default setting algorithms on that data to see if results improve. And do this for all the lag information of the 30-60-90-120-150-180 lags. Bunch more coding but the methods are above, with time consuming find and replace carefully done.</p>
-<p>To test how well this works for any given quarter year, month, year, etc., these same steps would have to be done to smaller subsets.</p>
+<p>To test how well this works for any given quarter year, month, year, etc., these same steps would have to be done to smaller subsets. ***</p>
+<p>Lets start by making a list of those stocks we already have lag values for.</p>
+<pre class="r"><code>colnames(Close53)</code></pre>
+<pre><code>##  [1] &quot;TGT&quot;   &quot;FTR&quot;   &quot;UBSI&quot;  &quot;HD&quot;    &quot;JPM&quot;   &quot;XOM&quot;   &quot;CVX&quot;   &quot;NSANY&quot; &quot;MGM&quot;  
+## [10] &quot;TEVA&quot;  &quot;HST&quot;   &quot;WFC&quot;   &quot;WWE&quot;   &quot;INO&quot;   &quot;SCE&quot;   &quot;FFIN&quot;  &quot;GOOG&quot;  &quot;WM&quot;   
+## [19] &quot;ONCY&quot;  &quot;S&quot;     &quot;F&quot;     &quot;ARWR&quot;  &quot;COST&quot;  &quot;AAL&quot;   &quot;JWN&quot;   &quot;NUS&quot;   &quot;ADDYY&quot;
+## [28] &quot;KSS&quot;   &quot;MSFT&quot;  &quot;LUV&quot;   &quot;HMC&quot;   &quot;PCG&quot;   &quot;DLTR&quot;  &quot;KGJI&quot;  &quot;NKE&quot;   &quot;AMZN&quot; 
+## [37] &quot;ROST&quot;  &quot;WMT&quot;   &quot;TJX&quot;   &quot;TM&quot;    &quot;T&quot;     &quot;JNJ&quot;   &quot;C&quot;     &quot;EPD&quot;   &quot;VZ&quot;   
+## [46] &quot;HRB&quot;   &quot;NFLX&quot;  &quot;AAP&quot;   &quot;HOFT&quot;  &quot;SIG&quot;   &quot;RRGB&quot;  &quot;M&quot;     &quot;JBLU&quot;  &quot;Date&quot;</code></pre>
+<pre class="r"><code>row.names(dROI17_lag7_d)</code></pre>
+<pre><code>##  [1] &quot;AAP&quot;   &quot;ADDYY&quot; &quot;AMZN&quot;  &quot;COST&quot;  &quot;DLTR&quot;  &quot;FFIN&quot;  &quot;GOOG&quot;  &quot;HD&quot;    &quot;JNJ&quot;  
+## [10] &quot;NFLX&quot;  &quot;NKE&quot;   &quot;PCG&quot;   &quot;ROST&quot;  &quot;TEVA&quot;  &quot;TJX&quot;   &quot;WMT&quot;   &quot;XOM&quot;</code></pre>
+<p>The remaining stocks we need to add lagfields to, and then get the lag7 information for each stock as we did above on our machine learning data set of the 17 stocks in the best performing portfolio of stocks that had positive median daily value changes when the DOW was down and unemployment was up from the previous month.</p>
+<pre class="r"><code>remaining &lt;- colnames(Close53)[c(1:3,5,7:9,11:15,18:22,24:26,28:31,34,40,41,43:46,49:53)]
+remaining</code></pre>
+<pre><code>##  [1] &quot;TGT&quot;   &quot;FTR&quot;   &quot;UBSI&quot;  &quot;JPM&quot;   &quot;CVX&quot;   &quot;NSANY&quot; &quot;MGM&quot;   &quot;HST&quot;   &quot;WFC&quot;  
+## [10] &quot;WWE&quot;   &quot;INO&quot;   &quot;SCE&quot;   &quot;WM&quot;    &quot;ONCY&quot;  &quot;S&quot;     &quot;F&quot;     &quot;ARWR&quot;  &quot;AAL&quot;  
+## [19] &quot;JWN&quot;   &quot;NUS&quot;   &quot;KSS&quot;   &quot;MSFT&quot;  &quot;LUV&quot;   &quot;HMC&quot;   &quot;KGJI&quot;  &quot;TM&quot;    &quot;T&quot;    
+## [28] &quot;C&quot;     &quot;EPD&quot;   &quot;VZ&quot;    &quot;HRB&quot;   &quot;HOFT&quot;  &quot;SIG&quot;   &quot;RRGB&quot;  &quot;M&quot;     &quot;JBLU&quot;</code></pre>
+<pre class="r"><code>#this is the list of stocks that we need, and we need to drop the 17 we already analyzed
+Remaining &lt;- as.data.frame(remaining)
+colnames(Remaining) &lt;- &#39;stockName&#39;
+
+#make all the stock name columns one field of stock names
+df36 &lt;- gather(Close53, &#39;stockName&#39;,&#39;stockDayValue&#39;,1:53)
+
+#merge the names of the remaining stock and the total stocks to keep only the ones needed
+DF_36 &lt;- merge(Remaining,df36, by.x=&#39;stockName&#39;, by.y=&#39;stockName&#39;)
+
+#spread out the stock names into columns after getting only the stocks needed for adding stats
+#from the 53 total, and 17 completed.
+remaining36 &lt;- spread(DF_36,&#39;stockName&#39;,&#39;stockDayValue&#39;)
+
+#name the rows by the date column
+row.names(remaining36) &lt;- as.factor(remaining36$Date)
+
+#order by date
+remaining36 &lt;- remaining36[order(remaining36$Date),]
+
+#remove the date column
+remaining36 &lt;- remaining36[,-1]</code></pre>
+<pre class="r"><code>write.csv(remaining36,&#39;remaining36.csv&#39;, row.names=TRUE)</code></pre>
+<p>Add all the lags to each stock from a 7 day lag, 30 day lag,…180 day lag. Then add the ratio of each day’s stock value to the lag. Then get the counts of cumulative days the ratio increased and decreased. Then add the max, median, and 3rd quantile stats of those cumulative day counts for increased and decreased.</p>
 
 
 

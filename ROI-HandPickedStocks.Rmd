@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: 'February 2020'
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 This is a project that is for now analyzing some hand picked stock to see if a program can be written based on the analysis of how certain stocks perform from 2007-2020. It looks at cyclical patterns of highs and lows, adds in the DOW highs and lows, the unemployment highs and lows, then mean and median values of daily changes various date fields for day of the week and month. The idea is to get the best performing stocks, analyze them with subsets of the worst performing stocks, get the specific features of each stock to describe it as a profit or loss forecasted stock to invest in based on its current stats, and more. 
@@ -4387,29 +4387,56 @@ A way to see of Naive Bayes, a GLM model, algorithm to calculate the probabiliti
 What remains is to add in the other 36 stock lag information and test this same series of machine learning default setting algorithms on that data to see if results improve. And do this for all the lag information of the 30-60-90-120-150-180 lags. Bunch more coding but the methods are above, with time consuming find and replace carefully done. 
 
 To test how well this works for any given quarter year, month, year, etc., these same steps would have to be done to smaller subsets.
-```{r}
+***
 
+
+Lets start by making a list of those stocks we already have lag values for.
+```{r}
+colnames(Close53)
 ```
 
 ```{r}
-
+row.names(dROI17_lag7_d)
 ```
 
-
+The remaining stocks we need to add lagfields to, and then get the lag7 information for each stock as we did above on our machine learning data set of the 17 stocks in the best performing portfolio of stocks that had positive median daily value changes when the DOW was down and unemployment was up from the previous month.
 ```{r}
-
-```
-
-
-```{r}
-
-```
-
-```{r}
+remaining <- colnames(Close53)[c(1:3,5,7:9,11:15,18:22,24:26,28:31,34,40,41,43:46,49:53)]
+remaining
 
 ```
 
 
+```{r}
+#this is the list of stocks that we need, and we need to drop the 17 we already analyzed
+Remaining <- as.data.frame(remaining)
+colnames(Remaining) <- 'stockName'
+
+#make all the stock name columns one field of stock names
+df36 <- gather(Close53, 'stockName','stockDayValue',1:53)
+
+#merge the names of the remaining stock and the total stocks to keep only the ones needed
+DF_36 <- merge(Remaining,df36, by.x='stockName', by.y='stockName')
+
+#spread out the stock names into columns after getting only the stocks needed for adding stats
+#from the 53 total, and 17 completed.
+remaining36 <- spread(DF_36,'stockName','stockDayValue')
+
+#name the rows by the date column
+row.names(remaining36) <- as.factor(remaining36$Date)
+
+#order by date
+remaining36 <- remaining36[order(remaining36$Date),]
+
+#remove the date column
+remaining36 <- remaining36[,-1]
+```
+
+```{r}
+write.csv(remaining36,'remaining36.csv', row.names=TRUE)
+```
+
+Add all the lags to each stock from a 7 day lag, 30 day lag,...180 day lag. Then add the ratio of each day's stock value to the lag. Then get the counts of cumulative days the ratio increased and decreased. Then add the max, median, and 3rd quantile stats of those cumulative day counts for increased and decreased.
 ```{r}
 
 ```
