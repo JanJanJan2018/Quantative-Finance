@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: 'February 2020'
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 This is a project that is for now analyzing some hand picked stock to see if a program can be written based on the analysis of how certain stocks perform from 2007-2020. It looks at cyclical patterns of highs and lows, adds in the DOW highs and lows, the unemployment highs and lows, then mean and median values of daily changes various date fields for day of the week and month. The idea is to get the best performing stocks, analyze them with subsets of the worst performing stocks, get the specific features of each stock to describe it as a profit or loss forecasted stock to invest in based on its current stats, and more. 
@@ -4422,21 +4422,194 @@ DF_36 <- merge(Remaining,df36, by.x='stockName', by.y='stockName')
 #from the 53 total, and 17 completed.
 remaining36 <- spread(DF_36,'stockName','stockDayValue')
 
-#name the rows by the date column
-row.names(remaining36) <- as.factor(remaining36$Date)
-
 #order by date
 remaining36 <- remaining36[order(remaining36$Date),]
 
-#remove the date column
-remaining36 <- remaining36[,-1]
 ```
 
 ```{r}
-write.csv(remaining36,'remaining36.csv', row.names=TRUE)
+write.csv(remaining36,'remaining36.csv', row.names=FALSE)
 ```
 
-Add all the lags to each stock from a 7 day lag, 30 day lag,...180 day lag. Then add the ratio of each day's stock value to the lag. Then get the counts of cumulative days the ratio increased and decreased. Then add the max, median, and 3rd quantile stats of those cumulative day counts for increased and decreased.
+
+***
+***
+***
+
+
+Add the 7 day lag then add the ratio of each day's stock value to the lag. Then get the counts of cumulative days the ratio increased and decreased. Then add the max, median, and 3rd quantile stats of those cumulative day counts for increased and decreased.
+
+```{r}
+remaining36_g <- gather(remaining36, 'stockName','stockDayValue',2:37) 
+```
+
+```{r}
+remaining36_g <- remaining36_g[with(remaining36_g, order(stockName, Date)),]
+
+Laal <- subset(remaining36_g, remaining36_g$stockName=='AAL')
+Larwr <- subset(remaining36_g, remaining36_g$stockName=='ARWR')
+Lc <- subset(remaining36_g, remaining36_g$stockName=='C')
+Lcvx <- subset(remaining36_g, remaining36_g$stockName=='CVX')
+Lepd <- subset(remaining36_g, remaining36_g$stockName=='EPD')
+Lf <- subset(remaining36_g, remaining36_g$stockName=='F')
+Lftr <- subset(remaining36_g, remaining36_g$stockName=='FTR')
+Lhmc <- subset(remaining36_g, remaining36_g$stockName=='HMC')
+Lhoft <- subset(remaining36_g, remaining36_g$stockName=='HOFT')
+Lhrb <- subset(remaining36_g, remaining36_g$stockName=='HRB')
+Lhst <- subset(remaining36_g, remaining36_g$stockName=='HST')
+Lino <- subset(remaining36_g, remaining36_g$stockName=='INO')
+Ljblu <- subset(remaining36_g, remaining36_g$stockName=='JBLU')
+Ljpm <- subset(remaining36_g, remaining36_g$stockName=='JPM')
+Ljwn <- subset(remaining36_g, remaining36_g$stockName=='JWN')
+Lkgji <- subset(remaining36_g, remaining36_g$stockName=='KGJI')
+Lkss <- subset(remaining36_g, remaining36_g$stockName=='KSS')
+Lluv <- subset(remaining36_g, remaining36_g$stockName=='LUV')
+Lm <- subset(remaining36_g, remaining36_g$stockName=='M')
+Lmgm <- subset(remaining36_g, remaining36_g$stockName=='MGM')
+Lmsft <- subset(remaining36_g, remaining36_g$stockName=='MSFT')
+Lnsany <- subset(remaining36_g, remaining36_g$stockName=='NSANY')
+Lnus <- subset(remaining36_g, remaining36_g$stockName=='NUS')
+Loncy <- subset(remaining36_g, remaining36_g$stockName=='ONCY')
+Lrrgb <- subset(remaining36_g, remaining36_g$stockName=='RRGB')
+Ls <- subset(remaining36_g, remaining36_g$stockName=='S')
+Lsce <- subset(remaining36_g, remaining36_g$stockName=='SCE')
+Lsig <- subset(remaining36_g, remaining36_g$stockName=='SIG')
+Lt <- subset(remaining36_g, remaining36_g$stockName=='T')
+Ltgt <- subset(remaining36_g, remaining36_g$stockName=='TGT')
+Ltm <- subset(remaining36_g, remaining36_g$stockName=='TM')
+Lubsi <- subset(remaining36_g, remaining36_g$stockName=='UBSI')
+Lvz <- subset(remaining36_g, remaining36_g$stockName=='VZ')
+Lwfc <- subset(remaining36_g, remaining36_g$stockName=='WFC')
+Lwm <- subset(remaining36_g, remaining36_g$stockName=='WM')
+Lwwe <- subset(remaining36_g, remaining36_g$stockName=='WWE')
+
+aalL7 <- lag(Laal$stockDayValue,7)
+arwrL7 <- lag(Larwr$stockDayValue,7)
+cL7 <- lag(Lc$stockDayValue,7)
+cvxL7 <- lag(Lcvx$stockDayValue,7)
+epdL7 <- lag(Lepd$stockDayValue,7)
+fL7 <- lag(Lf$stockDayValue,7)
+ftrL7 <- lag(Lftr$stockDayValue,7)
+hmcL7 <- lag(Lhmc$stockDayValue,7)
+hoftL7 <- lag(Lhoft$stockDayValue,7)
+hrbL7 <- lag(Lhrb$stockDayValue,7)
+hstL7 <- lag(Lhst$stockDayValue,7)
+inoL7 <- lag(Lino$stockDayValue,7)
+jbluL7 <- lag(Ljblu$stockDayValue,7)
+jpmL7 <- lag(Ljpm$stockDayValue,7)
+jwnL7 <- lag(Ljwn$stockDayValue,7)
+kgjiL7 <- lag(Lkgji$stockDayValue,7)
+kssL7 <- lag(Lkss$stockDayValue,7)
+luvL7 <- lag(Lluv$stockDayValue,7)
+mL7 <- lag(Lm$stockDayValue,7)
+mgmL7 <- lag(Lmgm$stockDayValue,7)
+msftL7 <- lag(Lmsft$stockDayValue,7)
+nsanyL7 <- lag(Lnsany$stockDayValue,7)
+nusL7 <- lag(Lnus$stockDayValue,7)
+oncyL7 <- lag(Loncy$stockDayValue,7)
+rrgbL7 <- lag(Lrrgb$stockDayValue,7)
+sL7 <- lag(Ls$stockDayValue,7)
+sceL7 <- lag(Lsce$stockDayValue,7)
+sigL7 <- lag(Lsig$stockDayValue,7)
+tL7 <- lag(Lt$stockDayValue,7)
+tgtL7 <- lag(Ltgt$stockDayValue,7)
+tmL7 <- lag(Ltm$stockDayValue,7)
+ubsiL7 <- lag(Lubsi$stockDayValue,7)
+vzL7 <- lag(Lvz$stockDayValue,7)
+wfcL7 <- lag(Lwfc$stockDayValue,7)
+wmL7 <- lag(Lwm$stockDayValue,7)
+wweL7 <- lag(Lwwe$stockDayValue,7)
+
+remaining36_g$lag7 <- c(aalL7,arwrL7,cL7,cvxL7,epdL7,fL7,ftrL7,
+                                  hmcL7,hoftL7,hrbL7,hstL7,inoL7,jbluL7,jpmL7,
+                                  jwnL7,kgjiL7,kssL7,luvL7,mL7,mgmL7,msftL7,nsanyL7,nusL7,oncyL7,
+                                  rrgbL7,sL7,sceL7,sigL7,tL7,tgtL7,tmL7,
+                                  ubsiL7,vzL7,wfcL7,wmL7,wweL7)
+#the dataset is ordered by stock then by date, so this works with matching,
+#NAs are present when no data in dataset before that date, and the today2lag7
+#will also have NAs in those instances
+remaining36_g$today2lag7 <- remaining36_g$lag7/remaining36_g$stockDayValue
+
+```
+
+
+```{r}
+AAL <- subset(remaining36_g, remaining36_g$stockName=='AAL')
+
+AAL <- AAL[complete.cases(AAL),]
+
+aal7_a <- ifelse(AAL$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for aal7 <- <- ifelse(AAL$today2lag7>1, 1,0)
+aal7_ab <- cumsum(aal7_a)
+
+aal7_abc <- as.data.frame(as.factor(aal7_ab))
+colnames(aal7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countAAL <- aal7_abc %>% group_by(cSum) %>% count(n=n())
+countAAL <- as.data.frame(countAAL)
+countAAL <- countAAL[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countAAL$aal7_decr_Days <- countAAL$n-1
+countAAL <- countAAL[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countAAL2 <- subset(countAAL, countAAL$aal7_decr_Days>0)
+summary(countAAL2$aal7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+aal7_decr_Days_grouped <- countAAL2 %>% group_by(aal7_decr_Days) %>% count(n=n())
+aal7_decr_Days_grouped <- aal7_decr_Days_grouped[,-3]
+```
+
+```{r}
+aal7_decr_Days_grouped
+```
+
+```{r}
+
+median(aal7_decr_Days_grouped$aal7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+aal7_b1 <- ifelse(AAL$today2lag7>1, 0,1)
+
+
+aal7_b2 <- cumsum(aal7_b1)
+
+aal7_b3 <- as.data.frame(as.factor(aal7_b2))
+colnames(aal7_b3) <- 'cSum'
+
+countAAL1 <- aal7_b3 %>% group_by(cSum) %>% count(n=n())
+countAAL1 <- as.data.frame(countAAL1)
+countAAL1 <- countAAL1[,-3]
+
+countAAL1$aal7_incr_Days <- countAAL1$n-1
+countAAL1 <- countAAL1[,-2]
+
+countAAL3 <- subset(countAAL1, countAAL1$aal7_incr_Days>0)
+summary(countAAL3$aal7_incr_Days)
+
+aal7_incr_Days_grouped <- countAAL3 %>% group_by(aal7_incr_Days) %>% count(n=n())
+aal7_incr_Days_grouped <- aal7_incr_Days_grouped[,-3]
+```
+
+```{r}
+aal7_incr_Days_grouped
+```
+
+```{r}
+median(aal7_incr_Days_grouped$aal7_incr_Days)
+```
+
 ```{r}
 
 ```
