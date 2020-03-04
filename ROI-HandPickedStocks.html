@@ -364,7 +364,7 @@ summary {
 
 <h1 class="title toc-ignore">ROI on Hand Picked Stocks 2007-2020</h1>
 <h4 class="author">Janis Corona</h4>
-<h4 class="date">February 2020</h4>
+<h4 class="date">February and March 2020</h4>
 
 </div>
 
@@ -5999,6 +5999,7 @@ remaining36_g$lag7 &lt;- c(aalL7,arwrL7,cL7,cvxL7,epdL7,fL7,ftrL7,
 #NAs are present when no data in dataset before that date, and the today2lag7
 #will also have NAs in those instances
 remaining36_g$today2lag7 &lt;- remaining36_g$lag7/remaining36_g$stockDayValue</code></pre>
+<hr />
 <pre class="r"><code>AAL &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;AAL&#39;)
 
 AAL &lt;- AAL[complete.cases(AAL),]
@@ -6090,6 +6091,3727 @@ aal7_incr_Days_grouped &lt;- aal7_incr_Days_grouped[,-3]</code></pre>
 ## # … with 13 more rows</code></pre>
 <pre class="r"><code>median(aal7_incr_Days_grouped$aal7_incr_Days)</code></pre>
 <pre><code>## [1] 12</code></pre>
+<hr />
+<pre class="r"><code>ARWR &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;ARWR&#39;)
+
+ARWR &lt;- ARWR[complete.cases(ARWR),]
+
+arwr7_a &lt;- ifelse(ARWR$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for arwr7 &lt;- &lt;- ifelse(ARWR$today2lag7&gt;1, 1,0)
+arwr7_ab &lt;- cumsum(arwr7_a)
+
+arwr7_abc &lt;- as.data.frame(as.factor(arwr7_ab))
+colnames(arwr7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countARWR &lt;- arwr7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countARWR &lt;- as.data.frame(countARWR)
+countARWR &lt;- countARWR[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countARWR$arwr7_decr_Days &lt;- countARWR$n-1
+countARWR &lt;- countARWR[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countARWR2 &lt;- subset(countARWR, countARWR$arwr7_decr_Days&gt;0)
+summary(countARWR2$arwr7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.974   8.000  33.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+arwr7_decr_Days_grouped &lt;- countARWR2 %&gt;% group_by(arwr7_decr_Days) %&gt;% count(n=n())
+arwr7_decr_Days_grouped &lt;- arwr7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>arwr7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   arwr7_decr_Days [24]
+##    arwr7_decr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    74
+##  2               2    35
+##  3               3    25
+##  4               4    19
+##  5               5     7
+##  6               6    12
+##  7               7    19
+##  8               8    14
+##  9               9    14
+## 10              10     7
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(arwr7_decr_Days_grouped$arwr7_decr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+arwr7_b1 &lt;- ifelse(ARWR$today2lag7&gt;1, 0,1)
+
+
+arwr7_b2 &lt;- cumsum(arwr7_b1)
+
+arwr7_b3 &lt;- as.data.frame(as.factor(arwr7_b2))
+colnames(arwr7_b3) &lt;- &#39;cSum&#39;
+
+countARWR1 &lt;- arwr7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countARWR1 &lt;- as.data.frame(countARWR1)
+countARWR1 &lt;- countARWR1[,-3]
+
+countARWR1$arwr7_incr_Days &lt;- countARWR1$n-1
+countARWR1 &lt;- countARWR1[,-2]
+
+countARWR3 &lt;- subset(countARWR1, countARWR1$arwr7_incr_Days&gt;0)
+summary(countARWR3$arwr7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.117   9.000  40.000</code></pre>
+<pre class="r"><code>arwr7_incr_Days_grouped &lt;- countARWR3 %&gt;% group_by(arwr7_incr_Days) %&gt;% count(n=n())
+arwr7_incr_Days_grouped &lt;- arwr7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>arwr7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   arwr7_incr_Days [24]
+##    arwr7_incr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    70
+##  2               2    32
+##  3               3    24
+##  4               4    20
+##  5               5    14
+##  6               6     6
+##  7               7    17
+##  8               8    17
+##  9               9    17
+## 10              10     4
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(arwr7_incr_Days_grouped$arwr7_incr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<hr />
+<pre class="r"><code>C &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;C&#39;)
+
+C &lt;- C[complete.cases(C),]
+
+c7_a &lt;- ifelse(C$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for c7 &lt;- &lt;- ifelse(C$today2lag7&gt;1, 1,0)
+c7_ab &lt;- cumsum(c7_a)
+
+c7_abc &lt;- as.data.frame(as.factor(c7_ab))
+colnames(c7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countC &lt;- c7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countC &lt;- as.data.frame(countC)
+countC &lt;- countC[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countC$c7_decr_Days &lt;- countC$n-1
+countC &lt;- countC[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countC2 &lt;- subset(countC, countC$c7_decr_Days&gt;0)
+summary(countC2$c7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.916   8.000  26.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+c7_decr_Days_grouped &lt;- countC2 %&gt;% group_by(c7_decr_Days) %&gt;% count(n=n())
+c7_decr_Days_grouped &lt;- c7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>c7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   c7_decr_Days [24]
+##    c7_decr_Days     n
+##           &lt;dbl&gt; &lt;int&gt;
+##  1            1    87
+##  2            2    28
+##  3            3    15
+##  4            4    19
+##  5            5    12
+##  6            6    11
+##  7            7    25
+##  8            8    17
+##  9            9    11
+## 10           10     5
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(c7_decr_Days_grouped$c7_decr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+c7_b1 &lt;- ifelse(C$today2lag7&gt;1, 0,1)
+
+
+c7_b2 &lt;- cumsum(c7_b1)
+
+c7_b3 &lt;- as.data.frame(as.factor(c7_b2))
+colnames(c7_b3) &lt;- &#39;cSum&#39;
+
+countC1 &lt;- c7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countC1 &lt;- as.data.frame(countC1)
+countC1 &lt;- countC1[,-3]
+
+countC1$c7_incr_Days &lt;- countC1$n-1
+countC1 &lt;- countC1[,-2]
+
+countC3 &lt;- subset(countC1, countC1$c7_incr_Days&gt;0)
+summary(countC3$c7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.626   8.000  27.000</code></pre>
+<pre class="r"><code>c7_incr_Days_grouped &lt;- countC3 %&gt;% group_by(c7_incr_Days) %&gt;% count(n=n())
+c7_incr_Days_grouped &lt;- c7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>c7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 23 x 2
+## # Groups:   c7_incr_Days [23]
+##    c7_incr_Days     n
+##           &lt;dbl&gt; &lt;int&gt;
+##  1            1    88
+##  2            2    36
+##  3            3    18
+##  4            4    21
+##  5            5    10
+##  6            6     8
+##  7            7    29
+##  8            8    13
+##  9            9     8
+## 10           10     7
+## # … with 13 more rows</code></pre>
+<pre class="r"><code>median(c7_incr_Days_grouped$c7_incr_Days)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<hr />
+<pre class="r"><code>CVX &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;CVX&#39;)
+
+CVX &lt;- CVX[complete.cases(CVX),]
+
+cvx7_a &lt;- ifelse(CVX$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for cvx7 &lt;- &lt;- ifelse(CVX$today2lag7&gt;1, 1,0)
+cvx7_ab &lt;- cumsum(cvx7_a)
+
+cvx7_abc &lt;- as.data.frame(as.factor(cvx7_ab))
+colnames(cvx7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countCVX &lt;- cvx7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countCVX &lt;- as.data.frame(countCVX)
+countCVX &lt;- countCVX[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countCVX$cvx7_decr_Days &lt;- countCVX$n-1
+countCVX &lt;- countCVX[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countCVX2 &lt;- subset(countCVX, countCVX$cvx7_decr_Days&gt;0)
+summary(countCVX2$cvx7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.867   8.000  42.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+cvx7_decr_Days_grouped &lt;- countCVX2 %&gt;% group_by(cvx7_decr_Days) %&gt;% count(n=n())
+cvx7_decr_Days_grouped &lt;- cvx7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>cvx7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 27 x 2
+## # Groups:   cvx7_decr_Days [27]
+##    cvx7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1   100
+##  2              2    36
+##  3              3    23
+##  4              4    17
+##  5              5    10
+##  6              6    12
+##  7              7    17
+##  8              8    17
+##  9              9     7
+## 10             10     9
+## # … with 17 more rows</code></pre>
+<pre class="r"><code>median(cvx7_decr_Days_grouped$cvx7_decr_Days)</code></pre>
+<pre><code>## [1] 14</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+cvx7_b1 &lt;- ifelse(CVX$today2lag7&gt;1, 0,1)
+
+
+cvx7_b2 &lt;- cumsum(cvx7_b1)
+
+cvx7_b3 &lt;- as.data.frame(as.factor(cvx7_b2))
+colnames(cvx7_b3) &lt;- &#39;cSum&#39;
+
+countCVX1 &lt;- cvx7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countCVX1 &lt;- as.data.frame(countCVX1)
+countCVX1 &lt;- countCVX1[,-3]
+
+countCVX1$cvx7_incr_Days &lt;- countCVX1$n-1
+countCVX1 &lt;- countCVX1[,-2]
+
+countCVX3 &lt;- subset(countCVX1, countCVX1$cvx7_incr_Days&gt;0)
+summary(countCVX3$cvx7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.063   8.000  25.000</code></pre>
+<pre class="r"><code>cvx7_incr_Days_grouped &lt;- countCVX3 %&gt;% group_by(cvx7_incr_Days) %&gt;% count(n=n())
+cvx7_incr_Days_grouped &lt;- cvx7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>cvx7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 23 x 2
+## # Groups:   cvx7_incr_Days [23]
+##    cvx7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1   101
+##  2              2    43
+##  3              3    25
+##  4              4    18
+##  5              5    10
+##  6              6     7
+##  7              7    17
+##  8              8    12
+##  9              9    17
+## 10             10    10
+## # … with 13 more rows</code></pre>
+<pre class="r"><code>median(cvx7_incr_Days_grouped$cvx7_incr_Days)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<hr />
+<pre class="r"><code>EPD &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;EPD&#39;)
+
+EPD &lt;- EPD[complete.cases(EPD),]
+
+epd7_a &lt;- ifelse(EPD$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for epd7 &lt;- &lt;- ifelse(EPD$today2lag7&gt;1, 1,0)
+epd7_ab &lt;- cumsum(epd7_a)
+
+epd7_abc &lt;- as.data.frame(as.factor(epd7_ab))
+colnames(epd7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countEPD &lt;- epd7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countEPD &lt;- as.data.frame(countEPD)
+countEPD &lt;- countEPD[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countEPD$epd7_decr_Days &lt;- countEPD$n-1
+countEPD &lt;- countEPD[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countEPD2 &lt;- subset(countEPD, countEPD$epd7_decr_Days&gt;0)
+summary(countEPD2$epd7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##     1.0     1.0     5.0     6.2     8.0    42.0</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+epd7_decr_Days_grouped &lt;- countEPD2 %&gt;% group_by(epd7_decr_Days) %&gt;% count(n=n())
+epd7_decr_Days_grouped &lt;- epd7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>epd7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 27 x 2
+## # Groups:   epd7_decr_Days [27]
+##    epd7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    79
+##  2              2    29
+##  3              3    20
+##  4              4    13
+##  5              5    16
+##  6              6    18
+##  7              7    24
+##  8              8    15
+##  9              9    10
+## 10             10    15
+## # … with 17 more rows</code></pre>
+<pre class="r"><code>median(epd7_decr_Days_grouped$epd7_decr_Days)</code></pre>
+<pre><code>## [1] 14</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+epd7_b1 &lt;- ifelse(EPD$today2lag7&gt;1, 0,1)
+
+
+epd7_b2 &lt;- cumsum(epd7_b1)
+
+epd7_b3 &lt;- as.data.frame(as.factor(epd7_b2))
+colnames(epd7_b3) &lt;- &#39;cSum&#39;
+
+countEPD1 &lt;- epd7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countEPD1 &lt;- as.data.frame(countEPD1)
+countEPD1 &lt;- countEPD1[,-3]
+
+countEPD1$epd7_incr_Days &lt;- countEPD1$n-1
+countEPD1 &lt;- countEPD1[,-2]
+
+countEPD3 &lt;- subset(countEPD1, countEPD1$epd7_incr_Days&gt;0)
+summary(countEPD3$epd7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.361   8.000  26.000</code></pre>
+<pre class="r"><code>epd7_incr_Days_grouped &lt;- countEPD3 %&gt;% group_by(epd7_incr_Days) %&gt;% count(n=n())
+epd7_incr_Days_grouped &lt;- epd7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>epd7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 22 x 2
+## # Groups:   epd7_incr_Days [22]
+##    epd7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    86
+##  2              2    42
+##  3              3    13
+##  4              4    15
+##  5              5    20
+##  6              6    14
+##  7              7    21
+##  8              8    11
+##  9              9    14
+## 10             10     5
+## # … with 12 more rows</code></pre>
+<pre class="r"><code>median(epd7_incr_Days_grouped$epd7_incr_Days)</code></pre>
+<pre><code>## [1] 11.5</code></pre>
+<hr />
+<pre class="r"><code>F &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;F&#39;)
+
+F &lt;- F[complete.cases(F),]
+
+f7_a &lt;- ifelse(F$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for f7 &lt;- &lt;- ifelse(F$today2lag7&gt;1, 1,0)
+f7_ab &lt;- cumsum(f7_a)
+
+f7_abc &lt;- as.data.frame(as.factor(f7_ab))
+colnames(f7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countF &lt;- f7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countF &lt;- as.data.frame(countF)
+countF &lt;- countF[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countF$f7_decr_Days &lt;- countF$n-1
+countF &lt;- countF[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countF2 &lt;- subset(countF, countF$f7_decr_Days&gt;0)
+summary(countF2$f7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.139   9.000  33.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+f7_decr_Days_grouped &lt;- countF2 %&gt;% group_by(f7_decr_Days) %&gt;% count(n=n())
+f7_decr_Days_grouped &lt;- f7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>f7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 26 x 2
+## # Groups:   f7_decr_Days [26]
+##    f7_decr_Days     n
+##           &lt;dbl&gt; &lt;int&gt;
+##  1            1    73
+##  2            2    39
+##  3            3    17
+##  4            4    15
+##  5            5    13
+##  6            6     8
+##  7            7    21
+##  8            8    10
+##  9            9    12
+## 10           10     8
+## # … with 16 more rows</code></pre>
+<pre class="r"><code>median(f7_decr_Days_grouped$f7_decr_Days)</code></pre>
+<pre><code>## [1] 13.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+f7_b1 &lt;- ifelse(F$today2lag7&gt;1, 0,1)
+
+
+f7_b2 &lt;- cumsum(f7_b1)
+
+f7_b3 &lt;- as.data.frame(as.factor(f7_b2))
+colnames(f7_b3) &lt;- &#39;cSum&#39;
+
+countF1 &lt;- f7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countF1 &lt;- as.data.frame(countF1)
+countF1 &lt;- countF1[,-3]
+
+countF1$f7_incr_Days &lt;- countF1$n-1
+countF1 &lt;- countF1[,-2]
+
+countF3 &lt;- subset(countF1, countF1$f7_incr_Days&gt;0)
+summary(countF3$f7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.500   5.000   6.202   9.000  32.000</code></pre>
+<pre class="r"><code>f7_incr_Days_grouped &lt;- countF3 %&gt;% group_by(f7_incr_Days) %&gt;% count(n=n())
+f7_incr_Days_grouped &lt;- f7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>f7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   f7_incr_Days [24]
+##    f7_incr_Days     n
+##           &lt;dbl&gt; &lt;int&gt;
+##  1            1    67
+##  2            2    27
+##  3            3    18
+##  4            4    13
+##  5            5    13
+##  6            6    10
+##  7            7    25
+##  8            8    21
+##  9            9    14
+## 10           10    10
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(f7_incr_Days_grouped$f7_incr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<hr />
+<pre class="r"><code>FTR &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;FTR&#39;)
+
+FTR &lt;- FTR[complete.cases(FTR),]
+
+ftr7_a &lt;- ifelse(FTR$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for ftr7 &lt;- &lt;- ifelse(FTR$today2lag7&gt;1, 1,0)
+ftr7_ab &lt;- cumsum(ftr7_a)
+
+ftr7_abc &lt;- as.data.frame(as.factor(ftr7_ab))
+colnames(ftr7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countFTR &lt;- ftr7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countFTR &lt;- as.data.frame(countFTR)
+countFTR &lt;- countFTR[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countFTR$ftr7_decr_Days &lt;- countFTR$n-1
+countFTR &lt;- countFTR[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countFTR2 &lt;- subset(countFTR, countFTR$ftr7_decr_Days&gt;0)
+summary(countFTR2$ftr7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##     1.0     1.0     4.0     5.4     8.0    28.0</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+ftr7_decr_Days_grouped &lt;- countFTR2 %&gt;% group_by(ftr7_decr_Days) %&gt;% count(n=n())
+ftr7_decr_Days_grouped &lt;- ftr7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>ftr7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 22 x 2
+## # Groups:   ftr7_decr_Days [22]
+##    ftr7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    79
+##  2              2    37
+##  3              3    27
+##  4              4    22
+##  5              5    14
+##  6              6     9
+##  7              7    22
+##  8              8    15
+##  9              9    11
+## 10             10    10
+## # … with 12 more rows</code></pre>
+<pre class="r"><code>median(ftr7_decr_Days_grouped$ftr7_decr_Days)</code></pre>
+<pre><code>## [1] 11.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+ftr7_b1 &lt;- ifelse(FTR$today2lag7&gt;1, 0,1)
+
+
+ftr7_b2 &lt;- cumsum(ftr7_b1)
+
+ftr7_b3 &lt;- as.data.frame(as.factor(ftr7_b2))
+colnames(ftr7_b3) &lt;- &#39;cSum&#39;
+
+countFTR1 &lt;- ftr7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countFTR1 &lt;- as.data.frame(countFTR1)
+countFTR1 &lt;- countFTR1[,-3]
+
+countFTR1$ftr7_incr_Days &lt;- countFTR1$n-1
+countFTR1 &lt;- countFTR1[,-2]
+
+countFTR3 &lt;- subset(countFTR1, countFTR1$ftr7_incr_Days&gt;0)
+summary(countFTR3$ftr7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.983   9.000  25.000</code></pre>
+<pre class="r"><code>ftr7_incr_Days_grouped &lt;- countFTR3 %&gt;% group_by(ftr7_incr_Days) %&gt;% count(n=n())
+ftr7_incr_Days_grouped &lt;- ftr7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>ftr7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 23 x 2
+## # Groups:   ftr7_incr_Days [23]
+##    ftr7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    82
+##  2              2    42
+##  3              3    18
+##  4              4    11
+##  5              5    13
+##  6              6     7
+##  7              7    15
+##  8              8    14
+##  9              9    19
+## 10             10     9
+## # … with 13 more rows</code></pre>
+<pre class="r"><code>median(ftr7_incr_Days_grouped$ftr7_incr_Days)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<hr />
+<pre class="r"><code>HMC &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;HMC&#39;)
+
+HMC &lt;- HMC[complete.cases(HMC),]
+
+hmc7_a &lt;- ifelse(HMC$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for hmc7 &lt;- &lt;- ifelse(HMC$today2lag7&gt;1, 1,0)
+hmc7_ab &lt;- cumsum(hmc7_a)
+
+hmc7_abc &lt;- as.data.frame(as.factor(hmc7_ab))
+colnames(hmc7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countHMC &lt;- hmc7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countHMC &lt;- as.data.frame(countHMC)
+countHMC &lt;- countHMC[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countHMC$hmc7_decr_Days &lt;- countHMC$n-1
+countHMC &lt;- countHMC[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countHMC2 &lt;- subset(countHMC, countHMC$hmc7_decr_Days&gt;0)
+summary(countHMC2$hmc7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.819   8.000  37.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+hmc7_decr_Days_grouped &lt;- countHMC2 %&gt;% group_by(hmc7_decr_Days) %&gt;% count(n=n())
+hmc7_decr_Days_grouped &lt;- hmc7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>hmc7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 26 x 2
+## # Groups:   hmc7_decr_Days [26]
+##    hmc7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    73
+##  2              2    38
+##  3              3    17
+##  4              4    18
+##  5              5    17
+##  6              6    11
+##  7              7    27
+##  8              8    14
+##  9              9    14
+## 10             10    16
+## # … with 16 more rows</code></pre>
+<pre class="r"><code>median(hmc7_decr_Days_grouped$hmc7_decr_Days)</code></pre>
+<pre><code>## [1] 13.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+hmc7_b1 &lt;- ifelse(HMC$today2lag7&gt;1, 0,1)
+
+
+hmc7_b2 &lt;- cumsum(hmc7_b1)
+
+hmc7_b3 &lt;- as.data.frame(as.factor(hmc7_b2))
+colnames(hmc7_b3) &lt;- &#39;cSum&#39;
+
+countHMC1 &lt;- hmc7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countHMC1 &lt;- as.data.frame(countHMC1)
+countHMC1 &lt;- countHMC1[,-3]
+
+countHMC1$hmc7_incr_Days &lt;- countHMC1$n-1
+countHMC1 &lt;- countHMC1[,-2]
+
+countHMC3 &lt;- subset(countHMC1, countHMC1$hmc7_incr_Days&gt;0)
+summary(countHMC3$hmc7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.865   8.750  31.000</code></pre>
+<pre class="r"><code>hmc7_incr_Days_grouped &lt;- countHMC3 %&gt;% group_by(hmc7_incr_Days) %&gt;% count(n=n())
+hmc7_incr_Days_grouped &lt;- hmc7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>hmc7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 27 x 2
+## # Groups:   hmc7_incr_Days [27]
+##    hmc7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    86
+##  2              2    28
+##  3              3    25
+##  4              4    16
+##  5              5    10
+##  6              6     7
+##  7              7    27
+##  8              8    12
+##  9              9    11
+## 10             10    11
+## # … with 17 more rows</code></pre>
+<pre class="r"><code>median(hmc7_incr_Days_grouped$hmc7_incr_Days)</code></pre>
+<pre><code>## [1] 14</code></pre>
+<hr />
+<pre class="r"><code>HOFT &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;HOFT&#39;)
+
+HOFT &lt;- HOFT[complete.cases(HOFT),]
+
+hoft7_a &lt;- ifelse(HOFT$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for hoft7 &lt;- &lt;- ifelse(HOFT$today2lag7&gt;1, 1,0)
+hoft7_ab &lt;- cumsum(hoft7_a)
+
+hoft7_abc &lt;- as.data.frame(as.factor(hoft7_ab))
+colnames(hoft7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countHOFT &lt;- hoft7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countHOFT &lt;- as.data.frame(countHOFT)
+countHOFT &lt;- countHOFT[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countHOFT$hoft7_decr_Days &lt;- countHOFT$n-1
+countHOFT &lt;- countHOFT[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countHOFT2 &lt;- subset(countHOFT, countHOFT$hoft7_decr_Days&gt;0)
+summary(countHOFT2$hoft7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.408   8.000  33.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+hoft7_decr_Days_grouped &lt;- countHOFT2 %&gt;% group_by(hoft7_decr_Days) %&gt;% count(n=n())
+hoft7_decr_Days_grouped &lt;- hoft7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>hoft7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   hoft7_decr_Days [24]
+##    hoft7_decr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    93
+##  2               2    55
+##  3               3    20
+##  4               4    21
+##  5               5    13
+##  6               6    12
+##  7               7    24
+##  8               8    16
+##  9               9     9
+## 10              10     9
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(hoft7_decr_Days_grouped$hoft7_decr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+hoft7_b1 &lt;- ifelse(HOFT$today2lag7&gt;1, 0,1)
+
+
+hoft7_b2 &lt;- cumsum(hoft7_b1)
+
+hoft7_b3 &lt;- as.data.frame(as.factor(hoft7_b2))
+colnames(hoft7_b3) &lt;- &#39;cSum&#39;
+
+countHOFT1 &lt;- hoft7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countHOFT1 &lt;- as.data.frame(countHOFT1)
+countHOFT1 &lt;- countHOFT1[,-3]
+
+countHOFT1$hoft7_incr_Days &lt;- countHOFT1$n-1
+countHOFT1 &lt;- countHOFT1[,-2]
+
+countHOFT3 &lt;- subset(countHOFT1, countHOFT1$hoft7_incr_Days&gt;0)
+summary(countHOFT3$hoft7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.857   7.000  28.000</code></pre>
+<pre class="r"><code>hoft7_incr_Days_grouped &lt;- countHOFT3 %&gt;% group_by(hoft7_incr_Days) %&gt;% count(n=n())
+hoft7_incr_Days_grouped &lt;- hoft7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>hoft7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 23 x 2
+## # Groups:   hoft7_incr_Days [23]
+##    hoft7_incr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1   106
+##  2               2    41
+##  3               3    25
+##  4               4    22
+##  5               5    14
+##  6               6    11
+##  7               7    31
+##  8               8    12
+##  9               9    14
+## 10              10     9
+## # … with 13 more rows</code></pre>
+<pre class="r"><code>median(hoft7_incr_Days_grouped$hoft7_incr_Days)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<hr />
+<pre class="r"><code>HRB &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;HRB&#39;)
+
+HRB &lt;- HRB[complete.cases(HRB),]
+
+hrb7_a &lt;- ifelse(HRB$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for hrb7 &lt;- &lt;- ifelse(HRB$today2lag7&gt;1, 1,0)
+hrb7_ab &lt;- cumsum(hrb7_a)
+
+hrb7_abc &lt;- as.data.frame(as.factor(hrb7_ab))
+colnames(hrb7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countHRB &lt;- hrb7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countHRB &lt;- as.data.frame(countHRB)
+countHRB &lt;- countHRB[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countHRB$hrb7_decr_Days &lt;- countHRB$n-1
+countHRB &lt;- countHRB[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countHRB2 &lt;- subset(countHRB, countHRB$hrb7_decr_Days&gt;0)
+summary(countHRB2$hrb7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   6.052   8.000  39.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+hrb7_decr_Days_grouped &lt;- countHRB2 %&gt;% group_by(hrb7_decr_Days) %&gt;% count(n=n())
+hrb7_decr_Days_grouped &lt;- hrb7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>hrb7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 28 x 2
+## # Groups:   hrb7_decr_Days [28]
+##    hrb7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    89
+##  2              2    36
+##  3              3    22
+##  4              4    12
+##  5              5    17
+##  6              6    16
+##  7              7    13
+##  8              8    13
+##  9              9     9
+## 10             10     6
+## # … with 18 more rows</code></pre>
+<pre class="r"><code>median(hrb7_decr_Days_grouped$hrb7_decr_Days)</code></pre>
+<pre><code>## [1] 14.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+hrb7_b1 &lt;- ifelse(HRB$today2lag7&gt;1, 0,1)
+
+
+hrb7_b2 &lt;- cumsum(hrb7_b1)
+
+hrb7_b3 &lt;- as.data.frame(as.factor(hrb7_b2))
+colnames(hrb7_b3) &lt;- &#39;cSum&#39;
+
+countHRB1 &lt;- hrb7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countHRB1 &lt;- as.data.frame(countHRB1)
+countHRB1 &lt;- countHRB1[,-3]
+
+countHRB1$hrb7_incr_Days &lt;- countHRB1$n-1
+countHRB1 &lt;- countHRB1[,-2]
+
+countHRB3 &lt;- subset(countHRB1, countHRB1$hrb7_incr_Days&gt;0)
+summary(countHRB3$hrb7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1.00    1.00    3.00    5.31    7.00   42.00</code></pre>
+<pre class="r"><code>hrb7_incr_Days_grouped &lt;- countHRB3 %&gt;% group_by(hrb7_incr_Days) %&gt;% count(n=n())
+hrb7_incr_Days_grouped &lt;- hrb7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>hrb7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 23 x 2
+## # Groups:   hrb7_incr_Days [23]
+##    hrb7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    86
+##  2              2    43
+##  3              3    19
+##  4              4    15
+##  5              5    15
+##  6              6    13
+##  7              7    27
+##  8              8    11
+##  9              9    13
+## 10             10     8
+## # … with 13 more rows</code></pre>
+<pre class="r"><code>median(hrb7_incr_Days_grouped$hrb7_incr_Days)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<hr />
+<pre class="r"><code>HST &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;HST&#39;)
+
+HST &lt;- HST[complete.cases(HST),]
+
+hst7_a &lt;- ifelse(HST$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for hst7 &lt;- &lt;- ifelse(HST$today2lag7&gt;1, 1,0)
+hst7_ab &lt;- cumsum(hst7_a)
+
+hst7_abc &lt;- as.data.frame(as.factor(hst7_ab))
+colnames(hst7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countHST &lt;- hst7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countHST &lt;- as.data.frame(countHST)
+countHST &lt;- countHST[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countHST$hst7_decr_Days &lt;- countHST$n-1
+countHST &lt;- countHST[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countHST2 &lt;- subset(countHST, countHST$hst7_decr_Days&gt;0)
+summary(countHST2$hst7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.799   8.000  32.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+hst7_decr_Days_grouped &lt;- countHST2 %&gt;% group_by(hst7_decr_Days) %&gt;% count(n=n())
+hst7_decr_Days_grouped &lt;- hst7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>hst7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 25 x 2
+## # Groups:   hst7_decr_Days [25]
+##    hst7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    87
+##  2              2    38
+##  3              3    17
+##  4              4    14
+##  5              5    13
+##  6              6    17
+##  7              7    21
+##  8              8    16
+##  9              9    14
+## 10             10     7
+## # … with 15 more rows</code></pre>
+<pre class="r"><code>median(hst7_decr_Days_grouped$hst7_decr_Days)</code></pre>
+<pre><code>## [1] 13</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+hst7_b1 &lt;- ifelse(HST$today2lag7&gt;1, 0,1)
+
+
+hst7_b2 &lt;- cumsum(hst7_b1)
+
+hst7_b3 &lt;- as.data.frame(as.factor(hst7_b2))
+colnames(hst7_b3) &lt;- &#39;cSum&#39;
+
+countHST1 &lt;- hst7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countHST1 &lt;- as.data.frame(countHST1)
+countHST1 &lt;- countHST1[,-3]
+
+countHST1$hst7_incr_Days &lt;- countHST1$n-1
+countHST1 &lt;- countHST1[,-2]
+
+countHST3 &lt;- subset(countHST1, countHST1$hst7_incr_Days&gt;0)
+summary(countHST3$hst7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.447   8.000  40.000</code></pre>
+<pre class="r"><code>hst7_incr_Days_grouped &lt;- countHST3 %&gt;% group_by(hst7_incr_Days) %&gt;% count(n=n())
+hst7_incr_Days_grouped &lt;- hst7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>hst7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   hst7_incr_Days [24]
+##    hst7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    93
+##  2              2    30
+##  3              3    34
+##  4              4    18
+##  5              5    13
+##  6              6     9
+##  7              7    20
+##  8              8    13
+##  9              9     9
+## 10             10     8
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(hst7_incr_Days_grouped$hst7_incr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<hr />
+<pre class="r"><code>INO &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;INO&#39;)
+
+INO &lt;- INO[complete.cases(INO),]
+
+ino7_a &lt;- ifelse(INO$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for ino7 &lt;- &lt;- ifelse(INO$today2lag7&gt;1, 1,0)
+ino7_ab &lt;- cumsum(ino7_a)
+
+ino7_abc &lt;- as.data.frame(as.factor(ino7_ab))
+colnames(ino7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countINO &lt;- ino7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countINO &lt;- as.data.frame(countINO)
+countINO &lt;- countINO[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countINO$ino7_decr_Days &lt;- countINO$n-1
+countINO &lt;- countINO[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countINO2 &lt;- subset(countINO, countINO$ino7_decr_Days&gt;0)
+summary(countINO2$ino7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.342   8.000  24.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+ino7_decr_Days_grouped &lt;- countINO2 %&gt;% group_by(ino7_decr_Days) %&gt;% count(n=n())
+ino7_decr_Days_grouped &lt;- ino7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>ino7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 20 x 2
+## # Groups:   ino7_decr_Days [20]
+##    ino7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    82
+##  2              2    41
+##  3              3    25
+##  4              4    18
+##  5              5     7
+##  6              6     5
+##  7              7    29
+##  8              8    19
+##  9              9    17
+## 10             10    10
+## 11             11     5
+## 12             12    10
+## 13             13     7
+## 14             14     7
+## 15             15     4
+## 16             16     1
+## 17             17     3
+## 18             18     3
+## 19             23     1
+## 20             24     1</code></pre>
+<pre class="r"><code>median(ino7_decr_Days_grouped$ino7_decr_Days)</code></pre>
+<pre><code>## [1] 10.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+ino7_b1 &lt;- ifelse(INO$today2lag7&gt;1, 0,1)
+
+
+ino7_b2 &lt;- cumsum(ino7_b1)
+
+ino7_b3 &lt;- as.data.frame(as.factor(ino7_b2))
+colnames(ino7_b3) &lt;- &#39;cSum&#39;
+
+countINO1 &lt;- ino7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countINO1 &lt;- as.data.frame(countINO1)
+countINO1 &lt;- countINO1[,-3]
+
+countINO1$ino7_incr_Days &lt;- countINO1$n-1
+countINO1 &lt;- countINO1[,-2]
+
+countINO3 &lt;- subset(countINO1, countINO1$ino7_incr_Days&gt;0)
+summary(countINO3$ino7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.847   8.750  34.000</code></pre>
+<pre class="r"><code>ino7_incr_Days_grouped &lt;- countINO3 %&gt;% group_by(ino7_incr_Days) %&gt;% count(n=n())
+ino7_incr_Days_grouped &lt;- ino7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>ino7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 28 x 2
+## # Groups:   ino7_incr_Days [28]
+##    ino7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    85
+##  2              2    38
+##  3              3    22
+##  4              4    17
+##  5              5    14
+##  6              6    12
+##  7              7    15
+##  8              8    17
+##  9              9    14
+## 10             10    11
+## # … with 18 more rows</code></pre>
+<pre class="r"><code>median(ino7_incr_Days_grouped$ino7_incr_Days)</code></pre>
+<pre><code>## [1] 14.5</code></pre>
+<hr />
+<pre class="r"><code>JBLU &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;JBLU&#39;)
+
+JBLU &lt;- JBLU[complete.cases(JBLU),]
+
+jblu7_a &lt;- ifelse(JBLU$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for jblu7 &lt;- &lt;- ifelse(JBLU$today2lag7&gt;1, 1,0)
+jblu7_ab &lt;- cumsum(jblu7_a)
+
+jblu7_abc &lt;- as.data.frame(as.factor(jblu7_ab))
+colnames(jblu7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countJBLU &lt;- jblu7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countJBLU &lt;- as.data.frame(countJBLU)
+countJBLU &lt;- countJBLU[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countJBLU$jblu7_decr_Days &lt;- countJBLU$n-1
+countJBLU &lt;- countJBLU[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countJBLU2 &lt;- subset(countJBLU, countJBLU$jblu7_decr_Days&gt;0)
+summary(countJBLU2$jblu7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1.00    1.00    4.00    5.67    8.00   30.00</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+jblu7_decr_Days_grouped &lt;- countJBLU2 %&gt;% group_by(jblu7_decr_Days) %&gt;% count(n=n())
+jblu7_decr_Days_grouped &lt;- jblu7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>jblu7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   jblu7_decr_Days [24]
+##    jblu7_decr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    84
+##  2               2    44
+##  3               3    17
+##  4               4    22
+##  5               5    11
+##  6               6     9
+##  7               7    29
+##  8               8    11
+##  9               9    12
+## 10              10    12
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(jblu7_decr_Days_grouped$jblu7_decr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+jblu7_b1 &lt;- ifelse(JBLU$today2lag7&gt;1, 0,1)
+
+
+jblu7_b2 &lt;- cumsum(jblu7_b1)
+
+jblu7_b3 &lt;- as.data.frame(as.factor(jblu7_b2))
+colnames(jblu7_b3) &lt;- &#39;cSum&#39;
+
+countJBLU1 &lt;- jblu7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countJBLU1 &lt;- as.data.frame(countJBLU1)
+countJBLU1 &lt;- countJBLU1[,-3]
+
+countJBLU1$jblu7_incr_Days &lt;- countJBLU1$n-1
+countJBLU1 &lt;- countJBLU1[,-2]
+
+countJBLU3 &lt;- subset(countJBLU1, countJBLU1$jblu7_incr_Days&gt;0)
+summary(countJBLU3$jblu7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.331   8.000  29.000</code></pre>
+<pre class="r"><code>jblu7_incr_Days_grouped &lt;- countJBLU3 %&gt;% group_by(jblu7_incr_Days) %&gt;% count(n=n())
+jblu7_incr_Days_grouped &lt;- jblu7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>jblu7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 23 x 2
+## # Groups:   jblu7_incr_Days [23]
+##    jblu7_incr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    88
+##  2               2    43
+##  3               3    29
+##  4               4    17
+##  5               5    17
+##  6               6     7
+##  7               7    17
+##  8               8    15
+##  9               9    10
+## 10              10     9
+## # … with 13 more rows</code></pre>
+<pre class="r"><code>median(jblu7_incr_Days_grouped$jblu7_incr_Days)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<hr />
+<pre class="r"><code>JPM &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;JPM&#39;)
+
+JPM &lt;- JPM[complete.cases(JPM),]
+
+jpm7_a &lt;- ifelse(JPM$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for jpm7 &lt;- &lt;- ifelse(JPM$today2lag7&gt;1, 1,0)
+jpm7_ab &lt;- cumsum(jpm7_a)
+
+jpm7_abc &lt;- as.data.frame(as.factor(jpm7_ab))
+colnames(jpm7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countJPM &lt;- jpm7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countJPM &lt;- as.data.frame(countJPM)
+countJPM &lt;- countJPM[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countJPM$jpm7_decr_Days &lt;- countJPM$n-1
+countJPM &lt;- countJPM[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countJPM2 &lt;- subset(countJPM, countJPM$jpm7_decr_Days&gt;0)
+summary(countJPM2$jpm7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.464   9.000  43.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+jpm7_decr_Days_grouped &lt;- countJPM2 %&gt;% group_by(jpm7_decr_Days) %&gt;% count(n=n())
+jpm7_decr_Days_grouped &lt;- jpm7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>jpm7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 26 x 2
+## # Groups:   jpm7_decr_Days [26]
+##    jpm7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    76
+##  2              2    37
+##  3              3    20
+##  4              4    13
+##  5              5     9
+##  6              6    11
+##  7              7    22
+##  8              8    15
+##  9              9    11
+## 10             10     9
+## # … with 16 more rows</code></pre>
+<pre class="r"><code>median(jpm7_decr_Days_grouped$jpm7_decr_Days)</code></pre>
+<pre><code>## [1] 13.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+jpm7_b1 &lt;- ifelse(JPM$today2lag7&gt;1, 0,1)
+
+
+jpm7_b2 &lt;- cumsum(jpm7_b1)
+
+jpm7_b3 &lt;- as.data.frame(as.factor(jpm7_b2))
+colnames(jpm7_b3) &lt;- &#39;cSum&#39;
+
+countJPM1 &lt;- jpm7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countJPM1 &lt;- as.data.frame(countJPM1)
+countJPM1 &lt;- countJPM1[,-3]
+
+countJPM1$jpm7_incr_Days &lt;- countJPM1$n-1
+countJPM1 &lt;- countJPM1[,-2]
+
+countJPM3 &lt;- subset(countJPM1, countJPM1$jpm7_incr_Days&gt;0)
+summary(countJPM3$jpm7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.304   8.000  29.000</code></pre>
+<pre class="r"><code>jpm7_incr_Days_grouped &lt;- countJPM3 %&gt;% group_by(jpm7_incr_Days) %&gt;% count(n=n())
+jpm7_incr_Days_grouped &lt;- jpm7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>jpm7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 23 x 2
+## # Groups:   jpm7_incr_Days [23]
+##    jpm7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    82
+##  2              2    38
+##  3              3    17
+##  4              4    17
+##  5              5    16
+##  6              6    13
+##  7              7    23
+##  8              8    15
+##  9              9    13
+## 10             10    11
+## # … with 13 more rows</code></pre>
+<pre class="r"><code>median(jpm7_incr_Days_grouped$jpm7_incr_Days)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<hr />
+<pre class="r"><code>JWN &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;JWN&#39;)
+
+JWN &lt;- JWN[complete.cases(JWN),]
+
+jwn7_a &lt;- ifelse(JWN$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for jwn7 &lt;- &lt;- ifelse(JWN$today2lag7&gt;1, 1,0)
+jwn7_ab &lt;- cumsum(jwn7_a)
+
+jwn7_abc &lt;- as.data.frame(as.factor(jwn7_ab))
+colnames(jwn7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countJWN &lt;- jwn7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countJWN &lt;- as.data.frame(countJWN)
+countJWN &lt;- countJWN[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countJWN$jwn7_decr_Days &lt;- countJWN$n-1
+countJWN &lt;- countJWN[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countJWN2 &lt;- subset(countJWN, countJWN$jwn7_decr_Days&gt;0)
+summary(countJWN2$jwn7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   2.000   4.000   5.779   8.000  32.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+jwn7_decr_Days_grouped &lt;- countJWN2 %&gt;% group_by(jwn7_decr_Days) %&gt;% count(n=n())
+jwn7_decr_Days_grouped &lt;- jwn7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>jwn7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 27 x 2
+## # Groups:   jwn7_decr_Days [27]
+##    jwn7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    65
+##  2              2    37
+##  3              3    36
+##  4              4    19
+##  5              5    22
+##  6              6    11
+##  7              7    24
+##  8              8    21
+##  9              9    11
+## 10             10     8
+## # … with 17 more rows</code></pre>
+<pre class="r"><code>median(jwn7_decr_Days_grouped$jwn7_decr_Days)</code></pre>
+<pre><code>## [1] 14</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+jwn7_b1 &lt;- ifelse(JWN$today2lag7&gt;1, 0,1)
+
+
+jwn7_b2 &lt;- cumsum(jwn7_b1)
+
+jwn7_b3 &lt;- as.data.frame(as.factor(jwn7_b2))
+colnames(jwn7_b3) &lt;- &#39;cSum&#39;
+
+countJWN1 &lt;- jwn7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countJWN1 &lt;- as.data.frame(countJWN1)
+countJWN1 &lt;- countJWN1[,-3]
+
+countJWN1$jwn7_incr_Days &lt;- countJWN1$n-1
+countJWN1 &lt;- countJWN1[,-2]
+
+countJWN3 &lt;- subset(countJWN1, countJWN1$jwn7_incr_Days&gt;0)
+summary(countJWN3$jwn7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.241   8.000  40.000</code></pre>
+<pre class="r"><code>jwn7_incr_Days_grouped &lt;- countJWN3 %&gt;% group_by(jwn7_incr_Days) %&gt;% count(n=n())
+jwn7_incr_Days_grouped &lt;- jwn7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>jwn7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 22 x 2
+## # Groups:   jwn7_incr_Days [22]
+##    jwn7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    91
+##  2              2    37
+##  3              3    25
+##  4              4    13
+##  5              5    15
+##  6              6    13
+##  7              7    28
+##  8              8    14
+##  9              9    18
+## 10             10     5
+## # … with 12 more rows</code></pre>
+<pre class="r"><code>median(jwn7_incr_Days_grouped$jwn7_incr_Days)</code></pre>
+<pre><code>## [1] 11.5</code></pre>
+<hr />
+<pre class="r"><code>KGJI &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;KGJI&#39;)
+
+KGJI &lt;- KGJI[complete.cases(KGJI),]
+
+kgji7_a &lt;- ifelse(KGJI$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for kgji7 &lt;- &lt;- ifelse(KGJI$today2lag7&gt;1, 1,0)
+kgji7_ab &lt;- cumsum(kgji7_a)
+
+kgji7_abc &lt;- as.data.frame(as.factor(kgji7_ab))
+colnames(kgji7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countKGJI &lt;- kgji7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countKGJI &lt;- as.data.frame(countKGJI)
+countKGJI &lt;- countKGJI[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countKGJI$kgji7_decr_Days &lt;- countKGJI$n-1
+countKGJI &lt;- countKGJI[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countKGJI2 &lt;- subset(countKGJI, countKGJI$kgji7_decr_Days&gt;0)
+summary(countKGJI2$kgji7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   6.179   7.250  83.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+kgji7_decr_Days_grouped &lt;- countKGJI2 %&gt;% group_by(kgji7_decr_Days) %&gt;% count(n=n())
+kgji7_decr_Days_grouped &lt;- kgji7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>kgji7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 28 x 2
+## # Groups:   kgji7_decr_Days [28]
+##    kgji7_decr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    76
+##  2               2    43
+##  3               3    36
+##  4               4    21
+##  5               5    11
+##  6               6     6
+##  7               7    29
+##  8               8    12
+##  9               9    10
+## 10              10    10
+## # … with 18 more rows</code></pre>
+<pre class="r"><code>median(kgji7_decr_Days_grouped$kgji7_decr_Days)</code></pre>
+<pre><code>## [1] 14.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+kgji7_b1 &lt;- ifelse(KGJI$today2lag7&gt;1, 0,1)
+
+
+kgji7_b2 &lt;- cumsum(kgji7_b1)
+
+kgji7_b3 &lt;- as.data.frame(as.factor(kgji7_b2))
+colnames(kgji7_b3) &lt;- &#39;cSum&#39;
+
+countKGJI1 &lt;- kgji7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countKGJI1 &lt;- as.data.frame(countKGJI1)
+countKGJI1 &lt;- countKGJI1[,-3]
+
+countKGJI1$kgji7_incr_Days &lt;- countKGJI1$n-1
+countKGJI1 &lt;- countKGJI1[,-2]
+
+countKGJI3 &lt;- subset(countKGJI1, countKGJI1$kgji7_incr_Days&gt;0)
+summary(countKGJI3$kgji7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.953   7.000  27.000</code></pre>
+<pre class="r"><code>kgji7_incr_Days_grouped &lt;- countKGJI3 %&gt;% group_by(kgji7_incr_Days) %&gt;% count(n=n())
+kgji7_incr_Days_grouped &lt;- kgji7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>kgji7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 22 x 2
+## # Groups:   kgji7_incr_Days [22]
+##    kgji7_incr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    93
+##  2               2    41
+##  3               3    30
+##  4               4    18
+##  5               5    11
+##  6               6     7
+##  7               7    33
+##  8               8     9
+##  9               9     6
+## 10              10    10
+## # … with 12 more rows</code></pre>
+<pre class="r"><code>median(kgji7_incr_Days_grouped$kgji7_incr_Days)</code></pre>
+<pre><code>## [1] 11.5</code></pre>
+<hr />
+<pre class="r"><code>KSS &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;KSS&#39;)
+
+KSS &lt;- KSS[complete.cases(KSS),]
+
+kss7_a &lt;- ifelse(KSS$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for kss7 &lt;- &lt;- ifelse(KSS$today2lag7&gt;1, 1,0)
+kss7_ab &lt;- cumsum(kss7_a)
+
+kss7_abc &lt;- as.data.frame(as.factor(kss7_ab))
+colnames(kss7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countKSS &lt;- kss7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countKSS &lt;- as.data.frame(countKSS)
+countKSS &lt;- countKSS[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countKSS$kss7_decr_Days &lt;- countKSS$n-1
+countKSS &lt;- countKSS[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countKSS2 &lt;- subset(countKSS, countKSS$kss7_decr_Days&gt;0)
+summary(countKSS2$kss7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.528   8.000  33.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+kss7_decr_Days_grouped &lt;- countKSS2 %&gt;% group_by(kss7_decr_Days) %&gt;% count(n=n())
+kss7_decr_Days_grouped &lt;- kss7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>kss7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 25 x 2
+## # Groups:   kss7_decr_Days [25]
+##    kss7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    90
+##  2              2    36
+##  3              3    23
+##  4              4    20
+##  5              5    15
+##  6              6    16
+##  7              7    18
+##  8              8    20
+##  9              9    13
+## 10             10     8
+## # … with 15 more rows</code></pre>
+<pre class="r"><code>median(kss7_decr_Days_grouped$kss7_decr_Days)</code></pre>
+<pre><code>## [1] 13</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+kss7_b1 &lt;- ifelse(KSS$today2lag7&gt;1, 0,1)
+
+
+kss7_b2 &lt;- cumsum(kss7_b1)
+
+kss7_b3 &lt;- as.data.frame(as.factor(kss7_b2))
+colnames(kss7_b3) &lt;- &#39;cSum&#39;
+
+countKSS1 &lt;- kss7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countKSS1 &lt;- as.data.frame(countKSS1)
+countKSS1 &lt;- countKSS1[,-3]
+
+countKSS1$kss7_incr_Days &lt;- countKSS1$n-1
+countKSS1 &lt;- countKSS1[,-2]
+
+countKSS3 &lt;- subset(countKSS1, countKSS1$kss7_incr_Days&gt;0)
+summary(countKSS3$kss7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.347   8.000  40.000</code></pre>
+<pre class="r"><code>kss7_incr_Days_grouped &lt;- countKSS3 %&gt;% group_by(kss7_incr_Days) %&gt;% count(n=n())
+kss7_incr_Days_grouped &lt;- kss7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>kss7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 22 x 2
+## # Groups:   kss7_incr_Days [22]
+##    kss7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    84
+##  2              2    45
+##  3              3    26
+##  4              4    20
+##  5              5    11
+##  6              6    10
+##  7              7    22
+##  8              8    23
+##  9              9     7
+## 10             10     9
+## # … with 12 more rows</code></pre>
+<pre class="r"><code>median(kss7_incr_Days_grouped$kss7_incr_Days)</code></pre>
+<pre><code>## [1] 11.5</code></pre>
+<hr />
+<pre class="r"><code>LUV &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;LUV&#39;)
+
+LUV &lt;- LUV[complete.cases(LUV),]
+
+luv7_a &lt;- ifelse(LUV$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for luv7 &lt;- &lt;- ifelse(LUV$today2lag7&gt;1, 1,0)
+luv7_ab &lt;- cumsum(luv7_a)
+
+luv7_abc &lt;- as.data.frame(as.factor(luv7_ab))
+colnames(luv7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countLUV &lt;- luv7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countLUV &lt;- as.data.frame(countLUV)
+countLUV &lt;- countLUV[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countLUV$luv7_decr_Days &lt;- countLUV$n-1
+countLUV &lt;- countLUV[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countLUV2 &lt;- subset(countLUV, countLUV$luv7_decr_Days&gt;0)
+summary(countLUV2$luv7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.498   9.000  61.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+luv7_decr_Days_grouped &lt;- countLUV2 %&gt;% group_by(luv7_decr_Days) %&gt;% count(n=n())
+luv7_decr_Days_grouped &lt;- luv7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>luv7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 32 x 2
+## # Groups:   luv7_decr_Days [32]
+##    luv7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    83
+##  2              2    33
+##  3              3    20
+##  4              4    17
+##  5              5    16
+##  6              6     8
+##  7              7    21
+##  8              8     8
+##  9              9    18
+## 10             10     8
+## # … with 22 more rows</code></pre>
+<pre class="r"><code>median(luv7_decr_Days_grouped$luv7_decr_Days)</code></pre>
+<pre><code>## [1] 16.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+luv7_b1 &lt;- ifelse(LUV$today2lag7&gt;1, 0,1)
+
+
+luv7_b2 &lt;- cumsum(luv7_b1)
+
+luv7_b3 &lt;- as.data.frame(as.factor(luv7_b2))
+colnames(luv7_b3) &lt;- &#39;cSum&#39;
+
+countLUV1 &lt;- luv7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countLUV1 &lt;- as.data.frame(countLUV1)
+countLUV1 &lt;- countLUV1[,-3]
+
+countLUV1$luv7_incr_Days &lt;- countLUV1$n-1
+countLUV1 &lt;- countLUV1[,-2]
+
+countLUV3 &lt;- subset(countLUV1, countLUV1$luv7_incr_Days&gt;0)
+summary(countLUV3$luv7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.246   7.000  37.000</code></pre>
+<pre class="r"><code>luv7_incr_Days_grouped &lt;- countLUV3 %&gt;% group_by(luv7_incr_Days) %&gt;% count(n=n())
+luv7_incr_Days_grouped &lt;- luv7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>luv7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 25 x 2
+## # Groups:   luv7_incr_Days [25]
+##    luv7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1   101
+##  2              2    34
+##  3              3    21
+##  4              4    14
+##  5              5     8
+##  6              6    17
+##  7              7    21
+##  8              8    11
+##  9              9     4
+## 10             10     8
+## # … with 15 more rows</code></pre>
+<pre class="r"><code>median(luv7_incr_Days_grouped$luv7_incr_Days)</code></pre>
+<pre><code>## [1] 13</code></pre>
+<hr />
+<pre class="r"><code>M &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;M&#39;)
+
+M &lt;- M[complete.cases(M),]
+
+m7_a &lt;- ifelse(M$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for m7 &lt;- &lt;- ifelse(M$today2lag7&gt;1, 1,0)
+m7_ab &lt;- cumsum(m7_a)
+
+m7_abc &lt;- as.data.frame(as.factor(m7_ab))
+colnames(m7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countM &lt;- m7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countM &lt;- as.data.frame(countM)
+countM &lt;- countM[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countM$m7_decr_Days &lt;- countM$n-1
+countM &lt;- countM[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countM2 &lt;- subset(countM, countM$m7_decr_Days&gt;0)
+summary(countM2$m7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1.00    2.00    4.00    6.21    8.00   38.00</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+m7_decr_Days_grouped &lt;- countM2 %&gt;% group_by(m7_decr_Days) %&gt;% count(n=n())
+m7_decr_Days_grouped &lt;- m7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>m7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 28 x 2
+## # Groups:   m7_decr_Days [28]
+##    m7_decr_Days     n
+##           &lt;dbl&gt; &lt;int&gt;
+##  1            1    65
+##  2            2    39
+##  3            3    28
+##  4            4    16
+##  5            5    12
+##  6            6    12
+##  7            7    26
+##  8            8    11
+##  9            9     7
+## 10           10     5
+## # … with 18 more rows</code></pre>
+<pre class="r"><code>median(m7_decr_Days_grouped$m7_decr_Days)</code></pre>
+<pre><code>## [1] 14.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+m7_b1 &lt;- ifelse(M$today2lag7&gt;1, 0,1)
+
+
+m7_b2 &lt;- cumsum(m7_b1)
+
+m7_b3 &lt;- as.data.frame(as.factor(m7_b2))
+colnames(m7_b3) &lt;- &#39;cSum&#39;
+
+countM1 &lt;- m7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countM1 &lt;- as.data.frame(countM1)
+countM1 &lt;- countM1[,-3]
+
+countM1$m7_incr_Days &lt;- countM1$n-1
+countM1 &lt;- countM1[,-2]
+
+countM3 &lt;- subset(countM1, countM1$m7_incr_Days&gt;0)
+summary(countM3$m7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.904   8.000  28.000</code></pre>
+<pre class="r"><code>m7_incr_Days_grouped &lt;- countM3 %&gt;% group_by(m7_incr_Days) %&gt;% count(n=n())
+m7_incr_Days_grouped &lt;- m7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>m7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 25 x 2
+## # Groups:   m7_incr_Days [25]
+##    m7_incr_Days     n
+##           &lt;dbl&gt; &lt;int&gt;
+##  1            1    69
+##  2            2    35
+##  3            3    27
+##  4            4    13
+##  5            5    12
+##  6            6    17
+##  7            7    27
+##  8            8     9
+##  9            9     9
+## 10           10     9
+## # … with 15 more rows</code></pre>
+<pre class="r"><code>median(m7_incr_Days_grouped$m7_incr_Days)</code></pre>
+<pre><code>## [1] 13</code></pre>
+<hr />
+<pre class="r"><code>MGM &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;MGM&#39;)
+
+MGM &lt;- MGM[complete.cases(MGM),]
+
+mgm7_a &lt;- ifelse(MGM$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for mgm7 &lt;- &lt;- ifelse(MGM$today2lag7&gt;1, 1,0)
+mgm7_ab &lt;- cumsum(mgm7_a)
+
+mgm7_abc &lt;- as.data.frame(as.factor(mgm7_ab))
+colnames(mgm7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countMGM &lt;- mgm7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countMGM &lt;- as.data.frame(countMGM)
+countMGM &lt;- countMGM[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countMGM$mgm7_decr_Days &lt;- countMGM$n-1
+countMGM &lt;- countMGM[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countMGM2 &lt;- subset(countMGM, countMGM$mgm7_decr_Days&gt;0)
+summary(countMGM2$mgm7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.083   9.000  38.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+mgm7_decr_Days_grouped &lt;- countMGM2 %&gt;% group_by(mgm7_decr_Days) %&gt;% count(n=n())
+mgm7_decr_Days_grouped &lt;- mgm7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>mgm7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 26 x 2
+## # Groups:   mgm7_decr_Days [26]
+##    mgm7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    79
+##  2              2    36
+##  3              3    17
+##  4              4    16
+##  5              5    11
+##  6              6     5
+##  7              7    27
+##  8              8    14
+##  9              9     5
+## 10             10    13
+## # … with 16 more rows</code></pre>
+<pre class="r"><code>median(mgm7_decr_Days_grouped$mgm7_decr_Days)</code></pre>
+<pre><code>## [1] 13.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+mgm7_b1 &lt;- ifelse(MGM$today2lag7&gt;1, 0,1)
+
+
+mgm7_b2 &lt;- cumsum(mgm7_b1)
+
+mgm7_b3 &lt;- as.data.frame(as.factor(mgm7_b2))
+colnames(mgm7_b3) &lt;- &#39;cSum&#39;
+
+countMGM1 &lt;- mgm7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countMGM1 &lt;- as.data.frame(countMGM1)
+countMGM1 &lt;- countMGM1[,-3]
+
+countMGM1$mgm7_incr_Days &lt;- countMGM1$n-1
+countMGM1 &lt;- countMGM1[,-2]
+
+countMGM3 &lt;- subset(countMGM1, countMGM1$mgm7_incr_Days&gt;0)
+summary(countMGM3$mgm7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1.00    1.00    4.00    5.77    8.00   41.00</code></pre>
+<pre class="r"><code>mgm7_incr_Days_grouped &lt;- countMGM3 %&gt;% group_by(mgm7_incr_Days) %&gt;% count(n=n())
+mgm7_incr_Days_grouped &lt;- mgm7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>mgm7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   mgm7_incr_Days [24]
+##    mgm7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    74
+##  2              2    36
+##  3              3    25
+##  4              4    18
+##  5              5    10
+##  6              6     9
+##  7              7    23
+##  8              8    16
+##  9              9    11
+## 10             10    13
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(mgm7_incr_Days_grouped$mgm7_incr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<hr />
+<pre class="r"><code>MSFT &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;MSFT&#39;)
+
+MSFT &lt;- MSFT[complete.cases(MSFT),]
+
+msft7_a &lt;- ifelse(MSFT$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for msft7 &lt;- &lt;- ifelse(MSFT$today2lag7&gt;1, 1,0)
+msft7_ab &lt;- cumsum(msft7_a)
+
+msft7_abc &lt;- as.data.frame(as.factor(msft7_ab))
+colnames(msft7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countMSFT &lt;- msft7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countMSFT &lt;- as.data.frame(countMSFT)
+countMSFT &lt;- countMSFT[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countMSFT$msft7_decr_Days &lt;- countMSFT$n-1
+countMSFT &lt;- countMSFT[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countMSFT2 &lt;- subset(countMSFT, countMSFT$msft7_decr_Days&gt;0)
+summary(countMSFT2$msft7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   2.000   4.000   6.273   9.000  33.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+msft7_decr_Days_grouped &lt;- countMSFT2 %&gt;% group_by(msft7_decr_Days) %&gt;% count(n=n())
+msft7_decr_Days_grouped &lt;- msft7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>msft7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 28 x 2
+## # Groups:   msft7_decr_Days [28]
+##    msft7_decr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    74
+##  2               2    33
+##  3               3    24
+##  4               4    30
+##  5               5     6
+##  6               6    13
+##  7               7    28
+##  8               8    13
+##  9               9    10
+## 10              10    13
+## # … with 18 more rows</code></pre>
+<pre class="r"><code>median(msft7_decr_Days_grouped$msft7_decr_Days)</code></pre>
+<pre><code>## [1] 14.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+msft7_b1 &lt;- ifelse(MSFT$today2lag7&gt;1, 0,1)
+
+
+msft7_b2 &lt;- cumsum(msft7_b1)
+
+msft7_b3 &lt;- as.data.frame(as.factor(msft7_b2))
+colnames(msft7_b3) &lt;- &#39;cSum&#39;
+
+countMSFT1 &lt;- msft7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countMSFT1 &lt;- as.data.frame(countMSFT1)
+countMSFT1 &lt;- countMSFT1[,-3]
+
+countMSFT1$msft7_incr_Days &lt;- countMSFT1$n-1
+countMSFT1 &lt;- countMSFT1[,-2]
+
+countMSFT3 &lt;- subset(countMSFT1, countMSFT1$msft7_incr_Days&gt;0)
+summary(countMSFT3$msft7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.726   7.000  29.000</code></pre>
+<pre class="r"><code>msft7_incr_Days_grouped &lt;- countMSFT3 %&gt;% group_by(msft7_incr_Days) %&gt;% count(n=n())
+msft7_incr_Days_grouped &lt;- msft7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>msft7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 21 x 2
+## # Groups:   msft7_incr_Days [21]
+##    msft7_incr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    92
+##  2               2    42
+##  3               3    25
+##  4               4    18
+##  5               5    18
+##  6               6    11
+##  7               7    32
+##  8               8    16
+##  9               9     9
+## 10              10     9
+## # … with 11 more rows</code></pre>
+<pre class="r"><code>median(msft7_incr_Days_grouped$msft7_incr_Days)</code></pre>
+<pre><code>## [1] 11</code></pre>
+<hr />
+<pre class="r"><code>NSANY &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;NSANY&#39;)
+
+NSANY &lt;- NSANY[complete.cases(NSANY),]
+
+nsany7_a &lt;- ifelse(NSANY$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for nsany7 &lt;- &lt;- ifelse(NSANY$today2lag7&gt;1, 1,0)
+nsany7_ab &lt;- cumsum(nsany7_a)
+
+nsany7_abc &lt;- as.data.frame(as.factor(nsany7_ab))
+colnames(nsany7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countNSANY &lt;- nsany7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countNSANY &lt;- as.data.frame(countNSANY)
+countNSANY &lt;- countNSANY[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countNSANY$nsany7_decr_Days &lt;- countNSANY$n-1
+countNSANY &lt;- countNSANY[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countNSANY2 &lt;- subset(countNSANY, countNSANY$nsany7_decr_Days&gt;0)
+summary(countNSANY2$nsany7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.579   8.750  35.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+nsany7_decr_Days_grouped &lt;- countNSANY2 %&gt;% group_by(nsany7_decr_Days) %&gt;% count(n=n())
+nsany7_decr_Days_grouped &lt;- nsany7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>nsany7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   nsany7_decr_Days [24]
+##    nsany7_decr_Days     n
+##               &lt;dbl&gt; &lt;int&gt;
+##  1                1    87
+##  2                2    39
+##  3                3    20
+##  4                4    16
+##  5                5    13
+##  6                6    11
+##  7                7    15
+##  8                8    16
+##  9                9    19
+## 10               10    10
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(nsany7_decr_Days_grouped$nsany7_decr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+nsany7_b1 &lt;- ifelse(NSANY$today2lag7&gt;1, 0,1)
+
+
+nsany7_b2 &lt;- cumsum(nsany7_b1)
+
+nsany7_b3 &lt;- as.data.frame(as.factor(nsany7_b2))
+colnames(nsany7_b3) &lt;- &#39;cSum&#39;
+
+countNSANY1 &lt;- nsany7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countNSANY1 &lt;- as.data.frame(countNSANY1)
+countNSANY1 &lt;- countNSANY1[,-3]
+
+countNSANY1$nsany7_incr_Days &lt;- countNSANY1$n-1
+countNSANY1 &lt;- countNSANY1[,-2]
+
+countNSANY3 &lt;- subset(countNSANY1, countNSANY1$nsany7_incr_Days&gt;0)
+summary(countNSANY3$nsany7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.763   8.000  29.000</code></pre>
+<pre class="r"><code>nsany7_incr_Days_grouped &lt;- countNSANY3 %&gt;% group_by(nsany7_incr_Days) %&gt;% count(n=n())
+nsany7_incr_Days_grouped &lt;- nsany7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>nsany7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   nsany7_incr_Days [24]
+##    nsany7_incr_Days     n
+##               &lt;dbl&gt; &lt;int&gt;
+##  1                1    89
+##  2                2    26
+##  3                3    15
+##  4                4    19
+##  5                5    20
+##  6                6    16
+##  7                7    25
+##  8                8    12
+##  9                9    13
+## 10               10    12
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(nsany7_incr_Days_grouped$nsany7_incr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<hr />
+<pre class="r"><code>NUS &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;NUS&#39;)
+
+NUS &lt;- NUS[complete.cases(NUS),]
+
+nus7_a &lt;- ifelse(NUS$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for nus7 &lt;- &lt;- ifelse(NUS$today2lag7&gt;1, 1,0)
+nus7_ab &lt;- cumsum(nus7_a)
+
+nus7_abc &lt;- as.data.frame(as.factor(nus7_ab))
+colnames(nus7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countNUS &lt;- nus7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countNUS &lt;- as.data.frame(countNUS)
+countNUS &lt;- countNUS[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countNUS$nus7_decr_Days &lt;- countNUS$n-1
+countNUS &lt;- countNUS[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countNUS2 &lt;- subset(countNUS, countNUS$nus7_decr_Days&gt;0)
+summary(countNUS2$nus7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.128   9.000  34.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+nus7_decr_Days_grouped &lt;- countNUS2 %&gt;% group_by(nus7_decr_Days) %&gt;% count(n=n())
+nus7_decr_Days_grouped &lt;- nus7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>nus7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 26 x 2
+## # Groups:   nus7_decr_Days [26]
+##    nus7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    84
+##  2              2    35
+##  3              3    20
+##  4              4    15
+##  5              5    13
+##  6              6     9
+##  7              7    20
+##  8              8    20
+##  9              9    10
+## 10             10    10
+## # … with 16 more rows</code></pre>
+<pre class="r"><code>median(nus7_decr_Days_grouped$nus7_decr_Days)</code></pre>
+<pre><code>## [1] 13.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+nus7_b1 &lt;- ifelse(NUS$today2lag7&gt;1, 0,1)
+
+
+nus7_b2 &lt;- cumsum(nus7_b1)
+
+nus7_b3 &lt;- as.data.frame(as.factor(nus7_b2))
+colnames(nus7_b3) &lt;- &#39;cSum&#39;
+
+countNUS1 &lt;- nus7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countNUS1 &lt;- as.data.frame(countNUS1)
+countNUS1 &lt;- countNUS1[,-3]
+
+countNUS1$nus7_incr_Days &lt;- countNUS1$n-1
+countNUS1 &lt;- countNUS1[,-2]
+
+countNUS3 &lt;- subset(countNUS1, countNUS1$nus7_incr_Days&gt;0)
+summary(countNUS3$nus7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.255   7.000  28.000</code></pre>
+<pre class="r"><code>nus7_incr_Days_grouped &lt;- countNUS3 %&gt;% group_by(nus7_incr_Days) %&gt;% count(n=n())
+nus7_incr_Days_grouped &lt;- nus7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>nus7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   nus7_incr_Days [24]
+##    nus7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    89
+##  2              2    38
+##  3              3    26
+##  4              4    17
+##  5              5    13
+##  6              6    14
+##  7              7    26
+##  8              8     7
+##  9              9    13
+## 10             10     8
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(nus7_incr_Days_grouped$nus7_incr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<hr />
+<pre class="r"><code>ONCY &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;ONCY&#39;)
+
+ONCY &lt;- ONCY[complete.cases(ONCY),]
+
+oncy7_a &lt;- ifelse(ONCY$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for oncy7 &lt;- &lt;- ifelse(ONCY$today2lag7&gt;1, 1,0)
+oncy7_ab &lt;- cumsum(oncy7_a)
+
+oncy7_abc &lt;- as.data.frame(as.factor(oncy7_ab))
+colnames(oncy7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countONCY &lt;- oncy7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countONCY &lt;- as.data.frame(countONCY)
+countONCY &lt;- countONCY[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countONCY$oncy7_decr_Days &lt;- countONCY$n-1
+countONCY &lt;- countONCY[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countONCY2 &lt;- subset(countONCY, countONCY$oncy7_decr_Days&gt;0)
+summary(countONCY2$oncy7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.094   7.000  23.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+oncy7_decr_Days_grouped &lt;- countONCY2 %&gt;% group_by(oncy7_decr_Days) %&gt;% count(n=n())
+oncy7_decr_Days_grouped &lt;- oncy7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>oncy7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 23 x 2
+## # Groups:   oncy7_decr_Days [23]
+##    oncy7_decr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    91
+##  2               2    33
+##  3               3    33
+##  4               4    23
+##  5               5    11
+##  6               6    11
+##  7               7    23
+##  8               8    18
+##  9               9     7
+## 10              10     7
+## # … with 13 more rows</code></pre>
+<pre class="r"><code>median(oncy7_decr_Days_grouped$oncy7_decr_Days)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+oncy7_b1 &lt;- ifelse(ONCY$today2lag7&gt;1, 0,1)
+
+
+oncy7_b2 &lt;- cumsum(oncy7_b1)
+
+oncy7_b3 &lt;- as.data.frame(as.factor(oncy7_b2))
+colnames(oncy7_b3) &lt;- &#39;cSum&#39;
+
+countONCY1 &lt;- oncy7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countONCY1 &lt;- as.data.frame(countONCY1)
+countONCY1 &lt;- countONCY1[,-3]
+
+countONCY1$oncy7_incr_Days &lt;- countONCY1$n-1
+countONCY1 &lt;- countONCY1[,-2]
+
+countONCY3 &lt;- subset(countONCY1, countONCY1$oncy7_incr_Days&gt;0)
+summary(countONCY3$oncy7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.963   9.000  28.000</code></pre>
+<pre class="r"><code>oncy7_incr_Days_grouped &lt;- countONCY3 %&gt;% group_by(oncy7_incr_Days) %&gt;% count(n=n())
+oncy7_incr_Days_grouped &lt;- oncy7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>oncy7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 25 x 2
+## # Groups:   oncy7_incr_Days [25]
+##    oncy7_incr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    76
+##  2               2    38
+##  3               3    25
+##  4               4    20
+##  5               5    19
+##  6               6    11
+##  7               7    20
+##  8               8    11
+##  9               9     5
+## 10              10    10
+## # … with 15 more rows</code></pre>
+<pre class="r"><code>median(oncy7_incr_Days_grouped$oncy7_incr_Days)</code></pre>
+<pre><code>## [1] 13</code></pre>
+<hr />
+<pre class="r"><code>RRGB &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;RRGB&#39;)
+
+RRGB &lt;- RRGB[complete.cases(RRGB),]
+
+rrgb7_a &lt;- ifelse(RRGB$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for rrgb7 &lt;- &lt;- ifelse(RRGB$today2lag7&gt;1, 1,0)
+rrgb7_ab &lt;- cumsum(rrgb7_a)
+
+rrgb7_abc &lt;- as.data.frame(as.factor(rrgb7_ab))
+colnames(rrgb7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countRRGB &lt;- rrgb7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countRRGB &lt;- as.data.frame(countRRGB)
+countRRGB &lt;- countRRGB[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countRRGB$rrgb7_decr_Days &lt;- countRRGB$n-1
+countRRGB &lt;- countRRGB[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countRRGB2 &lt;- subset(countRRGB, countRRGB$rrgb7_decr_Days&gt;0)
+summary(countRRGB2$rrgb7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.207   9.250  26.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+rrgb7_decr_Days_grouped &lt;- countRRGB2 %&gt;% group_by(rrgb7_decr_Days) %&gt;% count(n=n())
+rrgb7_decr_Days_grouped &lt;- rrgb7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>rrgb7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 22 x 2
+## # Groups:   rrgb7_decr_Days [22]
+##    rrgb7_decr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    72
+##  2               2    31
+##  3               3    26
+##  4               4    14
+##  5               5    10
+##  6               6     3
+##  7               7    26
+##  8               8    12
+##  9               9    13
+## 10              10     9
+## # … with 12 more rows</code></pre>
+<pre class="r"><code>median(rrgb7_decr_Days_grouped$rrgb7_decr_Days)</code></pre>
+<pre><code>## [1] 11.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+rrgb7_b1 &lt;- ifelse(RRGB$today2lag7&gt;1, 0,1)
+
+
+rrgb7_b2 &lt;- cumsum(rrgb7_b1)
+
+rrgb7_b3 &lt;- as.data.frame(as.factor(rrgb7_b2))
+colnames(rrgb7_b3) &lt;- &#39;cSum&#39;
+
+countRRGB1 &lt;- rrgb7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countRRGB1 &lt;- as.data.frame(countRRGB1)
+countRRGB1 &lt;- countRRGB1[,-3]
+
+countRRGB1$rrgb7_incr_Days &lt;- countRRGB1$n-1
+countRRGB1 &lt;- countRRGB1[,-2]
+
+countRRGB3 &lt;- subset(countRRGB1, countRRGB1$rrgb7_incr_Days&gt;0)
+summary(countRRGB3$rrgb7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.500   5.732   9.000  28.000</code></pre>
+<pre class="r"><code>rrgb7_incr_Days_grouped &lt;- countRRGB3 %&gt;% group_by(rrgb7_incr_Days) %&gt;% count(n=n())
+rrgb7_incr_Days_grouped &lt;- rrgb7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>rrgb7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   rrgb7_incr_Days [24]
+##    rrgb7_incr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    73
+##  2               2    45
+##  3               3    20
+##  4               4    15
+##  5               5    12
+##  6               6     7
+##  7               7    21
+##  8               8    11
+##  9               9    16
+## 10              10     7
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(rrgb7_incr_Days_grouped$rrgb7_incr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<hr />
+<pre class="r"><code>S &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;S&#39;)
+
+S &lt;- S[complete.cases(S),]
+
+s7_a &lt;- ifelse(S$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for s7 &lt;- &lt;- ifelse(S$today2lag7&gt;1, 1,0)
+s7_ab &lt;- cumsum(s7_a)
+
+s7_abc &lt;- as.data.frame(as.factor(s7_ab))
+colnames(s7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countS &lt;- s7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countS &lt;- as.data.frame(countS)
+countS &lt;- countS[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countS$s7_decr_Days &lt;- countS$n-1
+countS &lt;- countS[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countS2 &lt;- subset(countS, countS$s7_decr_Days&gt;0)
+summary(countS2$s7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1.00    1.00    4.00    5.75    8.00   27.00</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+s7_decr_Days_grouped &lt;- countS2 %&gt;% group_by(s7_decr_Days) %&gt;% count(n=n())
+s7_decr_Days_grouped &lt;- s7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>s7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   s7_decr_Days [24]
+##    s7_decr_Days     n
+##           &lt;dbl&gt; &lt;int&gt;
+##  1            1    76
+##  2            2    36
+##  3            3    16
+##  4            4    21
+##  5            5    14
+##  6            6    16
+##  7            7    20
+##  8            8    18
+##  9            9    13
+## 10           10     8
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(s7_decr_Days_grouped$s7_decr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+s7_b1 &lt;- ifelse(S$today2lag7&gt;1, 0,1)
+
+
+s7_b2 &lt;- cumsum(s7_b1)
+
+s7_b3 &lt;- as.data.frame(as.factor(s7_b2))
+colnames(s7_b3) &lt;- &#39;cSum&#39;
+
+countS1 &lt;- s7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countS1 &lt;- as.data.frame(countS1)
+countS1 &lt;- countS1[,-3]
+
+countS1$s7_incr_Days &lt;- countS1$n-1
+countS1 &lt;- countS1[,-2]
+
+countS3 &lt;- subset(countS1, countS1$s7_incr_Days&gt;0)
+summary(countS3$s7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.852   8.000  37.000</code></pre>
+<pre class="r"><code>s7_incr_Days_grouped &lt;- countS3 %&gt;% group_by(s7_incr_Days) %&gt;% count(n=n())
+s7_incr_Days_grouped &lt;- s7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>s7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 28 x 2
+## # Groups:   s7_incr_Days [28]
+##    s7_incr_Days     n
+##           &lt;dbl&gt; &lt;int&gt;
+##  1            1    81
+##  2            2    33
+##  3            3    22
+##  4            4    28
+##  5            5    11
+##  6            6    12
+##  7            7    22
+##  8            8    14
+##  9            9     8
+## 10           10     4
+## # … with 18 more rows</code></pre>
+<pre class="r"><code>median(s7_incr_Days_grouped$s7_incr_Days)</code></pre>
+<pre><code>## [1] 14.5</code></pre>
+<hr />
+<pre class="r"><code>SCE &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;SCE&#39;)
+
+SCE &lt;- SCE[complete.cases(SCE),]
+
+sce7_a &lt;- ifelse(SCE$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for sce7 &lt;- &lt;- ifelse(SCE$today2lag7&gt;1, 1,0)
+sce7_ab &lt;- cumsum(sce7_a)
+
+sce7_abc &lt;- as.data.frame(as.factor(sce7_ab))
+colnames(sce7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countSCE &lt;- sce7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countSCE &lt;- as.data.frame(countSCE)
+countSCE &lt;- countSCE[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countSCE$sce7_decr_Days &lt;- countSCE$n-1
+countSCE &lt;- countSCE[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countSCE2 &lt;- subset(countSCE, countSCE$sce7_decr_Days&gt;0)
+summary(countSCE2$sce7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   2.000   3.559   4.000 189.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+sce7_decr_Days_grouped &lt;- countSCE2 %&gt;% group_by(sce7_decr_Days) %&gt;% count(n=n())
+sce7_decr_Days_grouped &lt;- sce7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>sce7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 21 x 2
+## # Groups:   sce7_decr_Days [21]
+##    sce7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1   211
+##  2              2   126
+##  3              3    67
+##  4              4    43
+##  5              5    30
+##  6              6    14
+##  7              7    26
+##  8              8    21
+##  9              9     3
+## 10             10     5
+## # … with 11 more rows</code></pre>
+<pre class="r"><code>median(sce7_decr_Days_grouped$sce7_decr_Days)</code></pre>
+<pre><code>## [1] 11</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+sce7_b1 &lt;- ifelse(SCE$today2lag7&gt;1, 0,1)
+
+
+sce7_b2 &lt;- cumsum(sce7_b1)
+
+sce7_b3 &lt;- as.data.frame(as.factor(sce7_b2))
+colnames(sce7_b3) &lt;- &#39;cSum&#39;
+
+countSCE1 &lt;- sce7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countSCE1 &lt;- as.data.frame(countSCE1)
+countSCE1 &lt;- countSCE1[,-3]
+
+countSCE1$sce7_incr_Days &lt;- countSCE1$n-1
+countSCE1 &lt;- countSCE1[,-2]
+
+countSCE3 &lt;- subset(countSCE1, countSCE1$sce7_incr_Days&gt;0)
+summary(countSCE3$sce7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   1.000   2.236   3.000  15.000</code></pre>
+<pre class="r"><code>sce7_incr_Days_grouped &lt;- countSCE3 %&gt;% group_by(sce7_incr_Days) %&gt;% count(n=n())
+sce7_incr_Days_grouped &lt;- sce7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>sce7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 15 x 2
+## # Groups:   sce7_incr_Days [15]
+##    sce7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1   313
+##  2              2   108
+##  3              3    66
+##  4              4    25
+##  5              5     9
+##  6              6     9
+##  7              7    14
+##  8              8     5
+##  9              9     7
+## 10             10     3
+## 11             11     3
+## 12             12     1
+## 13             13     3
+## 14             14     1
+## 15             15     1</code></pre>
+<pre class="r"><code>median(sce7_incr_Days_grouped$sce7_incr_Days)</code></pre>
+<pre><code>## [1] 8</code></pre>
+<hr />
+<pre class="r"><code>SIG &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;SIG&#39;)
+
+SIG &lt;- SIG[complete.cases(SIG),]
+
+sig7_a &lt;- ifelse(SIG$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for sig7 &lt;- &lt;- ifelse(SIG$today2lag7&gt;1, 1,0)
+sig7_ab &lt;- cumsum(sig7_a)
+
+sig7_abc &lt;- as.data.frame(as.factor(sig7_ab))
+colnames(sig7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countSIG &lt;- sig7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countSIG &lt;- as.data.frame(countSIG)
+countSIG &lt;- countSIG[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countSIG$sig7_decr_Days &lt;- countSIG$n-1
+countSIG &lt;- countSIG[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countSIG2 &lt;- subset(countSIG, countSIG$sig7_decr_Days&gt;0)
+summary(countSIG2$sig7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.175   9.000  34.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+sig7_decr_Days_grouped &lt;- countSIG2 %&gt;% group_by(sig7_decr_Days) %&gt;% count(n=n())
+sig7_decr_Days_grouped &lt;- sig7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>sig7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 25 x 2
+## # Groups:   sig7_decr_Days [25]
+##    sig7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    76
+##  2              2    31
+##  3              3    25
+##  4              4     9
+##  5              5    15
+##  6              6    10
+##  7              7    19
+##  8              8    15
+##  9              9     8
+## 10             10    17
+## # … with 15 more rows</code></pre>
+<pre class="r"><code>median(sig7_decr_Days_grouped$sig7_decr_Days)</code></pre>
+<pre><code>## [1] 13</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+sig7_b1 &lt;- ifelse(SIG$today2lag7&gt;1, 0,1)
+
+
+sig7_b2 &lt;- cumsum(sig7_b1)
+
+sig7_b3 &lt;- as.data.frame(as.factor(sig7_b2))
+colnames(sig7_b3) &lt;- &#39;cSum&#39;
+
+countSIG1 &lt;- sig7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countSIG1 &lt;- as.data.frame(countSIG1)
+countSIG1 &lt;- countSIG1[,-3]
+
+countSIG1$sig7_incr_Days &lt;- countSIG1$n-1
+countSIG1 &lt;- countSIG1[,-2]
+
+countSIG3 &lt;- subset(countSIG1, countSIG1$sig7_incr_Days&gt;0)
+summary(countSIG3$sig7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   2.000   4.000   5.829   8.000  42.000</code></pre>
+<pre class="r"><code>sig7_incr_Days_grouped &lt;- countSIG3 %&gt;% group_by(sig7_incr_Days) %&gt;% count(n=n())
+sig7_incr_Days_grouped &lt;- sig7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>sig7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 23 x 2
+## # Groups:   sig7_incr_Days [23]
+##    sig7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    66
+##  2              2    40
+##  3              3    27
+##  4              4    20
+##  5              5    11
+##  6              6     9
+##  7              7    23
+##  8              8    17
+##  9              9    11
+## 10             10     7
+## # … with 13 more rows</code></pre>
+<pre class="r"><code>median(sig7_incr_Days_grouped$sig7_incr_Days)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<hr />
+<pre class="r"><code>T &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;T&#39;)
+
+T &lt;- T[complete.cases(T),]
+
+t7_a &lt;- ifelse(T$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for t7 &lt;- &lt;- ifelse(T$today2lag7&gt;1, 1,0)
+t7_ab &lt;- cumsum(t7_a)
+
+t7_abc &lt;- as.data.frame(as.factor(t7_ab))
+colnames(t7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countT &lt;- t7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countT &lt;- as.data.frame(countT)
+countT &lt;- countT[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countT$t7_decr_Days &lt;- countT$n-1
+countT &lt;- countT[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countT2 &lt;- subset(countT, countT$t7_decr_Days&gt;0)
+summary(countT2$t7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   2.000   3.000   5.723   8.000  35.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+t7_decr_Days_grouped &lt;- countT2 %&gt;% group_by(t7_decr_Days) %&gt;% count(n=n())
+t7_decr_Days_grouped &lt;- t7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>t7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 26 x 2
+## # Groups:   t7_decr_Days [26]
+##    t7_decr_Days     n
+##           &lt;dbl&gt; &lt;int&gt;
+##  1            1    73
+##  2            2    46
+##  3            3    33
+##  4            4    19
+##  5            5    17
+##  6            6     9
+##  7            7    23
+##  8            8    15
+##  9            9     4
+## 10           10    16
+## # … with 16 more rows</code></pre>
+<pre class="r"><code>median(t7_decr_Days_grouped$t7_decr_Days)</code></pre>
+<pre><code>## [1] 13.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+t7_b1 &lt;- ifelse(T$today2lag7&gt;1, 0,1)
+
+
+t7_b2 &lt;- cumsum(t7_b1)
+
+t7_b3 &lt;- as.data.frame(as.factor(t7_b2))
+colnames(t7_b3) &lt;- &#39;cSum&#39;
+
+countT1 &lt;- t7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countT1 &lt;- as.data.frame(countT1)
+countT1 &lt;- countT1[,-3]
+
+countT1$t7_incr_Days &lt;- countT1$n-1
+countT1 &lt;- countT1[,-2]
+
+countT3 &lt;- subset(countT1, countT1$t7_incr_Days&gt;0)
+summary(countT3$t7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.169   8.000  29.000</code></pre>
+<pre class="r"><code>t7_incr_Days_grouped &lt;- countT3 %&gt;% group_by(t7_incr_Days) %&gt;% count(n=n())
+t7_incr_Days_grouped &lt;- t7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>t7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 22 x 2
+## # Groups:   t7_incr_Days [22]
+##    t7_incr_Days     n
+##           &lt;dbl&gt; &lt;int&gt;
+##  1            1    82
+##  2            2    38
+##  3            3    35
+##  4            4    17
+##  5            5    10
+##  6            6    11
+##  7            7    27
+##  8            8    16
+##  9            9    24
+## 10           10    10
+## # … with 12 more rows</code></pre>
+<pre class="r"><code>median(t7_incr_Days_grouped$t7_incr_Days)</code></pre>
+<pre><code>## [1] 11.5</code></pre>
+<hr />
+<pre class="r"><code>TGT &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;TGT&#39;)
+
+TGT &lt;- TGT[complete.cases(TGT),]
+
+tgt7_a &lt;- ifelse(TGT$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for tgt7 &lt;- &lt;- ifelse(TGT$today2lag7&gt;1, 1,0)
+tgt7_ab &lt;- cumsum(tgt7_a)
+
+tgt7_abc &lt;- as.data.frame(as.factor(tgt7_ab))
+colnames(tgt7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countTGT &lt;- tgt7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countTGT &lt;- as.data.frame(countTGT)
+countTGT &lt;- countTGT[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countTGT$tgt7_decr_Days &lt;- countTGT$n-1
+countTGT &lt;- countTGT[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countTGT2 &lt;- subset(countTGT, countTGT$tgt7_decr_Days&gt;0)
+summary(countTGT2$tgt7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.135   9.000  29.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+tgt7_decr_Days_grouped &lt;- countTGT2 %&gt;% group_by(tgt7_decr_Days) %&gt;% count(n=n())
+tgt7_decr_Days_grouped &lt;- tgt7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>tgt7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 25 x 2
+## # Groups:   tgt7_decr_Days [25]
+##    tgt7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    75
+##  2              2    36
+##  3              3    20
+##  4              4    23
+##  5              5    18
+##  6              6    10
+##  7              7    17
+##  8              8    12
+##  9              9    12
+## 10             10     9
+## # … with 15 more rows</code></pre>
+<pre class="r"><code>median(tgt7_decr_Days_grouped$tgt7_decr_Days)</code></pre>
+<pre><code>## [1] 13</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+tgt7_b1 &lt;- ifelse(TGT$today2lag7&gt;1, 0,1)
+
+
+tgt7_b2 &lt;- cumsum(tgt7_b1)
+
+tgt7_b3 &lt;- as.data.frame(as.factor(tgt7_b2))
+colnames(tgt7_b3) &lt;- &#39;cSum&#39;
+
+countTGT1 &lt;- tgt7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countTGT1 &lt;- as.data.frame(countTGT1)
+countTGT1 &lt;- countTGT1[,-3]
+
+countTGT1$tgt7_incr_Days &lt;- countTGT1$n-1
+countTGT1 &lt;- countTGT1[,-2]
+
+countTGT3 &lt;- subset(countTGT1, countTGT1$tgt7_incr_Days&gt;0)
+summary(countTGT3$tgt7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.324   8.000  23.000</code></pre>
+<pre class="r"><code>tgt7_incr_Days_grouped &lt;- countTGT3 %&gt;% group_by(tgt7_incr_Days) %&gt;% count(n=n())
+tgt7_incr_Days_grouped &lt;- tgt7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>tgt7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 22 x 2
+## # Groups:   tgt7_incr_Days [22]
+##    tgt7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    82
+##  2              2    34
+##  3              3    24
+##  4              4    17
+##  5              5    13
+##  6              6     9
+##  7              7    28
+##  8              8    21
+##  9              9    14
+## 10             10     6
+## # … with 12 more rows</code></pre>
+<pre class="r"><code>median(tgt7_incr_Days_grouped$tgt7_incr_Days)</code></pre>
+<pre><code>## [1] 11.5</code></pre>
+<hr />
+<pre class="r"><code>TM &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;TM&#39;)
+
+TM &lt;- TM[complete.cases(TM),]
+
+tm7_a &lt;- ifelse(TM$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for tm7 &lt;- &lt;- ifelse(TM$today2lag7&gt;1, 1,0)
+tm7_ab &lt;- cumsum(tm7_a)
+
+tm7_abc &lt;- as.data.frame(as.factor(tm7_ab))
+colnames(tm7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countTM &lt;- tm7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countTM &lt;- as.data.frame(countTM)
+countTM &lt;- countTM[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countTM$tm7_decr_Days &lt;- countTM$n-1
+countTM &lt;- countTM[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countTM2 &lt;- subset(countTM, countTM$tm7_decr_Days&gt;0)
+summary(countTM2$tm7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.535   8.000  36.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+tm7_decr_Days_grouped &lt;- countTM2 %&gt;% group_by(tm7_decr_Days) %&gt;% count(n=n())
+tm7_decr_Days_grouped &lt;- tm7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>tm7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 29 x 2
+## # Groups:   tm7_decr_Days [29]
+##    tm7_decr_Days     n
+##            &lt;dbl&gt; &lt;int&gt;
+##  1             1    99
+##  2             2    34
+##  3             3    35
+##  4             4     6
+##  5             5    15
+##  6             6    10
+##  7             7    27
+##  8             8    15
+##  9             9    10
+## 10            10     5
+## # … with 19 more rows</code></pre>
+<pre class="r"><code>median(tm7_decr_Days_grouped$tm7_decr_Days)</code></pre>
+<pre><code>## [1] 15</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+tm7_b1 &lt;- ifelse(TM$today2lag7&gt;1, 0,1)
+
+
+tm7_b2 &lt;- cumsum(tm7_b1)
+
+tm7_b3 &lt;- as.data.frame(as.factor(tm7_b2))
+colnames(tm7_b3) &lt;- &#39;cSum&#39;
+
+countTM1 &lt;- tm7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countTM1 &lt;- as.data.frame(countTM1)
+countTM1 &lt;- countTM1[,-3]
+
+countTM1$tm7_incr_Days &lt;- countTM1$n-1
+countTM1 &lt;- countTM1[,-2]
+
+countTM3 &lt;- subset(countTM1, countTM1$tm7_incr_Days&gt;0)
+summary(countTM3$tm7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.322   8.000  29.000</code></pre>
+<pre class="r"><code>tm7_incr_Days_grouped &lt;- countTM3 %&gt;% group_by(tm7_incr_Days) %&gt;% count(n=n())
+tm7_incr_Days_grouped &lt;- tm7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>tm7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 22 x 2
+## # Groups:   tm7_incr_Days [22]
+##    tm7_incr_Days     n
+##            &lt;dbl&gt; &lt;int&gt;
+##  1             1    87
+##  2             2    44
+##  3             3    22
+##  4             4    17
+##  5             5    16
+##  6             6    11
+##  7             7    23
+##  8             8    18
+##  9             9    13
+## 10            10     7
+## # … with 12 more rows</code></pre>
+<pre class="r"><code>median(tm7_incr_Days_grouped$tm7_incr_Days)</code></pre>
+<pre><code>## [1] 11.5</code></pre>
+<hr />
+<pre class="r"><code>UBSI &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;UBSI&#39;)
+
+UBSI &lt;- UBSI[complete.cases(UBSI),]
+
+ubsi7_a &lt;- ifelse(UBSI$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for ubsi7 &lt;- &lt;- ifelse(UBSI$today2lag7&gt;1, 1,0)
+ubsi7_ab &lt;- cumsum(ubsi7_a)
+
+ubsi7_abc &lt;- as.data.frame(as.factor(ubsi7_ab))
+colnames(ubsi7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countUBSI &lt;- ubsi7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countUBSI &lt;- as.data.frame(countUBSI)
+countUBSI &lt;- countUBSI[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countUBSI$ubsi7_decr_Days &lt;- countUBSI$n-1
+countUBSI &lt;- countUBSI[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countUBSI2 &lt;- subset(countUBSI, countUBSI$ubsi7_decr_Days&gt;0)
+summary(countUBSI2$ubsi7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.253   7.000  41.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+ubsi7_decr_Days_grouped &lt;- countUBSI2 %&gt;% group_by(ubsi7_decr_Days) %&gt;% count(n=n())
+ubsi7_decr_Days_grouped &lt;- ubsi7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>ubsi7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 23 x 2
+## # Groups:   ubsi7_decr_Days [23]
+##    ubsi7_decr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1   102
+##  2               2    45
+##  3               3    15
+##  4               4    24
+##  5               5    20
+##  6               6    15
+##  7               7    16
+##  8               8     9
+##  9               9     9
+## 10              10     7
+## # … with 13 more rows</code></pre>
+<pre class="r"><code>median(ubsi7_decr_Days_grouped$ubsi7_decr_Days)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+ubsi7_b1 &lt;- ifelse(UBSI$today2lag7&gt;1, 0,1)
+
+
+ubsi7_b2 &lt;- cumsum(ubsi7_b1)
+
+ubsi7_b3 &lt;- as.data.frame(as.factor(ubsi7_b2))
+colnames(ubsi7_b3) &lt;- &#39;cSum&#39;
+
+countUBSI1 &lt;- ubsi7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countUBSI1 &lt;- as.data.frame(countUBSI1)
+countUBSI1 &lt;- countUBSI1[,-3]
+
+countUBSI1$ubsi7_incr_Days &lt;- countUBSI1$n-1
+countUBSI1 &lt;- countUBSI1[,-2]
+
+countUBSI3 &lt;- subset(countUBSI1, countUBSI1$ubsi7_incr_Days&gt;0)
+summary(countUBSI3$ubsi7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.291   7.000  35.000</code></pre>
+<pre class="r"><code>ubsi7_incr_Days_grouped &lt;- countUBSI3 %&gt;% group_by(ubsi7_incr_Days) %&gt;% count(n=n())
+ubsi7_incr_Days_grouped &lt;- ubsi7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>ubsi7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 25 x 2
+## # Groups:   ubsi7_incr_Days [25]
+##    ubsi7_incr_Days     n
+##              &lt;dbl&gt; &lt;int&gt;
+##  1               1    97
+##  2               2    45
+##  3               3    21
+##  4               4    20
+##  5               5    13
+##  6               6    12
+##  7               7    28
+##  8               8    11
+##  9               9    17
+## 10              10     2
+## # … with 15 more rows</code></pre>
+<pre class="r"><code>median(ubsi7_incr_Days_grouped$ubsi7_incr_Days)</code></pre>
+<pre><code>## [1] 13</code></pre>
+<hr />
+<pre class="r"><code>VZ &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;VZ&#39;)
+
+VZ &lt;- VZ[complete.cases(VZ),]
+
+vz7_a &lt;- ifelse(VZ$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for vz7 &lt;- &lt;- ifelse(VZ$today2lag7&gt;1, 1,0)
+vz7_ab &lt;- cumsum(vz7_a)
+
+vz7_abc &lt;- as.data.frame(as.factor(vz7_ab))
+colnames(vz7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countVZ &lt;- vz7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countVZ &lt;- as.data.frame(countVZ)
+countVZ &lt;- countVZ[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countVZ$vz7_decr_Days &lt;- countVZ$n-1
+countVZ &lt;- countVZ[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countVZ2 &lt;- subset(countVZ, countVZ$vz7_decr_Days&gt;0)
+summary(countVZ2$vz7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.500   6.096   8.000  30.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+vz7_decr_Days_grouped &lt;- countVZ2 %&gt;% group_by(vz7_decr_Days) %&gt;% count(n=n())
+vz7_decr_Days_grouped &lt;- vz7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>vz7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 27 x 2
+## # Groups:   vz7_decr_Days [27]
+##    vz7_decr_Days     n
+##            &lt;dbl&gt; &lt;int&gt;
+##  1             1    76
+##  2             2    47
+##  3             3    18
+##  4             4    24
+##  5             5    14
+##  6             6     3
+##  7             7    18
+##  8             8    13
+##  9             9     6
+## 10            10     9
+## # … with 17 more rows</code></pre>
+<pre class="r"><code>median(vz7_decr_Days_grouped$vz7_decr_Days)</code></pre>
+<pre><code>## [1] 14</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+vz7_b1 &lt;- ifelse(VZ$today2lag7&gt;1, 0,1)
+
+
+vz7_b2 &lt;- cumsum(vz7_b1)
+
+vz7_b3 &lt;- as.data.frame(as.factor(vz7_b2))
+colnames(vz7_b3) &lt;- &#39;cSum&#39;
+
+countVZ1 &lt;- vz7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countVZ1 &lt;- as.data.frame(countVZ1)
+countVZ1 &lt;- countVZ1[,-3]
+
+countVZ1$vz7_incr_Days &lt;- countVZ1$n-1
+countVZ1 &lt;- countVZ1[,-2]
+
+countVZ3 &lt;- subset(countVZ1, countVZ1$vz7_incr_Days&gt;0)
+summary(countVZ3$vz7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.569   8.000  32.000</code></pre>
+<pre class="r"><code>vz7_incr_Days_grouped &lt;- countVZ3 %&gt;% group_by(vz7_incr_Days) %&gt;% count(n=n())
+vz7_incr_Days_grouped &lt;- vz7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>vz7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 24 x 2
+## # Groups:   vz7_incr_Days [24]
+##    vz7_incr_Days     n
+##            &lt;dbl&gt; &lt;int&gt;
+##  1             1    82
+##  2             2    28
+##  3             3    29
+##  4             4    14
+##  5             5     9
+##  6             6    15
+##  7             7    26
+##  8             8    18
+##  9             9    12
+## 10            10    13
+## # … with 14 more rows</code></pre>
+<pre class="r"><code>median(vz7_incr_Days_grouped$vz7_incr_Days)</code></pre>
+<pre><code>## [1] 12.5</code></pre>
+<hr />
+<pre class="r"><code>WFC &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;WFC&#39;)
+
+WFC &lt;- WFC[complete.cases(WFC),]
+
+wfc7_a &lt;- ifelse(WFC$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for wfc7 &lt;- &lt;- ifelse(WFC$today2lag7&gt;1, 1,0)
+wfc7_ab &lt;- cumsum(wfc7_a)
+
+wfc7_abc &lt;- as.data.frame(as.factor(wfc7_ab))
+colnames(wfc7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countWFC &lt;- wfc7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countWFC &lt;- as.data.frame(countWFC)
+countWFC &lt;- countWFC[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countWFC$wfc7_decr_Days &lt;- countWFC$n-1
+countWFC &lt;- countWFC[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countWFC2 &lt;- subset(countWFC, countWFC$wfc7_decr_Days&gt;0)
+summary(countWFC2$wfc7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   5.536   8.000  46.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+wfc7_decr_Days_grouped &lt;- countWFC2 %&gt;% group_by(wfc7_decr_Days) %&gt;% count(n=n())
+wfc7_decr_Days_grouped &lt;- wfc7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>wfc7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 26 x 2
+## # Groups:   wfc7_decr_Days [26]
+##    wfc7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    85
+##  2              2    40
+##  3              3    30
+##  4              4    21
+##  5              5    13
+##  6              6    12
+##  7              7    31
+##  8              8    18
+##  9              9    14
+## 10             10    10
+## # … with 16 more rows</code></pre>
+<pre class="r"><code>median(wfc7_decr_Days_grouped$wfc7_decr_Days)</code></pre>
+<pre><code>## [1] 13.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+wfc7_b1 &lt;- ifelse(WFC$today2lag7&gt;1, 0,1)
+
+
+wfc7_b2 &lt;- cumsum(wfc7_b1)
+
+wfc7_b3 &lt;- as.data.frame(as.factor(wfc7_b2))
+colnames(wfc7_b3) &lt;- &#39;cSum&#39;
+
+countWFC1 &lt;- wfc7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countWFC1 &lt;- as.data.frame(countWFC1)
+countWFC1 &lt;- countWFC1[,-3]
+
+countWFC1$wfc7_incr_Days &lt;- countWFC1$n-1
+countWFC1 &lt;- countWFC1[,-2]
+
+countWFC3 &lt;- subset(countWFC1, countWFC1$wfc7_incr_Days&gt;0)
+summary(countWFC3$wfc7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.858   7.000  29.000</code></pre>
+<pre class="r"><code>wfc7_incr_Days_grouped &lt;- countWFC3 %&gt;% group_by(wfc7_incr_Days) %&gt;% count(n=n())
+wfc7_incr_Days_grouped &lt;- wfc7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>wfc7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 22 x 2
+## # Groups:   wfc7_incr_Days [22]
+##    wfc7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    94
+##  2              2    46
+##  3              3    31
+##  4              4    24
+##  5              5    15
+##  6              6    15
+##  7              7    20
+##  8              8    15
+##  9              9     9
+## 10             10     9
+## # … with 12 more rows</code></pre>
+<pre class="r"><code>median(wfc7_incr_Days_grouped$wfc7_incr_Days)</code></pre>
+<pre><code>## [1] 11.5</code></pre>
+<hr />
+<pre class="r"><code>WM &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;WM&#39;)
+
+WM &lt;- WM[complete.cases(WM),]
+
+wm7_a &lt;- ifelse(WM$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for wm7 &lt;- &lt;- ifelse(WM$today2lag7&gt;1, 1,0)
+wm7_ab &lt;- cumsum(wm7_a)
+
+wm7_abc &lt;- as.data.frame(as.factor(wm7_ab))
+colnames(wm7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countWM &lt;- wm7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countWM &lt;- as.data.frame(countWM)
+countWM &lt;- countWM[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countWM$wm7_decr_Days &lt;- countWM$n-1
+countWM &lt;- countWM[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countWM2 &lt;- subset(countWM, countWM$wm7_decr_Days&gt;0)
+summary(countWM2$wm7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   4.000   6.498   9.000  43.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+wm7_decr_Days_grouped &lt;- countWM2 %&gt;% group_by(wm7_decr_Days) %&gt;% count(n=n())
+wm7_decr_Days_grouped &lt;- wm7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>wm7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 30 x 2
+## # Groups:   wm7_decr_Days [30]
+##    wm7_decr_Days     n
+##            &lt;dbl&gt; &lt;int&gt;
+##  1             1    75
+##  2             2    40
+##  3             3    24
+##  4             4    14
+##  5             5    14
+##  6             6     8
+##  7             7    27
+##  8             8    13
+##  9             9    11
+## 10            10    11
+## # … with 20 more rows</code></pre>
+<pre class="r"><code>median(wm7_decr_Days_grouped$wm7_decr_Days)</code></pre>
+<pre><code>## [1] 15.5</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+wm7_b1 &lt;- ifelse(WM$today2lag7&gt;1, 0,1)
+
+
+wm7_b2 &lt;- cumsum(wm7_b1)
+
+wm7_b3 &lt;- as.data.frame(as.factor(wm7_b2))
+colnames(wm7_b3) &lt;- &#39;cSum&#39;
+
+countWM1 &lt;- wm7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countWM1 &lt;- as.data.frame(countWM1)
+countWM1 &lt;- countWM1[,-3]
+
+countWM1$wm7_incr_Days &lt;- countWM1$n-1
+countWM1 &lt;- countWM1[,-2]
+
+countWM3 &lt;- subset(countWM1, countWM1$wm7_incr_Days&gt;0)
+summary(countWM3$wm7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.687   7.000  24.000</code></pre>
+<pre class="r"><code>wm7_incr_Days_grouped &lt;- countWM3 %&gt;% group_by(wm7_incr_Days) %&gt;% count(n=n())
+wm7_incr_Days_grouped &lt;- wm7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>wm7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 21 x 2
+## # Groups:   wm7_incr_Days [21]
+##    wm7_incr_Days     n
+##            &lt;dbl&gt; &lt;int&gt;
+##  1             1   107
+##  2             2    38
+##  3             3    20
+##  4             4    19
+##  5             5    14
+##  6             6    11
+##  7             7    27
+##  8             8    12
+##  9             9     8
+## 10            10     8
+## # … with 11 more rows</code></pre>
+<pre class="r"><code>median(wm7_incr_Days_grouped$wm7_incr_Days)</code></pre>
+<pre><code>## [1] 11</code></pre>
+<hr />
+<pre class="r"><code>WWE &lt;- subset(remaining36_g, remaining36_g$stockName==&#39;WWE&#39;)
+
+WWE &lt;- WWE[complete.cases(WWE),]
+
+wwe7_a &lt;- ifelse(WWE$today2lag7&gt;1, 1,0)
+
+# get cumulative sum of the number of times today&#39;s stock increased from 7 days ago,
+# the day will be repeated if it didn&#39;t increase. For example &#39;10&#39; is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for wwe7 &lt;- &lt;- ifelse(WWE$today2lag7&gt;1, 1,0)
+wwe7_ab &lt;- cumsum(wwe7_a)
+
+wwe7_abc &lt;- as.data.frame(as.factor(wwe7_ab))
+colnames(wwe7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countWWE &lt;- wwe7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countWWE &lt;- as.data.frame(countWWE)
+countWWE &lt;- countWWE[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countWWE$wwe7_decr_Days &lt;- countWWE$n-1
+countWWE &lt;- countWWE[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countWWE2 &lt;- subset(countWWE, countWWE$wwe7_decr_Days&gt;0)
+summary(countWWE2$wwe7_decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.933   9.000  54.000</code></pre>
+<pre class="r"><code># this table shows how many sets of cumulative days decreasing there were in lag 7
+wwe7_decr_Days_grouped &lt;- countWWE2 %&gt;% group_by(wwe7_decr_Days) %&gt;% count(n=n())
+wwe7_decr_Days_grouped &lt;- wwe7_decr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>wwe7_decr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 27 x 2
+## # Groups:   wwe7_decr_Days [27]
+##    wwe7_decr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    83
+##  2              2    47
+##  3              3    25
+##  4              4    16
+##  5              5    12
+##  6              6     7
+##  7              7    18
+##  8              8    14
+##  9              9    12
+## 10             10     7
+## # … with 17 more rows</code></pre>
+<pre class="r"><code>median(wwe7_decr_Days_grouped$wwe7_decr_Days)</code></pre>
+<pre><code>## [1] 14</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+wwe7_b1 &lt;- ifelse(WWE$today2lag7&gt;1, 0,1)
+
+
+wwe7_b2 &lt;- cumsum(wwe7_b1)
+
+wwe7_b3 &lt;- as.data.frame(as.factor(wwe7_b2))
+colnames(wwe7_b3) &lt;- &#39;cSum&#39;
+
+countWWE1 &lt;- wwe7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countWWE1 &lt;- as.data.frame(countWWE1)
+countWWE1 &lt;- countWWE1[,-3]
+
+countWWE1$wwe7_incr_Days &lt;- countWWE1$n-1
+countWWE1 &lt;- countWWE1[,-2]
+
+countWWE3 &lt;- subset(countWWE1, countWWE1$wwe7_incr_Days&gt;0)
+summary(countWWE3$wwe7_incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.124   7.000  26.000</code></pre>
+<pre class="r"><code>wwe7_incr_Days_grouped &lt;- countWWE3 %&gt;% group_by(wwe7_incr_Days) %&gt;% count(n=n())
+wwe7_incr_Days_grouped &lt;- wwe7_incr_Days_grouped[,-3]</code></pre>
+<pre class="r"><code>wwe7_incr_Days_grouped</code></pre>
+<pre><code>## # A tibble: 22 x 2
+## # Groups:   wwe7_incr_Days [22]
+##    wwe7_incr_Days     n
+##             &lt;dbl&gt; &lt;int&gt;
+##  1              1    95
+##  2              2    36
+##  3              3    20
+##  4              4    20
+##  5              5    15
+##  6              6    14
+##  7              7    26
+##  8              8     9
+##  9              9    12
+## 10             10    10
+## # … with 12 more rows</code></pre>
+<pre class="r"><code>median(wwe7_incr_Days_grouped$wwe7_incr_Days)</code></pre>
+<pre><code>## [1] 11.5</code></pre>
+<hr />
+<hr />
+<hr />
+<pre class="r"><code>FFIN &lt;- subset(Close17_dow, Close17_dow$DOW_down_median==&#39;FFIN&#39;)
+
+#assign a 1 to increasing values
+ffin7 &lt;- ifelse(FFIN$today2lag7&gt;1, 1,0)
+
+ffin7_a &lt;- na.omit(ffin7)
+
+ffin7_ab &lt;- cumsum(ffin7_a)
+
+ffin7_abc &lt;- as.data.frame(as.factor(ffin7_ab))
+colnames(ffin7_abc) &lt;- &#39;cSum&#39;
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today&#39;s value to 7 days prior value.
+countFFIN &lt;- ffin7_abc %&gt;% group_by(cSum) %&gt;% count(n=n())
+countFFIN &lt;- as.data.frame(countFFIN)
+countFFIN &lt;- countFFIN[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countFFIN$decr_Days &lt;- countFFIN$n-1
+countFFIN &lt;- countFFIN[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countFFIN1 &lt;- subset(countFFIN, countFFIN$decr_Days&gt;0)
+summary(countFFIN1$decr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   5.347   8.000  38.000</code></pre>
+<pre class="r"><code>mxffin_d &lt;- max(countFFIN1$decr_Days)
+mdnffin_d &lt;- median(countFFIN1$decr_Days)
+q3ffin_d &lt;- as.numeric(as.character(summary(countFFIN1$decr_Days)[&quot;3rd Qu.&quot;]))</code></pre>
+<pre class="r"><code>#assign a 1 to decreasing values
+ffin7_b &lt;- ifelse(FFIN$today2lag7&gt;1, 0,1)
+
+#rm NAs
+ffin7_b1 &lt;- na.omit(ffin7_b) 
+
+#counts the 
+ffin7_b2 &lt;- cumsum(ffin7_b1)
+
+ffin7_b3 &lt;- as.data.frame(as.factor(ffin7_b2))
+colnames(ffin7_b3) &lt;- &#39;cSum&#39;
+
+countFFIN2 &lt;- ffin7_b3 %&gt;% group_by(cSum) %&gt;% count(n=n())
+countFFIN2 &lt;- as.data.frame(countFFIN2)
+countFFIN2 &lt;- countFFIN2[,-3]
+
+countFFIN2$incr_Days &lt;- countFFIN2$n-1
+countFFIN2 &lt;- countFFIN2[,-2]
+
+countFFIN3 &lt;- subset(countFFIN2, countFFIN2$incr_Days&gt;0)
+summary(countFFIN3$incr_Days)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   3.000   4.504   7.000  26.000</code></pre>
+<pre class="r"><code>mxffin_i &lt;- max(countFFIN3$incr_Days)
+mdnffin_i &lt;- median(countFFIN3$incr_Days)
+q3ffin_i &lt;- as.numeric(as.character(summary(countFFIN3$incr_Days)[&quot;3rd Qu.&quot;]))</code></pre>
+<hr />
+<p>Start making the table of statistics for the remaining 36 stocks, using the first set of 17 that were in the best performing portfolio compared to the DOW.</p>
+<p>This gets the average and the median stock values from the start and end of this time series from Jan 3, 2007 to Feb 14, 2020.</p>
+<pre class="r"><code>close53_avg &lt;- Close53_g %&gt;% group_by(stockName) %&gt;% summarise_at(vars(stockDayValue),
+                                                                  mean)
+close53_median &lt;- Close53_g %&gt;% group_by(stockName) %&gt;% summarise_at(vars(stockDayValue),
+                                                                  median)
+colnames(close53_avg)[2] &lt;- &#39;avgStockValue&#39;
+colnames(close53_median)[2] &lt;- &#39;medianStockValue&#39;</code></pre>
+<pre class="r"><code>first17 &lt;- dROI17_lag7_d[,-c(1,4)]
+row.names(first17) &lt;- row.names(dROI17_lag7_d)
+
+Remaining36 &lt;- remaining36[order(remaining36$Date),]
+
+remaining36_st_fi &lt;- Remaining36[c(1,length(remaining36$Date)),]
+remaining36_st_fi_t &lt;- as.data.frame(t(remaining36_st_fi))
+colnames(remaining36_st_fi_t) &lt;- c(&#39;startValue&#39;, &#39;finalValue&#39;)
+
+remaining36_st_fi_t &lt;- remaining36_st_fi_t[-1,]
+last36 &lt;- remaining36_st_fi_t
+
+last36$startValue &lt;- as.numeric(as.character(last36$startValue))
+last36$finalValue &lt;- as.numeric(as.character(last36$finalValue))
+
+last36$stock_ROI &lt;- last36$finalValue/last36$startValue
+
+last36$medn_cSum_decr_L7 &lt;- &#39;median cSum down L7&#39;
+last36$Q3_cSum_decr_L7 &lt;- &#39;3rd Qntl cSum down L7&#39;
+last36$max_cSum_decr_L7 &lt;- &#39;max cSum down L7&#39;
+last36$medn_cSum_incr_L7 &lt;- &#39;median cSum up L7&#39;
+last36$Q3_cSum_incr_L7 &lt;- &#39;3rd Qntl cSun up L7&#39;
+last36$max_cSum_incr_L7 &lt;- &#39;max cSum up L7&#39;
+
+all53 &lt;- rbind(first17, last36)
+
+all53$stockName &lt;- row.names(all53)
+
+all_53 &lt;- merge(close53_avg, all53, by.x=&#39;stockName&#39;, by.y=&#39;stockName&#39;)
+All53 &lt;- merge(close53_median, all_53, by.x=&#39;stockName&#39;, by.y=&#39;stockName&#39;)
+head(All53)</code></pre>
+<pre><code>##   stockName medianStockValue avgStockValue startValue finalValue  stock_ROI
+## 1       AAL            28.08      25.81191      56.30      29.20  0.5186501
+## 2       AAP            84.59      97.31300      35.58     133.59  3.7500000
+## 3     ADDYY            39.99      58.44379      25.00     156.11  6.2400000
+## 4      AMZN           288.80     550.53223      38.70    2134.87 55.1600000
+## 5      ARWR             6.87      13.18195      44.00      41.27  0.9379545
+## 6         C            51.59      93.33454     552.50      78.79  0.1426063
+##     medn_cSum_decr_L7       Q3_cSum_decr_L7 max_cSum_decr_L7 medn_cSum_incr_L7
+## 1 median cSum down L7 3rd Qntl cSum down L7 max cSum down L7 median cSum up L7
+## 2                   3                     9               44                 3
+## 3                   5                    10               35                 3
+## 4                   5                    11               31                 3
+## 5 median cSum down L7 3rd Qntl cSum down L7 max cSum down L7 median cSum up L7
+## 6 median cSum down L7 3rd Qntl cSum down L7 max cSum down L7 median cSum up L7
+##       Q3_cSum_incr_L7 max_cSum_incr_L7
+## 1 3rd Qntl cSun up L7   max cSum up L7
+## 2                   7               30
+## 3                   8               25
+## 4                   8               26
+## 5 3rd Qntl cSun up L7   max cSum up L7
+## 6 3rd Qntl cSun up L7   max cSum up L7</code></pre>
+<p>Add these statistics to their respective stock instance in the All53 table now that we have the table, there are 36 stock statistics on the number of times the stock increases and decreases in this time span that need to be filled in. Carefully find and replace the names of each of the remaining 36 stock for the lower and upper instances in the block below. Then after running each chunk of code, the All53 table will be filled in.</p>
+<p>AAL-American Airlines:</p>
+<pre class="r"><code>mdnaal_d &lt;- median(countAAL2$aal7_decr_Days)
+q3aal_d &lt;- as.numeric(as.character(summary(countAAL2$aal7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxaal_d &lt;- max(countAAL2$aal7_decr_Days)
+
+mdnaal_i &lt;- median(countAAL3$aal7_incr_Days)
+q3aal_i &lt;- as.numeric(as.character(summary(countAAL3$aal7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxaal_i &lt;- max(countAAL3$aal7_incr_Days)
+
+aal_g &lt;- grep(&#39;AAL&#39;, All53$stockName )
+
+All53[aal_g,7:12] &lt;- c(mdnaal_d,q3aal_d,mxaal_d,mdnaal_i,q3aal_i,mxaal_i)</code></pre>
+<p>The above code chunk filled in the AAL stock statistical information.</p>
+<pre class="r"><code>head(All53)</code></pre>
+<pre><code>##   stockName medianStockValue avgStockValue startValue finalValue  stock_ROI
+## 1       AAL            28.08      25.81191      56.30      29.20  0.5186501
+## 2       AAP            84.59      97.31300      35.58     133.59  3.7500000
+## 3     ADDYY            39.99      58.44379      25.00     156.11  6.2400000
+## 4      AMZN           288.80     550.53223      38.70    2134.87 55.1600000
+## 5      ARWR             6.87      13.18195      44.00      41.27  0.9379545
+## 6         C            51.59      93.33454     552.50      78.79  0.1426063
+##     medn_cSum_decr_L7       Q3_cSum_decr_L7 max_cSum_decr_L7 medn_cSum_incr_L7
+## 1                   4                    10               32                 5
+## 2                   3                     9               44                 3
+## 3                   5                    10               35                 3
+## 4                   5                    11               31                 3
+## 5 median cSum down L7 3rd Qntl cSum down L7 max cSum down L7 median cSum up L7
+## 6 median cSum down L7 3rd Qntl cSum down L7 max cSum down L7 median cSum up L7
+##       Q3_cSum_incr_L7 max_cSum_incr_L7
+## 1                   9               30
+## 2                   7               30
+## 3                   8               25
+## 4                   8               26
+## 5 3rd Qntl cSun up L7   max cSum up L7
+## 6 3rd Qntl cSun up L7   max cSum up L7</code></pre>
+<p>Now to fill in the other 35 stocks for our completed ML table of stats (for now).</p>
+<p>ARWR-Arrowhead Pharmaceuticals:</p>
+<pre class="r"><code>mdnarwr_d &lt;- median(countARWR2$arwr7_decr_Days)
+q3arwr_d &lt;- as.numeric(as.character(summary(countARWR2$arwr7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxarwr_d &lt;- max(countARWR2$arwr7_decr_Days)
+
+mdnarwr_i &lt;- median(countARWR3$arwr7_incr_Days)
+q3arwr_i &lt;- as.numeric(as.character(summary(countARWR3$arwr7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxarwr_i &lt;- max(countARWR3$arwr7_incr_Days)
+
+arwr_g &lt;- grep(&#39;ARWR&#39;, All53$stockName )
+
+All53[arwr_g,7:12] &lt;- c(mdnarwr_d,q3arwr_d,mxarwr_d,mdnarwr_i,q3arwr_i,mxarwr_i)</code></pre>
+<p>C-Citigroup:</p>
+<pre class="r"><code>mdnc_d &lt;- median(countC2$c7_decr_Days)
+q3c_d &lt;- as.numeric(as.character(summary(countC2$c7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxc_d &lt;- max(countC2$c7_decr_Days)
+
+mdnc_i &lt;- median(countC3$c7_incr_Days)
+q3c_i &lt;- as.numeric(as.character(summary(countC3$c7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxc_i &lt;- max(countC3$c7_incr_Days)
+
+c_g &lt;- grep(&#39;C&#39;, All53$stockName )
+
+All53[c_g,7:12] &lt;- c(mdnc_d,q3c_d,mxc_d,mdnc_i,q3c_i,mxc_i)</code></pre>
+<p>EPD-Enterprise Products Partners:</p>
+<pre class="r"><code>mdnepd_d &lt;- median(countEPD2$epd7_decr_Days)
+q3epd_d &lt;- as.numeric(as.character(summary(countEPD2$epd7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxepd_d &lt;- max(countEPD2$epd7_decr_Days)
+
+mdnepd_i &lt;- median(countEPD3$epd7_incr_Days)
+q3epd_i &lt;- as.numeric(as.character(summary(countEPD3$epd7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxepd_i &lt;- max(countEPD3$epd7_incr_Days)
+
+epd_g &lt;- grep(&#39;EPD&#39;, All53$stockName )
+
+All53[epd_g,7:12] &lt;- c(mdnepd_d,q3epd_d,mxepd_d,mdnepd_i,q3epd_i,mxepd_i)</code></pre>
+<p>F-Ford:</p>
+<pre class="r"><code>mdnf_d &lt;- median(countF2$f7_decr_Days)
+q3f_d &lt;- as.numeric(as.character(summary(countF2$f7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxf_d &lt;- max(countF2$f7_decr_Days)
+
+mdnf_i &lt;- median(countF3$f7_incr_Days)
+q3f_i &lt;- as.numeric(as.character(summary(countF3$f7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxf_i &lt;- max(countF3$f7_incr_Days)
+
+f_g &lt;- grep(&#39;F&#39;, All53$stockName )
+
+All53[f_g,7:12] &lt;- c(mdnf_d,q3f_d,mxf_d,mdnf_i,q3f_i,mxf_i)</code></pre>
+<p>HRB-H&amp;R Block:</p>
+<pre class="r"><code>mdnhrb_d &lt;- median(countHRB2$hrb7_decr_Days)
+q3hrb_d &lt;- as.numeric(as.character(summary(countHRB2$hrb7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxhrb_d &lt;- max(countHRB2$hrb7_decr_Days)
+
+mdnhrb_i &lt;- median(countHRB3$hrb7_incr_Days)
+q3hrb_i &lt;- as.numeric(as.character(summary(countHRB3$hrb7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxhrb_i &lt;- max(countHRB3$hrb7_incr_Days)
+
+hrb_g &lt;- grep(&#39;HRB&#39;, All53$stockName )
+
+All53[hrb_g,7:12] &lt;- c(mdnhrb_d,q3hrb_d,mxhrb_d,mdnhrb_i,q3hrb_i,mxhrb_i)</code></pre>
+<p>HST-Host Hotels &amp; Resorts:</p>
+<pre class="r"><code>mdnhst_d &lt;- median(countHST2$hst7_decr_Days)
+q3hst_d &lt;- as.numeric(as.character(summary(countHST2$hst7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxhst_d &lt;- max(countHST2$hst7_decr_Days)
+
+mdnhst_i &lt;- median(countHST3$hst7_incr_Days)
+q3hst_i &lt;- as.numeric(as.character(summary(countHST3$hst7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxhst_i &lt;- max(countHST3$hst7_incr_Days)
+
+hst_g &lt;- grep(&#39;HST&#39;, All53$stockName )
+
+All53[hst_g,7:12] &lt;- c(mdnhst_d,q3hst_d,mxhst_d,mdnhst_i,q3hst_i,mxhst_i)</code></pre>
+<p>INO-Inovio Pharmaceuticals:</p>
+<pre class="r"><code>mdnino_d &lt;- median(countINO2$ino7_decr_Days)
+q3ino_d &lt;- as.numeric(as.character(summary(countINO2$ino7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxino_d &lt;- max(countINO2$ino7_decr_Days)
+
+mdnino_i &lt;- median(countINO3$ino7_incr_Days)
+q3ino_i &lt;- as.numeric(as.character(summary(countINO3$ino7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxino_i &lt;- max(countINO3$ino7_incr_Days)
+
+ino_g &lt;- grep(&#39;INO&#39;, All53$stockName )
+
+All53[ino_g,7:12] &lt;- c(mdnino_d,q3ino_d,mxino_d,mdnino_i,q3ino_i,mxino_i)</code></pre>
+<p>JBLU-Jet Blue Airways:</p>
+<pre class="r"><code>mdnjblu_d &lt;- median(countJBLU2$jblu7_decr_Days)
+q3jblu_d &lt;- as.numeric(as.character(summary(countJBLU2$jblu7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxjblu_d &lt;- max(countJBLU2$jblu7_decr_Days)
+
+mdnjblu_i &lt;- median(countJBLU3$jblu7_incr_Days)
+q3jblu_i &lt;- as.numeric(as.character(summary(countJBLU3$jblu7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxjblu_i &lt;- max(countJBLU3$jblu7_incr_Days)
+
+jblu_g &lt;- grep(&#39;JBLU&#39;, All53$stockName )
+
+All53[jblu_g,7:12] &lt;- c(mdnjblu_d,q3jblu_d,mxjblu_d,mdnjblu_i,q3jblu_i,mxjblu_i)</code></pre>
+<p>JPM-JP Morgan Chase &amp; Co.:</p>
+<pre class="r"><code>mdnjpm_d &lt;- median(countJPM2$jpm7_decr_Days)
+q3jpm_d &lt;- as.numeric(as.character(summary(countJPM2$jpm7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxjpm_d &lt;- max(countJPM2$jpm7_decr_Days)
+
+mdnjpm_i &lt;- median(countJPM3$jpm7_incr_Days)
+q3jpm_i &lt;- as.numeric(as.character(summary(countJPM3$jpm7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxjpm_i &lt;- max(countJPM3$jpm7_incr_Days)
+
+jpm_g &lt;- grep(&#39;JPM&#39;, All53$stockName )
+
+All53[jpm_g,7:12] &lt;- c(mdnjpm_d,q3jpm_d,mxjpm_d,mdnjpm_i,q3jpm_i,mxjpm_i)</code></pre>
+<p>JWN-Nordstrom:</p>
+<pre class="r"><code>mdnjwn_d &lt;- median(countJWN2$jwn7_decr_Days)
+q3jwn_d &lt;- as.numeric(as.character(summary(countJWN2$jwn7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxjwn_d &lt;- max(countJWN2$jwn7_decr_Days)
+
+mdnjwn_i &lt;- median(countJWN3$jwn7_incr_Days)
+q3jwn_i &lt;- as.numeric(as.character(summary(countJWN3$jwn7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxjwn_i &lt;- max(countJWN3$jwn7_incr_Days)
+
+jwn_g &lt;- grep(&#39;JWN&#39;, All53$stockName )
+
+All53[jwn_g,7:12] &lt;- c(mdnjwn_d,q3jwn_d,mxjwn_d,mdnjwn_i,q3jwn_i,mxjwn_i)</code></pre>
+<p>KGJI-Kingold Jewelry,Inc:</p>
+<pre class="r"><code>mdnkgji_d &lt;- median(countKGJI2$kgji7_decr_Days)
+q3kgji_d &lt;- as.numeric(as.character(summary(countKGJI2$kgji7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxkgji_d &lt;- max(countKGJI2$kgji7_decr_Days)
+
+mdnkgji_i &lt;- median(countKGJI3$kgji7_incr_Days)
+q3kgji_i &lt;- as.numeric(as.character(summary(countKGJI3$kgji7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxkgji_i &lt;- max(countKGJI3$kgji7_incr_Days)
+
+kgji_g &lt;- grep(&#39;KGJI&#39;, All53$stockName )
+
+All53[kgji_g,7:12] &lt;- c(mdnkgji_d,q3kgji_d,mxkgji_d,mdnkgji_i,q3kgji_i,mxkgji_i)</code></pre>
+<p>KSS-Kohls Corporation:</p>
+<pre class="r"><code>mdnkss_d &lt;- median(countKSS2$kss7_decr_Days)
+q3kss_d &lt;- as.numeric(as.character(summary(countKSS2$kss7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxkss_d &lt;- max(countKSS2$kss7_decr_Days)
+
+mdnkss_i &lt;- median(countKSS3$kss7_incr_Days)
+q3kss_i &lt;- as.numeric(as.character(summary(countKSS3$kss7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxkss_i &lt;- max(countKSS3$kss7_incr_Days)
+
+kss_g &lt;- grep(&#39;KSS&#39;, All53$stockName )
+
+All53[kss_g,7:12] &lt;- c(mdnkss_d,q3kss_d,mxkss_d,mdnkss_i,q3kss_i,mxkss_i)</code></pre>
+<p>LUV-Southwest Airlines:</p>
+<pre class="r"><code>mdnluv_d &lt;- median(countLUV2$luv7_decr_Days)
+q3luv_d &lt;- as.numeric(as.character(summary(countLUV2$luv7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxluv_d &lt;- max(countLUV2$luv7_decr_Days)
+
+mdnluv_i &lt;- median(countLUV3$luv7_incr_Days)
+q3luv_i &lt;- as.numeric(as.character(summary(countLUV3$luv7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxluv_i &lt;- max(countLUV3$luv7_incr_Days)
+
+luv_g &lt;- grep(&#39;LUV&#39;, All53$stockName )
+
+All53[luv_g,7:12] &lt;- c(mdnluv_d,q3luv_d,mxluv_d,mdnluv_i,q3luv_i,mxluv_i)</code></pre>
+<p>M-Macys:</p>
+<pre class="r"><code>mdnm_d &lt;- median(countM2$m7_decr_Days)
+q3m_d &lt;- as.numeric(as.character(summary(countM2$m7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxm_d &lt;- max(countM2$m7_decr_Days)
+
+mdnm_i &lt;- median(countM3$m7_incr_Days)
+q3m_i &lt;- as.numeric(as.character(summary(countM3$m7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxm_i &lt;- max(countM3$m7_incr_Days)
+
+m_g &lt;- grep(&#39;M&#39;, All53$stockName )
+
+All53[m_g,7:12] &lt;- c(mdnm_d,q3m_d,mxm_d,mdnm_i,q3m_i,mxm_i)</code></pre>
+<p>NSANY-Nissan Motor Co.:</p>
+<pre class="r"><code>mdnnsany_d &lt;- median(countNSANY2$nsany7_decr_Days)
+q3nsany_d &lt;- as.numeric(as.character(summary(countNSANY2$nsany7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxnsany_d &lt;- max(countNSANY2$nsany7_decr_Days)
+
+mdnnsany_i &lt;- median(countNSANY3$nsany7_incr_Days)
+q3nsany_i &lt;- as.numeric(as.character(summary(countNSANY3$nsany7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxnsany_i &lt;- max(countNSANY3$nsany7_incr_Days)
+
+nsany_g &lt;- grep(&#39;NSANY&#39;, All53$stockName )
+
+All53[nsany_g,7:12] &lt;- c(mdnnsany_d,q3nsany_d,mxnsany_d,mdnnsany_i,q3nsany_i,mxnsany_i)</code></pre>
+<p>NUS-Nu Skin Enterprises:</p>
+<pre class="r"><code>mdnnus_d &lt;- median(countNUS2$nus7_decr_Days)
+q3nus_d &lt;- as.numeric(as.character(summary(countNUS2$nus7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxnus_d &lt;- max(countNUS2$nus7_decr_Days)
+
+mdnnus_i &lt;- median(countNUS3$nus7_incr_Days)
+q3nus_i &lt;- as.numeric(as.character(summary(countNUS3$nus7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxnus_i &lt;- max(countNUS3$nus7_incr_Days)
+
+nus_g &lt;- grep(&#39;NUS&#39;, All53$stockName )
+
+All53[nus_g,7:12] &lt;- c(mdnnus_d,q3nus_d,mxnus_d,mdnnus_i,q3nus_i,mxnus_i)</code></pre>
+<p>RRGB-Red Robin Gourmet Burgers:</p>
+<pre class="r"><code>mdnrrgb_d &lt;- median(countRRGB2$rrgb7_decr_Days)
+q3rrgb_d &lt;- as.numeric(as.character(summary(countRRGB2$rrgb7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxrrgb_d &lt;- max(countRRGB2$rrgb7_decr_Days)
+
+mdnrrgb_i &lt;- median(countRRGB3$rrgb7_incr_Days)
+q3rrgb_i &lt;- as.numeric(as.character(summary(countRRGB3$rrgb7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxrrgb_i &lt;- max(countRRGB3$rrgb7_incr_Days)
+
+rrgb_g &lt;- grep(&#39;RRGB&#39;, All53$stockName )
+
+All53[rrgb_g,7:12] &lt;- c(mdnrrgb_d,q3rrgb_d,mxrrgb_d,mdnrrgb_i,q3rrgb_i,mxrrgb_i)</code></pre>
+<p>S-Sprint Corporation:</p>
+<pre class="r"><code>mdns_d &lt;- median(countS2$s7_decr_Days)
+q3s_d &lt;- as.numeric(as.character(summary(countS2$s7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxs_d &lt;- max(countS2$s7_decr_Days)
+
+mdns_i &lt;- median(countS3$s7_incr_Days)
+q3s_i &lt;- as.numeric(as.character(summary(countS3$s7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxs_i &lt;- max(countS3$s7_incr_Days)
+
+s_g &lt;- grep(&#39;S&#39;, All53$stockName )
+
+All53[s_g,7:12] &lt;- c(mdns_d,q3s_d,mxs_d,mdns_i,q3s_i,mxs_i)</code></pre>
+<p>T-AT&amp;T Inc:</p>
+<pre class="r"><code>mdnt_d &lt;- median(countT2$t7_decr_Days)
+q3t_d &lt;- as.numeric(as.character(summary(countT2$t7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxt_d &lt;- max(countT2$t7_decr_Days)
+
+mdnt_i &lt;- median(countT3$t7_incr_Days)
+q3t_i &lt;- as.numeric(as.character(summary(countT3$t7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxt_i &lt;- max(countT3$t7_incr_Days)
+
+t_g &lt;- grep(&#39;T&#39;, All53$stockName )
+
+All53[t_g,7:12] &lt;- c(mdnt_d,q3t_d,mxt_d,mdnt_i,q3t_i,mxt_i)</code></pre>
+<p>VZ-Verizon:</p>
+<pre class="r"><code>mdnvz_d &lt;- median(countVZ2$vz7_decr_Days)
+q3vz_d &lt;- as.numeric(as.character(summary(countVZ2$vz7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxvz_d &lt;- max(countVZ2$vz7_decr_Days)
+
+mdnvz_i &lt;- median(countVZ3$vz7_incr_Days)
+q3vz_i &lt;- as.numeric(as.character(summary(countVZ3$vz7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxvz_i &lt;- max(countVZ3$vz7_incr_Days)
+
+vz_g &lt;- grep(&#39;VZ&#39;, All53$stockName )
+
+All53[vz_g,7:12] &lt;- c(mdnvz_d,q3vz_d,mxvz_d,mdnvz_i,q3vz_i,mxvz_i)</code></pre>
+<p>WWE-World Wrestling Entertainment:</p>
+<pre class="r"><code>mdnwwe_d &lt;- median(countWWE2$wwe7_decr_Days)
+q3wwe_d &lt;- as.numeric(as.character(summary(countWWE2$wwe7_decr_Days)[&quot;3rd Qu.&quot;]))
+mxwwe_d &lt;- max(countWWE2$wwe7_decr_Days)
+
+mdnwwe_i &lt;- median(countWWE3$wwe7_incr_Days)
+q3wwe_i &lt;- as.numeric(as.character(summary(countWWE3$wwe7_incr_Days)[&quot;3rd Qu.&quot;]))
+mxwwe_i &lt;- max(countWWE3$wwe7_incr_Days)
+
+wwe_g &lt;- grep(&#39;WWE&#39;, All53$stockName )
+
+All53[wwe_g,7:12] &lt;- c(mdnwwe_d,q3wwe_d,mxwwe_d,mdnwwe_i,q3wwe_i,mxwwe_i)</code></pre>
+<hr />
+<p>Now, lets look at the columns to see they are the right data types.</p>
+<pre class="r"><code>str(All53)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    53 obs. of  12 variables:
+##  $ stockName        : Factor w/ 53 levels &quot;AAL&quot;,&quot;AAP&quot;,&quot;ADDYY&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
+##  $ medianStockValue : num  28.08 84.59 39.99 288.8 6.87 ...
+##  $ avgStockValue    : num  25.8 97.3 58.4 550.5 13.2 ...
+##  $ startValue       : num  56.3 35.6 25 38.7 44 ...
+##  $ finalValue       : num  29.2 133.6 156.1 2134.9 41.3 ...
+##  $ stock_ROI        : num  0.519 3.75 6.24 55.16 0.938 ...
+##  $ medn_cSum_decr_L7: chr  &quot;4&quot; &quot;3&quot; &quot;5&quot; &quot;4&quot; ...
+##  $ Q3_cSum_decr_L7  : chr  &quot;10&quot; &quot;9&quot; &quot;10&quot; &quot;8&quot; ...
+##  $ max_cSum_decr_L7 : chr  &quot;32&quot; &quot;44&quot; &quot;35&quot; &quot;38&quot; ...
+##  $ medn_cSum_incr_L7: chr  &quot;5&quot; &quot;3&quot; &quot;3&quot; &quot;4&quot; ...
+##  $ Q3_cSum_incr_L7  : chr  &quot;9&quot; &quot;7&quot; &quot;8&quot; &quot;8&quot; ...
+##  $ max_cSum_incr_L7 : chr  &quot;30&quot; &quot;30&quot; &quot;25&quot; &quot;38&quot; ...</code></pre>
+<p>We need to change the stat columns in the All53 table from char to numeric. So lets do that.</p>
+<pre class="r"><code>All53$medn_cSum_decr_L7 &lt;- as.numeric(All53$medn_cSum_decr_L7)
+All53$Q3_cSum_decr_L7 &lt;- as.numeric(All53$Q3_cSum_decr_L7)
+All53$max_cSum_decr_L7 &lt;- as.numeric(All53$max_cSum_decr_L7)
+All53$medn_cSum_incr_L7 &lt;- as.numeric(All53$medn_cSum_incr_L7)
+All53$Q3_cSum_incr_L7 &lt;- as.numeric(All53$Q3_cSum_incr_L7)
+All53$max_cSum_incr_L7 &lt;- as.numeric(All53$max_cSum_incr_L7)
+
+str(All53)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    53 obs. of  12 variables:
+##  $ stockName        : Factor w/ 53 levels &quot;AAL&quot;,&quot;AAP&quot;,&quot;ADDYY&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
+##  $ medianStockValue : num  28.08 84.59 39.99 288.8 6.87 ...
+##  $ avgStockValue    : num  25.8 97.3 58.4 550.5 13.2 ...
+##  $ startValue       : num  56.3 35.6 25 38.7 44 ...
+##  $ finalValue       : num  29.2 133.6 156.1 2134.9 41.3 ...
+##  $ stock_ROI        : num  0.519 3.75 6.24 55.16 0.938 ...
+##  $ medn_cSum_decr_L7: num  4 3 5 4 4 4 3 26 8 5 ...
+##  $ Q3_cSum_decr_L7  : num  10 9 10 8 8 26 8 8 35 8 ...
+##  $ max_cSum_decr_L7 : num  32 44 35 38 33 8 35 4 3 42 ...
+##  $ medn_cSum_incr_L7: num  5 3 3 4 4 4 3 26 8 4 ...
+##  $ Q3_cSum_incr_L7  : num  9 7 8 8 9 26 8 8 29 8 ...
+##  $ max_cSum_incr_L7 : num  30 30 25 38 40 8 29 4 3 26 ...</code></pre>
+<p>Lets also add the name of the stock to the stock name. We will also make a table of the total stocks in the hand picked portfolio of 65 that had many missing observations in the yahoo finance grab of stock information from 2007-2020 to start with.</p>
+<pre class="r"><code>names53 &lt;- stockNames[,1:2]
+names53$stock &lt;- gsub(&#39;.PB&#39;,&#39;&#39;, names53$stock)
+names53$stock &lt;- as.factor(names53$stock)
+
+ALL53 &lt;- merge(names53, All53, by.x=&#39;stock&#39;, by.y=&#39;stockName&#39;)
+ALL65 &lt;- merge(names53, All53, by.x=&#39;stock&#39;, by.y=&#39;stockName&#39;, all.x=TRUE)
+
+ALL65 &lt;- ALL65[order(ALL65$medn_cSum_decr_L7, na.last=TRUE),]
+na12stocks &lt;- ALL65[54:65,]</code></pre>
+<p>Before we write these to file, lets also categorize these stocks by type of stock. Such as cell phone, airlines, restaurants, etc. To get a category measure of each stock stats within their category or business category.</p>
+<pre class="r"><code>businessType &lt;- as.data.frame(c(&#39;airTravel&#39;,&#39;autoParts&#39;,&#39;athleticShoes&#39;,&#39;cloudComputing&#39;,
+                  &#39;genotypePharmaceuticals&#39;,
+                  &#39;bank&#39;,&#39;retail&#39;,&#39;fuel&#39;,&#39;discountRetail&#39;,&#39;fuel&#39;,&#39;automotive&#39;,&#39;bank&#39;,
+                  &#39;communications&#39;,&#39;cloudComputing&#39;,&#39;homeRepair&#39;,&#39;automotive&#39;,
+                  &#39;furniture&#39;,&#39;taxService&#39;, &#39;hotelTravel&#39;,&#39;immunoPharmaceuticals&#39;, &#39;airTravel&#39;,
+                  &#39;healthCarePharmaceuticals&#39;, &#39;bank&#39;,&#39;retail&#39;, &#39;jewelry&#39;, 
+                  &#39;retail&#39;, &#39;airTravel&#39;, &#39;retail&#39;,
+                  &#39;hotelTravel&#39;, &#39;CloudComputing&#39;, &#39;subsriptionEntertainment&#39;, &#39;athleticShoes&#39;,
+                  &#39;automotive&#39;,&#39;beautyProducts&#39;,&#39;cancerPharmaceuticals&#39;, &#39;energyUtility&#39;,
+                  &#39;discountRetail&#39;,&#39;restaurant&#39;,&#39;mobileCommunications&#39;,&#39;energyUtility&#39;,
+                  &#39;jewelry&#39;, &#39;communications&#39;,&#39;genericPharmaceuticals&#39;,&#39;retail&#39;,&#39;discountRetail&#39;,
+                  &#39;automotive&#39;,&#39;bank&#39;,&#39;mobileCommunications&#39;, &#39;bank&#39;,&#39;wasteUtility&#39;,
+                  &#39;discountRetail&#39;, &#39;sportsEntertainment&#39;,&#39;fuel&#39;))
+colnames(businessType) &lt;- &#39;businessType&#39;
+
+businessType2 &lt;- as.data.frame(c(&#39;movieEntertainment&#39;,&#39;athleticShoes&#39;,&#39;movieEntertainment&#39;,
+                                 &#39;automotive&#39;,&#39;automotive&#39;,&#39;immunoPharmaceuticals&#39;,
+                                 &#39;couponDeals&#39;,&#39;cancerPharmaceuticals&#39;,
+                                 &#39;fastFoodRestaurant&#39;,&#39;dentalBioTech&#39;,&#39;mobileCommunications&#39;,
+                                 &#39;businessSocialMedia&#39;))
+colnames(businessType2) &lt;- &#39;businessType&#39;
+other12 &lt;- cbind(businessType2,na12stocks)
+other12 &lt;- other12[,c(2,3,1,4:14)]</code></pre>
+<pre class="r"><code>ALL_53 &lt;- cbind(businessType,ALL53)
+ALL_53 &lt;- ALL_53[,c(2,3,1,4:14)]
+
+ALL_65 &lt;- rbind(ALL_53,other12)
+
+write.csv(ALL_53, &#39;ALL_53.csv&#39;, row.names=FALSE)
+write.csv(ALL_65, &#39;ALL_65.csv&#39;, row.names=FALSE)</code></pre>
 
 
 

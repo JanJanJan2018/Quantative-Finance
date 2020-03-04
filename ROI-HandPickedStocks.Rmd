@@ -1,10 +1,10 @@
 ---
 title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
-date: 'February 2020'
+date: 'February and March 2020'
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 This is a project that is for now analyzing some hand picked stock to see if a program can be written based on the analysis of how certain stocks perform from 2007-2020. It looks at cyclical patterns of highs and lows, adds in the DOW highs and lows, the unemployment highs and lows, then mean and median values of daily changes various date fields for day of the week and month. The idea is to get the best performing stocks, analyze them with subsets of the worst performing stocks, get the specific features of each stock to describe it as a profit or loss forecasted stock to invest in based on its current stats, and more. 
@@ -4446,7 +4446,7 @@ remaining36_g <- gather(remaining36, 'stockName','stockDayValue',2:37)
 ```{r}
 remaining36_g <- remaining36_g[with(remaining36_g, order(stockName, Date)),]
 
-Laalx <- subset(remaining36_g, remaining36_g$stockName=='AAL')
+Laal <- subset(remaining36_g, remaining36_g$stockName=='AAL')
 Larwr <- subset(remaining36_g, remaining36_g$stockName=='ARWR')
 Lc <- subset(remaining36_g, remaining36_g$stockName=='C')
 Lcvx <- subset(remaining36_g, remaining36_g$stockName=='CVX')
@@ -7601,6 +7601,393 @@ mxc_i <- max(countC3$c7_incr_Days)
 c_g <- grep('C', All53$stockName )
 
 All53[c_g,7:12] <- c(mdnc_d,q3c_d,mxc_d,mdnc_i,q3c_i,mxc_i)
+
+```
+
+EPD-Enterprise Products Partners:
+```{r}
+mdnepd_d <- median(countEPD2$epd7_decr_Days)
+q3epd_d <- as.numeric(as.character(summary(countEPD2$epd7_decr_Days)["3rd Qu."]))
+mxepd_d <- max(countEPD2$epd7_decr_Days)
+
+mdnepd_i <- median(countEPD3$epd7_incr_Days)
+q3epd_i <- as.numeric(as.character(summary(countEPD3$epd7_incr_Days)["3rd Qu."]))
+mxepd_i <- max(countEPD3$epd7_incr_Days)
+
+epd_g <- grep('EPD', All53$stockName )
+
+All53[epd_g,7:12] <- c(mdnepd_d,q3epd_d,mxepd_d,mdnepd_i,q3epd_i,mxepd_i)
+
+```
+
+F-Ford:
+```{r}
+mdnf_d <- median(countF2$f7_decr_Days)
+q3f_d <- as.numeric(as.character(summary(countF2$f7_decr_Days)["3rd Qu."]))
+mxf_d <- max(countF2$f7_decr_Days)
+
+mdnf_i <- median(countF3$f7_incr_Days)
+q3f_i <- as.numeric(as.character(summary(countF3$f7_incr_Days)["3rd Qu."]))
+mxf_i <- max(countF3$f7_incr_Days)
+
+f_g <- grep('F', All53$stockName )
+
+All53[f_g,7:12] <- c(mdnf_d,q3f_d,mxf_d,mdnf_i,q3f_i,mxf_i)
+
+```
+
+HRB-H&R Block:
+```{r}
+mdnhrb_d <- median(countHRB2$hrb7_decr_Days)
+q3hrb_d <- as.numeric(as.character(summary(countHRB2$hrb7_decr_Days)["3rd Qu."]))
+mxhrb_d <- max(countHRB2$hrb7_decr_Days)
+
+mdnhrb_i <- median(countHRB3$hrb7_incr_Days)
+q3hrb_i <- as.numeric(as.character(summary(countHRB3$hrb7_incr_Days)["3rd Qu."]))
+mxhrb_i <- max(countHRB3$hrb7_incr_Days)
+
+hrb_g <- grep('HRB', All53$stockName )
+
+All53[hrb_g,7:12] <- c(mdnhrb_d,q3hrb_d,mxhrb_d,mdnhrb_i,q3hrb_i,mxhrb_i)
+
+```
+
+HST-Host Hotels & Resorts:
+```{r}
+mdnhst_d <- median(countHST2$hst7_decr_Days)
+q3hst_d <- as.numeric(as.character(summary(countHST2$hst7_decr_Days)["3rd Qu."]))
+mxhst_d <- max(countHST2$hst7_decr_Days)
+
+mdnhst_i <- median(countHST3$hst7_incr_Days)
+q3hst_i <- as.numeric(as.character(summary(countHST3$hst7_incr_Days)["3rd Qu."]))
+mxhst_i <- max(countHST3$hst7_incr_Days)
+
+hst_g <- grep('HST', All53$stockName )
+
+All53[hst_g,7:12] <- c(mdnhst_d,q3hst_d,mxhst_d,mdnhst_i,q3hst_i,mxhst_i)
+
+```
+
+INO-Inovio Pharmaceuticals:
+```{r}
+mdnino_d <- median(countINO2$ino7_decr_Days)
+q3ino_d <- as.numeric(as.character(summary(countINO2$ino7_decr_Days)["3rd Qu."]))
+mxino_d <- max(countINO2$ino7_decr_Days)
+
+mdnino_i <- median(countINO3$ino7_incr_Days)
+q3ino_i <- as.numeric(as.character(summary(countINO3$ino7_incr_Days)["3rd Qu."]))
+mxino_i <- max(countINO3$ino7_incr_Days)
+
+ino_g <- grep('INO', All53$stockName )
+
+All53[ino_g,7:12] <- c(mdnino_d,q3ino_d,mxino_d,mdnino_i,q3ino_i,mxino_i)
+
+```
+
+JBLU-Jet Blue Airways:
+```{r}
+mdnjblu_d <- median(countJBLU2$jblu7_decr_Days)
+q3jblu_d <- as.numeric(as.character(summary(countJBLU2$jblu7_decr_Days)["3rd Qu."]))
+mxjblu_d <- max(countJBLU2$jblu7_decr_Days)
+
+mdnjblu_i <- median(countJBLU3$jblu7_incr_Days)
+q3jblu_i <- as.numeric(as.character(summary(countJBLU3$jblu7_incr_Days)["3rd Qu."]))
+mxjblu_i <- max(countJBLU3$jblu7_incr_Days)
+
+jblu_g <- grep('JBLU', All53$stockName )
+
+All53[jblu_g,7:12] <- c(mdnjblu_d,q3jblu_d,mxjblu_d,mdnjblu_i,q3jblu_i,mxjblu_i)
+
+```
+
+JPM-JP Morgan Chase & Co.:
+```{r}
+mdnjpm_d <- median(countJPM2$jpm7_decr_Days)
+q3jpm_d <- as.numeric(as.character(summary(countJPM2$jpm7_decr_Days)["3rd Qu."]))
+mxjpm_d <- max(countJPM2$jpm7_decr_Days)
+
+mdnjpm_i <- median(countJPM3$jpm7_incr_Days)
+q3jpm_i <- as.numeric(as.character(summary(countJPM3$jpm7_incr_Days)["3rd Qu."]))
+mxjpm_i <- max(countJPM3$jpm7_incr_Days)
+
+jpm_g <- grep('JPM', All53$stockName )
+
+All53[jpm_g,7:12] <- c(mdnjpm_d,q3jpm_d,mxjpm_d,mdnjpm_i,q3jpm_i,mxjpm_i)
+
+
+```
+
+JWN-Nordstrom:
+```{r}
+mdnjwn_d <- median(countJWN2$jwn7_decr_Days)
+q3jwn_d <- as.numeric(as.character(summary(countJWN2$jwn7_decr_Days)["3rd Qu."]))
+mxjwn_d <- max(countJWN2$jwn7_decr_Days)
+
+mdnjwn_i <- median(countJWN3$jwn7_incr_Days)
+q3jwn_i <- as.numeric(as.character(summary(countJWN3$jwn7_incr_Days)["3rd Qu."]))
+mxjwn_i <- max(countJWN3$jwn7_incr_Days)
+
+jwn_g <- grep('JWN', All53$stockName )
+
+All53[jwn_g,7:12] <- c(mdnjwn_d,q3jwn_d,mxjwn_d,mdnjwn_i,q3jwn_i,mxjwn_i)
+
+
+```
+
+KGJI-Kingold Jewelry,Inc:
+```{r}
+mdnkgji_d <- median(countKGJI2$kgji7_decr_Days)
+q3kgji_d <- as.numeric(as.character(summary(countKGJI2$kgji7_decr_Days)["3rd Qu."]))
+mxkgji_d <- max(countKGJI2$kgji7_decr_Days)
+
+mdnkgji_i <- median(countKGJI3$kgji7_incr_Days)
+q3kgji_i <- as.numeric(as.character(summary(countKGJI3$kgji7_incr_Days)["3rd Qu."]))
+mxkgji_i <- max(countKGJI3$kgji7_incr_Days)
+
+kgji_g <- grep('KGJI', All53$stockName )
+
+All53[kgji_g,7:12] <- c(mdnkgji_d,q3kgji_d,mxkgji_d,mdnkgji_i,q3kgji_i,mxkgji_i)
+
+
+```
+
+KSS-Kohls Corporation:
+```{r}
+mdnkss_d <- median(countKSS2$kss7_decr_Days)
+q3kss_d <- as.numeric(as.character(summary(countKSS2$kss7_decr_Days)["3rd Qu."]))
+mxkss_d <- max(countKSS2$kss7_decr_Days)
+
+mdnkss_i <- median(countKSS3$kss7_incr_Days)
+q3kss_i <- as.numeric(as.character(summary(countKSS3$kss7_incr_Days)["3rd Qu."]))
+mxkss_i <- max(countKSS3$kss7_incr_Days)
+
+kss_g <- grep('KSS', All53$stockName )
+
+All53[kss_g,7:12] <- c(mdnkss_d,q3kss_d,mxkss_d,mdnkss_i,q3kss_i,mxkss_i)
+
+
+```
+
+LUV-Southwest Airlines:
+```{r}
+mdnluv_d <- median(countLUV2$luv7_decr_Days)
+q3luv_d <- as.numeric(as.character(summary(countLUV2$luv7_decr_Days)["3rd Qu."]))
+mxluv_d <- max(countLUV2$luv7_decr_Days)
+
+mdnluv_i <- median(countLUV3$luv7_incr_Days)
+q3luv_i <- as.numeric(as.character(summary(countLUV3$luv7_incr_Days)["3rd Qu."]))
+mxluv_i <- max(countLUV3$luv7_incr_Days)
+
+luv_g <- grep('LUV', All53$stockName )
+
+All53[luv_g,7:12] <- c(mdnluv_d,q3luv_d,mxluv_d,mdnluv_i,q3luv_i,mxluv_i)
+
+
+```
+
+M-Macys:
+```{r}
+mdnm_d <- median(countM2$m7_decr_Days)
+q3m_d <- as.numeric(as.character(summary(countM2$m7_decr_Days)["3rd Qu."]))
+mxm_d <- max(countM2$m7_decr_Days)
+
+mdnm_i <- median(countM3$m7_incr_Days)
+q3m_i <- as.numeric(as.character(summary(countM3$m7_incr_Days)["3rd Qu."]))
+mxm_i <- max(countM3$m7_incr_Days)
+
+m_g <- grep('M', All53$stockName )
+
+All53[m_g,7:12] <- c(mdnm_d,q3m_d,mxm_d,mdnm_i,q3m_i,mxm_i)
+
+
+```
+
+NSANY-Nissan Motor Co.:
+```{r}
+mdnnsany_d <- median(countNSANY2$nsany7_decr_Days)
+q3nsany_d <- as.numeric(as.character(summary(countNSANY2$nsany7_decr_Days)["3rd Qu."]))
+mxnsany_d <- max(countNSANY2$nsany7_decr_Days)
+
+mdnnsany_i <- median(countNSANY3$nsany7_incr_Days)
+q3nsany_i <- as.numeric(as.character(summary(countNSANY3$nsany7_incr_Days)["3rd Qu."]))
+mxnsany_i <- max(countNSANY3$nsany7_incr_Days)
+
+nsany_g <- grep('NSANY', All53$stockName )
+
+All53[nsany_g,7:12] <- c(mdnnsany_d,q3nsany_d,mxnsany_d,mdnnsany_i,q3nsany_i,mxnsany_i)
+
+
+```
+
+NUS-Nu Skin Enterprises:
+```{r}
+mdnnus_d <- median(countNUS2$nus7_decr_Days)
+q3nus_d <- as.numeric(as.character(summary(countNUS2$nus7_decr_Days)["3rd Qu."]))
+mxnus_d <- max(countNUS2$nus7_decr_Days)
+
+mdnnus_i <- median(countNUS3$nus7_incr_Days)
+q3nus_i <- as.numeric(as.character(summary(countNUS3$nus7_incr_Days)["3rd Qu."]))
+mxnus_i <- max(countNUS3$nus7_incr_Days)
+
+nus_g <- grep('NUS', All53$stockName )
+
+All53[nus_g,7:12] <- c(mdnnus_d,q3nus_d,mxnus_d,mdnnus_i,q3nus_i,mxnus_i)
+
+
+```
+
+RRGB-Red Robin Gourmet Burgers:
+```{r}
+mdnrrgb_d <- median(countRRGB2$rrgb7_decr_Days)
+q3rrgb_d <- as.numeric(as.character(summary(countRRGB2$rrgb7_decr_Days)["3rd Qu."]))
+mxrrgb_d <- max(countRRGB2$rrgb7_decr_Days)
+
+mdnrrgb_i <- median(countRRGB3$rrgb7_incr_Days)
+q3rrgb_i <- as.numeric(as.character(summary(countRRGB3$rrgb7_incr_Days)["3rd Qu."]))
+mxrrgb_i <- max(countRRGB3$rrgb7_incr_Days)
+
+rrgb_g <- grep('RRGB', All53$stockName )
+
+All53[rrgb_g,7:12] <- c(mdnrrgb_d,q3rrgb_d,mxrrgb_d,mdnrrgb_i,q3rrgb_i,mxrrgb_i)
+
+
+```
+
+S-Sprint Corporation:
+```{r}
+mdns_d <- median(countS2$s7_decr_Days)
+q3s_d <- as.numeric(as.character(summary(countS2$s7_decr_Days)["3rd Qu."]))
+mxs_d <- max(countS2$s7_decr_Days)
+
+mdns_i <- median(countS3$s7_incr_Days)
+q3s_i <- as.numeric(as.character(summary(countS3$s7_incr_Days)["3rd Qu."]))
+mxs_i <- max(countS3$s7_incr_Days)
+
+s_g <- grep('S', All53$stockName )
+
+All53[s_g,7:12] <- c(mdns_d,q3s_d,mxs_d,mdns_i,q3s_i,mxs_i)
+
+
+```
+
+T-AT&T Inc:
+```{r}
+mdnt_d <- median(countT2$t7_decr_Days)
+q3t_d <- as.numeric(as.character(summary(countT2$t7_decr_Days)["3rd Qu."]))
+mxt_d <- max(countT2$t7_decr_Days)
+
+mdnt_i <- median(countT3$t7_incr_Days)
+q3t_i <- as.numeric(as.character(summary(countT3$t7_incr_Days)["3rd Qu."]))
+mxt_i <- max(countT3$t7_incr_Days)
+
+t_g <- grep('T', All53$stockName )
+
+All53[t_g,7:12] <- c(mdnt_d,q3t_d,mxt_d,mdnt_i,q3t_i,mxt_i)
+
+
+```
+
+VZ-Verizon:
+```{r}
+mdnvz_d <- median(countVZ2$vz7_decr_Days)
+q3vz_d <- as.numeric(as.character(summary(countVZ2$vz7_decr_Days)["3rd Qu."]))
+mxvz_d <- max(countVZ2$vz7_decr_Days)
+
+mdnvz_i <- median(countVZ3$vz7_incr_Days)
+q3vz_i <- as.numeric(as.character(summary(countVZ3$vz7_incr_Days)["3rd Qu."]))
+mxvz_i <- max(countVZ3$vz7_incr_Days)
+
+vz_g <- grep('VZ', All53$stockName )
+
+All53[vz_g,7:12] <- c(mdnvz_d,q3vz_d,mxvz_d,mdnvz_i,q3vz_i,mxvz_i)
+
+
+```
+
+WWE-World Wrestling Entertainment:
+```{r}
+mdnwwe_d <- median(countWWE2$wwe7_decr_Days)
+q3wwe_d <- as.numeric(as.character(summary(countWWE2$wwe7_decr_Days)["3rd Qu."]))
+mxwwe_d <- max(countWWE2$wwe7_decr_Days)
+
+mdnwwe_i <- median(countWWE3$wwe7_incr_Days)
+q3wwe_i <- as.numeric(as.character(summary(countWWE3$wwe7_incr_Days)["3rd Qu."]))
+mxwwe_i <- max(countWWE3$wwe7_incr_Days)
+
+wwe_g <- grep('WWE', All53$stockName )
+
+All53[wwe_g,7:12] <- c(mdnwwe_d,q3wwe_d,mxwwe_d,mdnwwe_i,q3wwe_i,mxwwe_i)
+
+```
+
+***
+
+Now, lets look at the columns to see they are the right data types.
+```{r}
+str(All53)
+
+```
+
+We need to change the stat columns in the All53 table from char to numeric. So lets do that.
+```{r}
+All53$medn_cSum_decr_L7 <- as.numeric(All53$medn_cSum_decr_L7)
+All53$Q3_cSum_decr_L7 <- as.numeric(All53$Q3_cSum_decr_L7)
+All53$max_cSum_decr_L7 <- as.numeric(All53$max_cSum_decr_L7)
+All53$medn_cSum_incr_L7 <- as.numeric(All53$medn_cSum_incr_L7)
+All53$Q3_cSum_incr_L7 <- as.numeric(All53$Q3_cSum_incr_L7)
+All53$max_cSum_incr_L7 <- as.numeric(All53$max_cSum_incr_L7)
+
+str(All53)
+```
+
+Lets also add the name of the stock to the stock name. We will also make a table of the total stocks in the hand picked portfolio of 65 that had many missing observations in the yahoo finance grab of stock information from 2007-2020 to start with.
+```{r}
+names53 <- stockNames[,1:2]
+names53$stock <- gsub('.PB','', names53$stock)
+names53$stock <- as.factor(names53$stock)
+
+ALL53 <- merge(names53, All53, by.x='stock', by.y='stockName')
+ALL65 <- merge(names53, All53, by.x='stock', by.y='stockName', all.x=TRUE)
+
+ALL65 <- ALL65[order(ALL65$medn_cSum_decr_L7, na.last=TRUE),]
+na12stocks <- ALL65[54:65,]
+```
+
+Before we write these to file, lets also categorize these stocks by type of stock. Such as cell phone, airlines, restaurants, etc. To get a category measure of each stock stats within their category or business category.
+```{r}
+businessType <- as.data.frame(c('airTravel','autoParts','athleticShoes','cloudComputing',
+                  'genotypePharmaceuticals',
+                  'bank','retail','fuel','discountRetail','fuel','automotive','bank',
+                  'communications','cloudComputing','homeRepair','automotive',
+                  'furniture','taxService', 'hotelTravel','immunoPharmaceuticals', 'airTravel',
+                  'healthCarePharmaceuticals', 'bank','retail', 'jewelry', 
+                  'retail', 'airTravel', 'retail',
+                  'hotelTravel', 'CloudComputing', 'subsriptionEntertainment', 'athleticShoes',
+                  'automotive','beautyProducts','cancerPharmaceuticals', 'energyUtility',
+                  'discountRetail','restaurant','mobileCommunications','energyUtility',
+                  'jewelry', 'communications','genericPharmaceuticals','retail','discountRetail',
+                  'automotive','bank','mobileCommunications', 'bank','wasteUtility',
+                  'discountRetail', 'sportsEntertainment','fuel'))
+colnames(businessType) <- 'businessType'
+
+businessType2 <- as.data.frame(c('movieEntertainment','athleticShoes','movieEntertainment',
+                                 'automotive','automotive','immunoPharmaceuticals',
+                                 'couponDeals','cancerPharmaceuticals',
+                                 'fastFoodRestaurant','dentalBioTech','mobileCommunications',
+                                 'businessSocialMedia'))
+colnames(businessType2) <- 'businessType'
+other12 <- cbind(businessType2,na12stocks)
+other12 <- other12[,c(2,3,1,4:14)]
+```
+
+```{r}
+ALL_53 <- cbind(businessType,ALL53)
+ALL_53 <- ALL_53[,c(2,3,1,4:14)]
+
+ALL_65 <- rbind(ALL_53,other12)
+
+write.csv(ALL_53, 'ALL_53.csv', row.names=FALSE)
+write.csv(ALL_65, 'ALL_65.csv', row.names=FALSE)
 
 ```
 
