@@ -4446,7 +4446,7 @@ remaining36_g <- gather(remaining36, 'stockName','stockDayValue',2:37)
 ```{r}
 remaining36_g <- remaining36_g[with(remaining36_g, order(stockName, Date)),]
 
-Laal <- subset(remaining36_g, remaining36_g$stockName=='AAL')
+Laalx <- subset(remaining36_g, remaining36_g$stockName=='AAL')
 Larwr <- subset(remaining36_g, remaining36_g$stockName=='ARWR')
 Lc <- subset(remaining36_g, remaining36_g$stockName=='C')
 Lcvx <- subset(remaining36_g, remaining36_g$stockName=='CVX')
@@ -4532,6 +4532,7 @@ remaining36_g$today2lag7 <- remaining36_g$lag7/remaining36_g$stockDayValue
 
 ```
 
+***
 
 ```{r}
 AAL <- subset(remaining36_g, remaining36_g$stockName=='AAL')
@@ -4562,6 +4563,7 @@ countAAL <- countAAL[,-2]
 #this is a set of only those days decreasing at least one day in the lag 7 comparison
 countAAL2 <- subset(countAAL, countAAL$aal7_decr_Days>0)
 summary(countAAL2$aal7_decr_Days)
+
 
 # this table shows how many sets of cumulative days decreasing there were in lag 7
 aal7_decr_Days_grouped <- countAAL2 %>% group_by(aal7_decr_Days) %>% count(n=n())
@@ -4610,26 +4612,2995 @@ aal7_incr_Days_grouped
 median(aal7_incr_Days_grouped$aal7_incr_Days)
 ```
 
+
+***
+
+
+
 ```{r}
+ARWR <- subset(remaining36_g, remaining36_g$stockName=='ARWR')
+
+ARWR <- ARWR[complete.cases(ARWR),]
+
+arwr7_a <- ifelse(ARWR$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for arwr7 <- <- ifelse(ARWR$today2lag7>1, 1,0)
+arwr7_ab <- cumsum(arwr7_a)
+
+arwr7_abc <- as.data.frame(as.factor(arwr7_ab))
+colnames(arwr7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countARWR <- arwr7_abc %>% group_by(cSum) %>% count(n=n())
+countARWR <- as.data.frame(countARWR)
+countARWR <- countARWR[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countARWR$arwr7_decr_Days <- countARWR$n-1
+countARWR <- countARWR[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countARWR2 <- subset(countARWR, countARWR$arwr7_decr_Days>0)
+summary(countARWR2$arwr7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+arwr7_decr_Days_grouped <- countARWR2 %>% group_by(arwr7_decr_Days) %>% count(n=n())
+arwr7_decr_Days_grouped <- arwr7_decr_Days_grouped[,-3]
+```
+
+```{r}
+arwr7_decr_Days_grouped
+```
+
+```{r}
+
+median(arwr7_decr_Days_grouped$arwr7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+arwr7_b1 <- ifelse(ARWR$today2lag7>1, 0,1)
+
+
+arwr7_b2 <- cumsum(arwr7_b1)
+
+arwr7_b3 <- as.data.frame(as.factor(arwr7_b2))
+colnames(arwr7_b3) <- 'cSum'
+
+countARWR1 <- arwr7_b3 %>% group_by(cSum) %>% count(n=n())
+countARWR1 <- as.data.frame(countARWR1)
+countARWR1 <- countARWR1[,-3]
+
+countARWR1$arwr7_incr_Days <- countARWR1$n-1
+countARWR1 <- countARWR1[,-2]
+
+countARWR3 <- subset(countARWR1, countARWR1$arwr7_incr_Days>0)
+summary(countARWR3$arwr7_incr_Days)
+
+arwr7_incr_Days_grouped <- countARWR3 %>% group_by(arwr7_incr_Days) %>% count(n=n())
+arwr7_incr_Days_grouped <- arwr7_incr_Days_grouped[,-3]
+```
+
+```{r}
+arwr7_incr_Days_grouped
+```
+
+```{r}
+median(arwr7_incr_Days_grouped$arwr7_incr_Days)
+```
+
+
+***
+ 
+```{r}
+C <- subset(remaining36_g, remaining36_g$stockName=='C')
+
+C <- C[complete.cases(C),]
+
+c7_a <- ifelse(C$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for c7 <- <- ifelse(C$today2lag7>1, 1,0)
+c7_ab <- cumsum(c7_a)
+
+c7_abc <- as.data.frame(as.factor(c7_ab))
+colnames(c7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countC <- c7_abc %>% group_by(cSum) %>% count(n=n())
+countC <- as.data.frame(countC)
+countC <- countC[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countC$c7_decr_Days <- countC$n-1
+countC <- countC[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countC2 <- subset(countC, countC$c7_decr_Days>0)
+summary(countC2$c7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+c7_decr_Days_grouped <- countC2 %>% group_by(c7_decr_Days) %>% count(n=n())
+c7_decr_Days_grouped <- c7_decr_Days_grouped[,-3]
+```
+
+```{r}
+c7_decr_Days_grouped
+```
+
+```{r}
+
+median(c7_decr_Days_grouped$c7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+c7_b1 <- ifelse(C$today2lag7>1, 0,1)
+
+
+c7_b2 <- cumsum(c7_b1)
+
+c7_b3 <- as.data.frame(as.factor(c7_b2))
+colnames(c7_b3) <- 'cSum'
+
+countC1 <- c7_b3 %>% group_by(cSum) %>% count(n=n())
+countC1 <- as.data.frame(countC1)
+countC1 <- countC1[,-3]
+
+countC1$c7_incr_Days <- countC1$n-1
+countC1 <- countC1[,-2]
+
+countC3 <- subset(countC1, countC1$c7_incr_Days>0)
+summary(countC3$c7_incr_Days)
+
+c7_incr_Days_grouped <- countC3 %>% group_by(c7_incr_Days) %>% count(n=n())
+c7_incr_Days_grouped <- c7_incr_Days_grouped[,-3]
+```
+
+```{r}
+c7_incr_Days_grouped
+```
+
+```{r}
+median(c7_incr_Days_grouped$c7_incr_Days)
+```
+ 
+***
+
+```{r}
+CVX <- subset(remaining36_g, remaining36_g$stockName=='CVX')
+
+CVX <- CVX[complete.cases(CVX),]
+
+cvx7_a <- ifelse(CVX$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for cvx7 <- <- ifelse(CVX$today2lag7>1, 1,0)
+cvx7_ab <- cumsum(cvx7_a)
+
+cvx7_abc <- as.data.frame(as.factor(cvx7_ab))
+colnames(cvx7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countCVX <- cvx7_abc %>% group_by(cSum) %>% count(n=n())
+countCVX <- as.data.frame(countCVX)
+countCVX <- countCVX[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countCVX$cvx7_decr_Days <- countCVX$n-1
+countCVX <- countCVX[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countCVX2 <- subset(countCVX, countCVX$cvx7_decr_Days>0)
+summary(countCVX2$cvx7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+cvx7_decr_Days_grouped <- countCVX2 %>% group_by(cvx7_decr_Days) %>% count(n=n())
+cvx7_decr_Days_grouped <- cvx7_decr_Days_grouped[,-3]
+```
+
+```{r}
+cvx7_decr_Days_grouped
+```
+
+```{r}
+
+median(cvx7_decr_Days_grouped$cvx7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+cvx7_b1 <- ifelse(CVX$today2lag7>1, 0,1)
+
+
+cvx7_b2 <- cumsum(cvx7_b1)
+
+cvx7_b3 <- as.data.frame(as.factor(cvx7_b2))
+colnames(cvx7_b3) <- 'cSum'
+
+countCVX1 <- cvx7_b3 %>% group_by(cSum) %>% count(n=n())
+countCVX1 <- as.data.frame(countCVX1)
+countCVX1 <- countCVX1[,-3]
+
+countCVX1$cvx7_incr_Days <- countCVX1$n-1
+countCVX1 <- countCVX1[,-2]
+
+countCVX3 <- subset(countCVX1, countCVX1$cvx7_incr_Days>0)
+summary(countCVX3$cvx7_incr_Days)
+
+cvx7_incr_Days_grouped <- countCVX3 %>% group_by(cvx7_incr_Days) %>% count(n=n())
+cvx7_incr_Days_grouped <- cvx7_incr_Days_grouped[,-3]
+```
+
+```{r}
+cvx7_incr_Days_grouped
+```
+
+```{r}
+median(cvx7_incr_Days_grouped$cvx7_incr_Days)
+```
+
+***
+
+
+```{r}
+EPD <- subset(remaining36_g, remaining36_g$stockName=='EPD')
+
+EPD <- EPD[complete.cases(EPD),]
+
+epd7_a <- ifelse(EPD$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for epd7 <- <- ifelse(EPD$today2lag7>1, 1,0)
+epd7_ab <- cumsum(epd7_a)
+
+epd7_abc <- as.data.frame(as.factor(epd7_ab))
+colnames(epd7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countEPD <- epd7_abc %>% group_by(cSum) %>% count(n=n())
+countEPD <- as.data.frame(countEPD)
+countEPD <- countEPD[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countEPD$epd7_decr_Days <- countEPD$n-1
+countEPD <- countEPD[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countEPD2 <- subset(countEPD, countEPD$epd7_decr_Days>0)
+summary(countEPD2$epd7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+epd7_decr_Days_grouped <- countEPD2 %>% group_by(epd7_decr_Days) %>% count(n=n())
+epd7_decr_Days_grouped <- epd7_decr_Days_grouped[,-3]
+```
+
+```{r}
+epd7_decr_Days_grouped
+```
+
+```{r}
+
+median(epd7_decr_Days_grouped$epd7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+epd7_b1 <- ifelse(EPD$today2lag7>1, 0,1)
+
+
+epd7_b2 <- cumsum(epd7_b1)
+
+epd7_b3 <- as.data.frame(as.factor(epd7_b2))
+colnames(epd7_b3) <- 'cSum'
+
+countEPD1 <- epd7_b3 %>% group_by(cSum) %>% count(n=n())
+countEPD1 <- as.data.frame(countEPD1)
+countEPD1 <- countEPD1[,-3]
+
+countEPD1$epd7_incr_Days <- countEPD1$n-1
+countEPD1 <- countEPD1[,-2]
+
+countEPD3 <- subset(countEPD1, countEPD1$epd7_incr_Days>0)
+summary(countEPD3$epd7_incr_Days)
+
+epd7_incr_Days_grouped <- countEPD3 %>% group_by(epd7_incr_Days) %>% count(n=n())
+epd7_incr_Days_grouped <- epd7_incr_Days_grouped[,-3]
+```
+
+```{r}
+epd7_incr_Days_grouped
+```
+
+```{r}
+median(epd7_incr_Days_grouped$epd7_incr_Days)
+```
+
+
+***
+
+
+```{r}
+F <- subset(remaining36_g, remaining36_g$stockName=='F')
+
+F <- F[complete.cases(F),]
+
+f7_a <- ifelse(F$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for f7 <- <- ifelse(F$today2lag7>1, 1,0)
+f7_ab <- cumsum(f7_a)
+
+f7_abc <- as.data.frame(as.factor(f7_ab))
+colnames(f7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countF <- f7_abc %>% group_by(cSum) %>% count(n=n())
+countF <- as.data.frame(countF)
+countF <- countF[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countF$f7_decr_Days <- countF$n-1
+countF <- countF[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countF2 <- subset(countF, countF$f7_decr_Days>0)
+summary(countF2$f7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+f7_decr_Days_grouped <- countF2 %>% group_by(f7_decr_Days) %>% count(n=n())
+f7_decr_Days_grouped <- f7_decr_Days_grouped[,-3]
+```
+
+```{r}
+f7_decr_Days_grouped
+```
+
+```{r}
+
+median(f7_decr_Days_grouped$f7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+f7_b1 <- ifelse(F$today2lag7>1, 0,1)
+
+
+f7_b2 <- cumsum(f7_b1)
+
+f7_b3 <- as.data.frame(as.factor(f7_b2))
+colnames(f7_b3) <- 'cSum'
+
+countF1 <- f7_b3 %>% group_by(cSum) %>% count(n=n())
+countF1 <- as.data.frame(countF1)
+countF1 <- countF1[,-3]
+
+countF1$f7_incr_Days <- countF1$n-1
+countF1 <- countF1[,-2]
+
+countF3 <- subset(countF1, countF1$f7_incr_Days>0)
+summary(countF3$f7_incr_Days)
+
+f7_incr_Days_grouped <- countF3 %>% group_by(f7_incr_Days) %>% count(n=n())
+f7_incr_Days_grouped <- f7_incr_Days_grouped[,-3]
+```
+
+```{r}
+f7_incr_Days_grouped
+```
+
+```{r}
+median(f7_incr_Days_grouped$f7_incr_Days)
+```
+
+
+***
+
+
+```{r}
+FTR <- subset(remaining36_g, remaining36_g$stockName=='FTR')
+
+FTR <- FTR[complete.cases(FTR),]
+
+ftr7_a <- ifelse(FTR$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for ftr7 <- <- ifelse(FTR$today2lag7>1, 1,0)
+ftr7_ab <- cumsum(ftr7_a)
+
+ftr7_abc <- as.data.frame(as.factor(ftr7_ab))
+colnames(ftr7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countFTR <- ftr7_abc %>% group_by(cSum) %>% count(n=n())
+countFTR <- as.data.frame(countFTR)
+countFTR <- countFTR[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countFTR$ftr7_decr_Days <- countFTR$n-1
+countFTR <- countFTR[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countFTR2 <- subset(countFTR, countFTR$ftr7_decr_Days>0)
+summary(countFTR2$ftr7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+ftr7_decr_Days_grouped <- countFTR2 %>% group_by(ftr7_decr_Days) %>% count(n=n())
+ftr7_decr_Days_grouped <- ftr7_decr_Days_grouped[,-3]
+```
+
+```{r}
+ftr7_decr_Days_grouped
+```
+
+```{r}
+
+median(ftr7_decr_Days_grouped$ftr7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+ftr7_b1 <- ifelse(FTR$today2lag7>1, 0,1)
+
+
+ftr7_b2 <- cumsum(ftr7_b1)
+
+ftr7_b3 <- as.data.frame(as.factor(ftr7_b2))
+colnames(ftr7_b3) <- 'cSum'
+
+countFTR1 <- ftr7_b3 %>% group_by(cSum) %>% count(n=n())
+countFTR1 <- as.data.frame(countFTR1)
+countFTR1 <- countFTR1[,-3]
+
+countFTR1$ftr7_incr_Days <- countFTR1$n-1
+countFTR1 <- countFTR1[,-2]
+
+countFTR3 <- subset(countFTR1, countFTR1$ftr7_incr_Days>0)
+summary(countFTR3$ftr7_incr_Days)
+
+ftr7_incr_Days_grouped <- countFTR3 %>% group_by(ftr7_incr_Days) %>% count(n=n())
+ftr7_incr_Days_grouped <- ftr7_incr_Days_grouped[,-3]
+```
+
+```{r}
+ftr7_incr_Days_grouped
+```
+
+```{r}
+median(ftr7_incr_Days_grouped$ftr7_incr_Days)
+```
+
+
+***
+
+```{r}
+HMC <- subset(remaining36_g, remaining36_g$stockName=='HMC')
+
+HMC <- HMC[complete.cases(HMC),]
+
+hmc7_a <- ifelse(HMC$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for hmc7 <- <- ifelse(HMC$today2lag7>1, 1,0)
+hmc7_ab <- cumsum(hmc7_a)
+
+hmc7_abc <- as.data.frame(as.factor(hmc7_ab))
+colnames(hmc7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countHMC <- hmc7_abc %>% group_by(cSum) %>% count(n=n())
+countHMC <- as.data.frame(countHMC)
+countHMC <- countHMC[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countHMC$hmc7_decr_Days <- countHMC$n-1
+countHMC <- countHMC[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countHMC2 <- subset(countHMC, countHMC$hmc7_decr_Days>0)
+summary(countHMC2$hmc7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+hmc7_decr_Days_grouped <- countHMC2 %>% group_by(hmc7_decr_Days) %>% count(n=n())
+hmc7_decr_Days_grouped <- hmc7_decr_Days_grouped[,-3]
+```
+
+```{r}
+hmc7_decr_Days_grouped
+```
+
+```{r}
+
+median(hmc7_decr_Days_grouped$hmc7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+hmc7_b1 <- ifelse(HMC$today2lag7>1, 0,1)
+
+
+hmc7_b2 <- cumsum(hmc7_b1)
+
+hmc7_b3 <- as.data.frame(as.factor(hmc7_b2))
+colnames(hmc7_b3) <- 'cSum'
+
+countHMC1 <- hmc7_b3 %>% group_by(cSum) %>% count(n=n())
+countHMC1 <- as.data.frame(countHMC1)
+countHMC1 <- countHMC1[,-3]
+
+countHMC1$hmc7_incr_Days <- countHMC1$n-1
+countHMC1 <- countHMC1[,-2]
+
+countHMC3 <- subset(countHMC1, countHMC1$hmc7_incr_Days>0)
+summary(countHMC3$hmc7_incr_Days)
+
+hmc7_incr_Days_grouped <- countHMC3 %>% group_by(hmc7_incr_Days) %>% count(n=n())
+hmc7_incr_Days_grouped <- hmc7_incr_Days_grouped[,-3]
+```
+
+```{r}
+hmc7_incr_Days_grouped
+```
+
+```{r}
+median(hmc7_incr_Days_grouped$hmc7_incr_Days)
+```
+
+***
+
+
+```{r}
+HOFT <- subset(remaining36_g, remaining36_g$stockName=='HOFT')
+
+HOFT <- HOFT[complete.cases(HOFT),]
+
+hoft7_a <- ifelse(HOFT$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for hoft7 <- <- ifelse(HOFT$today2lag7>1, 1,0)
+hoft7_ab <- cumsum(hoft7_a)
+
+hoft7_abc <- as.data.frame(as.factor(hoft7_ab))
+colnames(hoft7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countHOFT <- hoft7_abc %>% group_by(cSum) %>% count(n=n())
+countHOFT <- as.data.frame(countHOFT)
+countHOFT <- countHOFT[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countHOFT$hoft7_decr_Days <- countHOFT$n-1
+countHOFT <- countHOFT[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countHOFT2 <- subset(countHOFT, countHOFT$hoft7_decr_Days>0)
+summary(countHOFT2$hoft7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+hoft7_decr_Days_grouped <- countHOFT2 %>% group_by(hoft7_decr_Days) %>% count(n=n())
+hoft7_decr_Days_grouped <- hoft7_decr_Days_grouped[,-3]
+```
+
+```{r}
+hoft7_decr_Days_grouped
+```
+
+```{r}
+
+median(hoft7_decr_Days_grouped$hoft7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+hoft7_b1 <- ifelse(HOFT$today2lag7>1, 0,1)
+
+
+hoft7_b2 <- cumsum(hoft7_b1)
+
+hoft7_b3 <- as.data.frame(as.factor(hoft7_b2))
+colnames(hoft7_b3) <- 'cSum'
+
+countHOFT1 <- hoft7_b3 %>% group_by(cSum) %>% count(n=n())
+countHOFT1 <- as.data.frame(countHOFT1)
+countHOFT1 <- countHOFT1[,-3]
+
+countHOFT1$hoft7_incr_Days <- countHOFT1$n-1
+countHOFT1 <- countHOFT1[,-2]
+
+countHOFT3 <- subset(countHOFT1, countHOFT1$hoft7_incr_Days>0)
+summary(countHOFT3$hoft7_incr_Days)
+
+hoft7_incr_Days_grouped <- countHOFT3 %>% group_by(hoft7_incr_Days) %>% count(n=n())
+hoft7_incr_Days_grouped <- hoft7_incr_Days_grouped[,-3]
+```
+
+```{r}
+hoft7_incr_Days_grouped
+```
+
+```{r}
+median(hoft7_incr_Days_grouped$hoft7_incr_Days)
+```
+
+***
+
+
+```{r}
+HRB <- subset(remaining36_g, remaining36_g$stockName=='HRB')
+
+HRB <- HRB[complete.cases(HRB),]
+
+hrb7_a <- ifelse(HRB$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for hrb7 <- <- ifelse(HRB$today2lag7>1, 1,0)
+hrb7_ab <- cumsum(hrb7_a)
+
+hrb7_abc <- as.data.frame(as.factor(hrb7_ab))
+colnames(hrb7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countHRB <- hrb7_abc %>% group_by(cSum) %>% count(n=n())
+countHRB <- as.data.frame(countHRB)
+countHRB <- countHRB[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countHRB$hrb7_decr_Days <- countHRB$n-1
+countHRB <- countHRB[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countHRB2 <- subset(countHRB, countHRB$hrb7_decr_Days>0)
+summary(countHRB2$hrb7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+hrb7_decr_Days_grouped <- countHRB2 %>% group_by(hrb7_decr_Days) %>% count(n=n())
+hrb7_decr_Days_grouped <- hrb7_decr_Days_grouped[,-3]
+```
+
+```{r}
+hrb7_decr_Days_grouped
+```
+
+```{r}
+
+median(hrb7_decr_Days_grouped$hrb7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+hrb7_b1 <- ifelse(HRB$today2lag7>1, 0,1)
+
+
+hrb7_b2 <- cumsum(hrb7_b1)
+
+hrb7_b3 <- as.data.frame(as.factor(hrb7_b2))
+colnames(hrb7_b3) <- 'cSum'
+
+countHRB1 <- hrb7_b3 %>% group_by(cSum) %>% count(n=n())
+countHRB1 <- as.data.frame(countHRB1)
+countHRB1 <- countHRB1[,-3]
+
+countHRB1$hrb7_incr_Days <- countHRB1$n-1
+countHRB1 <- countHRB1[,-2]
+
+countHRB3 <- subset(countHRB1, countHRB1$hrb7_incr_Days>0)
+summary(countHRB3$hrb7_incr_Days)
+
+hrb7_incr_Days_grouped <- countHRB3 %>% group_by(hrb7_incr_Days) %>% count(n=n())
+hrb7_incr_Days_grouped <- hrb7_incr_Days_grouped[,-3]
+```
+
+```{r}
+hrb7_incr_Days_grouped
+```
+
+```{r}
+median(hrb7_incr_Days_grouped$hrb7_incr_Days)
+```
+
+
+***
+
+```{r}
+HST <- subset(remaining36_g, remaining36_g$stockName=='HST')
+
+HST <- HST[complete.cases(HST),]
+
+hst7_a <- ifelse(HST$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for hst7 <- <- ifelse(HST$today2lag7>1, 1,0)
+hst7_ab <- cumsum(hst7_a)
+
+hst7_abc <- as.data.frame(as.factor(hst7_ab))
+colnames(hst7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countHST <- hst7_abc %>% group_by(cSum) %>% count(n=n())
+countHST <- as.data.frame(countHST)
+countHST <- countHST[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countHST$hst7_decr_Days <- countHST$n-1
+countHST <- countHST[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countHST2 <- subset(countHST, countHST$hst7_decr_Days>0)
+summary(countHST2$hst7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+hst7_decr_Days_grouped <- countHST2 %>% group_by(hst7_decr_Days) %>% count(n=n())
+hst7_decr_Days_grouped <- hst7_decr_Days_grouped[,-3]
+```
+
+```{r}
+hst7_decr_Days_grouped
+```
+
+```{r}
+
+median(hst7_decr_Days_grouped$hst7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+hst7_b1 <- ifelse(HST$today2lag7>1, 0,1)
+
+
+hst7_b2 <- cumsum(hst7_b1)
+
+hst7_b3 <- as.data.frame(as.factor(hst7_b2))
+colnames(hst7_b3) <- 'cSum'
+
+countHST1 <- hst7_b3 %>% group_by(cSum) %>% count(n=n())
+countHST1 <- as.data.frame(countHST1)
+countHST1 <- countHST1[,-3]
+
+countHST1$hst7_incr_Days <- countHST1$n-1
+countHST1 <- countHST1[,-2]
+
+countHST3 <- subset(countHST1, countHST1$hst7_incr_Days>0)
+summary(countHST3$hst7_incr_Days)
+
+hst7_incr_Days_grouped <- countHST3 %>% group_by(hst7_incr_Days) %>% count(n=n())
+hst7_incr_Days_grouped <- hst7_incr_Days_grouped[,-3]
+```
+
+```{r}
+hst7_incr_Days_grouped
+```
+
+```{r}
+median(hst7_incr_Days_grouped$hst7_incr_Days)
+```
+
+***
+
+
+```{r}
+INO <- subset(remaining36_g, remaining36_g$stockName=='INO')
+
+INO <- INO[complete.cases(INO),]
+
+ino7_a <- ifelse(INO$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for ino7 <- <- ifelse(INO$today2lag7>1, 1,0)
+ino7_ab <- cumsum(ino7_a)
+
+ino7_abc <- as.data.frame(as.factor(ino7_ab))
+colnames(ino7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countINO <- ino7_abc %>% group_by(cSum) %>% count(n=n())
+countINO <- as.data.frame(countINO)
+countINO <- countINO[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countINO$ino7_decr_Days <- countINO$n-1
+countINO <- countINO[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countINO2 <- subset(countINO, countINO$ino7_decr_Days>0)
+summary(countINO2$ino7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+ino7_decr_Days_grouped <- countINO2 %>% group_by(ino7_decr_Days) %>% count(n=n())
+ino7_decr_Days_grouped <- ino7_decr_Days_grouped[,-3]
+```
+
+```{r}
+ino7_decr_Days_grouped
+```
+
+```{r}
+
+median(ino7_decr_Days_grouped$ino7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+ino7_b1 <- ifelse(INO$today2lag7>1, 0,1)
+
+
+ino7_b2 <- cumsum(ino7_b1)
+
+ino7_b3 <- as.data.frame(as.factor(ino7_b2))
+colnames(ino7_b3) <- 'cSum'
+
+countINO1 <- ino7_b3 %>% group_by(cSum) %>% count(n=n())
+countINO1 <- as.data.frame(countINO1)
+countINO1 <- countINO1[,-3]
+
+countINO1$ino7_incr_Days <- countINO1$n-1
+countINO1 <- countINO1[,-2]
+
+countINO3 <- subset(countINO1, countINO1$ino7_incr_Days>0)
+summary(countINO3$ino7_incr_Days)
+
+ino7_incr_Days_grouped <- countINO3 %>% group_by(ino7_incr_Days) %>% count(n=n())
+ino7_incr_Days_grouped <- ino7_incr_Days_grouped[,-3]
+```
+
+```{r}
+ino7_incr_Days_grouped
+```
+
+```{r}
+median(ino7_incr_Days_grouped$ino7_incr_Days)
+```
+
+***
+
+```{r}
+JBLU <- subset(remaining36_g, remaining36_g$stockName=='JBLU')
+
+JBLU <- JBLU[complete.cases(JBLU),]
+
+jblu7_a <- ifelse(JBLU$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for jblu7 <- <- ifelse(JBLU$today2lag7>1, 1,0)
+jblu7_ab <- cumsum(jblu7_a)
+
+jblu7_abc <- as.data.frame(as.factor(jblu7_ab))
+colnames(jblu7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countJBLU <- jblu7_abc %>% group_by(cSum) %>% count(n=n())
+countJBLU <- as.data.frame(countJBLU)
+countJBLU <- countJBLU[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countJBLU$jblu7_decr_Days <- countJBLU$n-1
+countJBLU <- countJBLU[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countJBLU2 <- subset(countJBLU, countJBLU$jblu7_decr_Days>0)
+summary(countJBLU2$jblu7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+jblu7_decr_Days_grouped <- countJBLU2 %>% group_by(jblu7_decr_Days) %>% count(n=n())
+jblu7_decr_Days_grouped <- jblu7_decr_Days_grouped[,-3]
+```
+
+```{r}
+jblu7_decr_Days_grouped
+```
+
+```{r}
+
+median(jblu7_decr_Days_grouped$jblu7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+jblu7_b1 <- ifelse(JBLU$today2lag7>1, 0,1)
+
+
+jblu7_b2 <- cumsum(jblu7_b1)
+
+jblu7_b3 <- as.data.frame(as.factor(jblu7_b2))
+colnames(jblu7_b3) <- 'cSum'
+
+countJBLU1 <- jblu7_b3 %>% group_by(cSum) %>% count(n=n())
+countJBLU1 <- as.data.frame(countJBLU1)
+countJBLU1 <- countJBLU1[,-3]
+
+countJBLU1$jblu7_incr_Days <- countJBLU1$n-1
+countJBLU1 <- countJBLU1[,-2]
+
+countJBLU3 <- subset(countJBLU1, countJBLU1$jblu7_incr_Days>0)
+summary(countJBLU3$jblu7_incr_Days)
+
+jblu7_incr_Days_grouped <- countJBLU3 %>% group_by(jblu7_incr_Days) %>% count(n=n())
+jblu7_incr_Days_grouped <- jblu7_incr_Days_grouped[,-3]
+```
+
+```{r}
+jblu7_incr_Days_grouped
+```
+
+```{r}
+median(jblu7_incr_Days_grouped$jblu7_incr_Days)
+```
+
+***
+
+```{r}
+JPM <- subset(remaining36_g, remaining36_g$stockName=='JPM')
+
+JPM <- JPM[complete.cases(JPM),]
+
+jpm7_a <- ifelse(JPM$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for jpm7 <- <- ifelse(JPM$today2lag7>1, 1,0)
+jpm7_ab <- cumsum(jpm7_a)
+
+jpm7_abc <- as.data.frame(as.factor(jpm7_ab))
+colnames(jpm7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countJPM <- jpm7_abc %>% group_by(cSum) %>% count(n=n())
+countJPM <- as.data.frame(countJPM)
+countJPM <- countJPM[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countJPM$jpm7_decr_Days <- countJPM$n-1
+countJPM <- countJPM[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countJPM2 <- subset(countJPM, countJPM$jpm7_decr_Days>0)
+summary(countJPM2$jpm7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+jpm7_decr_Days_grouped <- countJPM2 %>% group_by(jpm7_decr_Days) %>% count(n=n())
+jpm7_decr_Days_grouped <- jpm7_decr_Days_grouped[,-3]
+```
+
+```{r}
+jpm7_decr_Days_grouped
+```
+
+```{r}
+
+median(jpm7_decr_Days_grouped$jpm7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+jpm7_b1 <- ifelse(JPM$today2lag7>1, 0,1)
+
+
+jpm7_b2 <- cumsum(jpm7_b1)
+
+jpm7_b3 <- as.data.frame(as.factor(jpm7_b2))
+colnames(jpm7_b3) <- 'cSum'
+
+countJPM1 <- jpm7_b3 %>% group_by(cSum) %>% count(n=n())
+countJPM1 <- as.data.frame(countJPM1)
+countJPM1 <- countJPM1[,-3]
+
+countJPM1$jpm7_incr_Days <- countJPM1$n-1
+countJPM1 <- countJPM1[,-2]
+
+countJPM3 <- subset(countJPM1, countJPM1$jpm7_incr_Days>0)
+summary(countJPM3$jpm7_incr_Days)
+
+jpm7_incr_Days_grouped <- countJPM3 %>% group_by(jpm7_incr_Days) %>% count(n=n())
+jpm7_incr_Days_grouped <- jpm7_incr_Days_grouped[,-3]
+```
+
+```{r}
+jpm7_incr_Days_grouped
+```
+
+```{r}
+median(jpm7_incr_Days_grouped$jpm7_incr_Days)
+```
+
+***
+
+
+```{r}
+JWN <- subset(remaining36_g, remaining36_g$stockName=='JWN')
+
+JWN <- JWN[complete.cases(JWN),]
+
+jwn7_a <- ifelse(JWN$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for jwn7 <- <- ifelse(JWN$today2lag7>1, 1,0)
+jwn7_ab <- cumsum(jwn7_a)
+
+jwn7_abc <- as.data.frame(as.factor(jwn7_ab))
+colnames(jwn7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countJWN <- jwn7_abc %>% group_by(cSum) %>% count(n=n())
+countJWN <- as.data.frame(countJWN)
+countJWN <- countJWN[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countJWN$jwn7_decr_Days <- countJWN$n-1
+countJWN <- countJWN[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countJWN2 <- subset(countJWN, countJWN$jwn7_decr_Days>0)
+summary(countJWN2$jwn7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+jwn7_decr_Days_grouped <- countJWN2 %>% group_by(jwn7_decr_Days) %>% count(n=n())
+jwn7_decr_Days_grouped <- jwn7_decr_Days_grouped[,-3]
+```
+
+```{r}
+jwn7_decr_Days_grouped
+```
+
+```{r}
+
+median(jwn7_decr_Days_grouped$jwn7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+jwn7_b1 <- ifelse(JWN$today2lag7>1, 0,1)
+
+
+jwn7_b2 <- cumsum(jwn7_b1)
+
+jwn7_b3 <- as.data.frame(as.factor(jwn7_b2))
+colnames(jwn7_b3) <- 'cSum'
+
+countJWN1 <- jwn7_b3 %>% group_by(cSum) %>% count(n=n())
+countJWN1 <- as.data.frame(countJWN1)
+countJWN1 <- countJWN1[,-3]
+
+countJWN1$jwn7_incr_Days <- countJWN1$n-1
+countJWN1 <- countJWN1[,-2]
+
+countJWN3 <- subset(countJWN1, countJWN1$jwn7_incr_Days>0)
+summary(countJWN3$jwn7_incr_Days)
+
+jwn7_incr_Days_grouped <- countJWN3 %>% group_by(jwn7_incr_Days) %>% count(n=n())
+jwn7_incr_Days_grouped <- jwn7_incr_Days_grouped[,-3]
+```
+
+```{r}
+jwn7_incr_Days_grouped
+```
+
+```{r}
+median(jwn7_incr_Days_grouped$jwn7_incr_Days)
+```
+
+***
+
+
+```{r}
+KGJI <- subset(remaining36_g, remaining36_g$stockName=='KGJI')
+
+KGJI <- KGJI[complete.cases(KGJI),]
+
+kgji7_a <- ifelse(KGJI$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for kgji7 <- <- ifelse(KGJI$today2lag7>1, 1,0)
+kgji7_ab <- cumsum(kgji7_a)
+
+kgji7_abc <- as.data.frame(as.factor(kgji7_ab))
+colnames(kgji7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countKGJI <- kgji7_abc %>% group_by(cSum) %>% count(n=n())
+countKGJI <- as.data.frame(countKGJI)
+countKGJI <- countKGJI[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countKGJI$kgji7_decr_Days <- countKGJI$n-1
+countKGJI <- countKGJI[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countKGJI2 <- subset(countKGJI, countKGJI$kgji7_decr_Days>0)
+summary(countKGJI2$kgji7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+kgji7_decr_Days_grouped <- countKGJI2 %>% group_by(kgji7_decr_Days) %>% count(n=n())
+kgji7_decr_Days_grouped <- kgji7_decr_Days_grouped[,-3]
+```
+
+```{r}
+kgji7_decr_Days_grouped
+```
+
+```{r}
+
+median(kgji7_decr_Days_grouped$kgji7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+kgji7_b1 <- ifelse(KGJI$today2lag7>1, 0,1)
+
+
+kgji7_b2 <- cumsum(kgji7_b1)
+
+kgji7_b3 <- as.data.frame(as.factor(kgji7_b2))
+colnames(kgji7_b3) <- 'cSum'
+
+countKGJI1 <- kgji7_b3 %>% group_by(cSum) %>% count(n=n())
+countKGJI1 <- as.data.frame(countKGJI1)
+countKGJI1 <- countKGJI1[,-3]
+
+countKGJI1$kgji7_incr_Days <- countKGJI1$n-1
+countKGJI1 <- countKGJI1[,-2]
+
+countKGJI3 <- subset(countKGJI1, countKGJI1$kgji7_incr_Days>0)
+summary(countKGJI3$kgji7_incr_Days)
+
+kgji7_incr_Days_grouped <- countKGJI3 %>% group_by(kgji7_incr_Days) %>% count(n=n())
+kgji7_incr_Days_grouped <- kgji7_incr_Days_grouped[,-3]
+```
+
+```{r}
+kgji7_incr_Days_grouped
+```
+
+```{r}
+median(kgji7_incr_Days_grouped$kgji7_incr_Days)
+```
+
+***
+
+```{r}
+KSS <- subset(remaining36_g, remaining36_g$stockName=='KSS')
+
+KSS <- KSS[complete.cases(KSS),]
+
+kss7_a <- ifelse(KSS$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for kss7 <- <- ifelse(KSS$today2lag7>1, 1,0)
+kss7_ab <- cumsum(kss7_a)
+
+kss7_abc <- as.data.frame(as.factor(kss7_ab))
+colnames(kss7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countKSS <- kss7_abc %>% group_by(cSum) %>% count(n=n())
+countKSS <- as.data.frame(countKSS)
+countKSS <- countKSS[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countKSS$kss7_decr_Days <- countKSS$n-1
+countKSS <- countKSS[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countKSS2 <- subset(countKSS, countKSS$kss7_decr_Days>0)
+summary(countKSS2$kss7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+kss7_decr_Days_grouped <- countKSS2 %>% group_by(kss7_decr_Days) %>% count(n=n())
+kss7_decr_Days_grouped <- kss7_decr_Days_grouped[,-3]
+```
+
+```{r}
+kss7_decr_Days_grouped
+```
+
+```{r}
+
+median(kss7_decr_Days_grouped$kss7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+kss7_b1 <- ifelse(KSS$today2lag7>1, 0,1)
+
+
+kss7_b2 <- cumsum(kss7_b1)
+
+kss7_b3 <- as.data.frame(as.factor(kss7_b2))
+colnames(kss7_b3) <- 'cSum'
+
+countKSS1 <- kss7_b3 %>% group_by(cSum) %>% count(n=n())
+countKSS1 <- as.data.frame(countKSS1)
+countKSS1 <- countKSS1[,-3]
+
+countKSS1$kss7_incr_Days <- countKSS1$n-1
+countKSS1 <- countKSS1[,-2]
+
+countKSS3 <- subset(countKSS1, countKSS1$kss7_incr_Days>0)
+summary(countKSS3$kss7_incr_Days)
+
+kss7_incr_Days_grouped <- countKSS3 %>% group_by(kss7_incr_Days) %>% count(n=n())
+kss7_incr_Days_grouped <- kss7_incr_Days_grouped[,-3]
+```
+
+```{r}
+kss7_incr_Days_grouped
+```
+
+```{r}
+median(kss7_incr_Days_grouped$kss7_incr_Days)
+```
+
+
+***
+
+
+```{r}
+LUV <- subset(remaining36_g, remaining36_g$stockName=='LUV')
+
+LUV <- LUV[complete.cases(LUV),]
+
+luv7_a <- ifelse(LUV$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for luv7 <- <- ifelse(LUV$today2lag7>1, 1,0)
+luv7_ab <- cumsum(luv7_a)
+
+luv7_abc <- as.data.frame(as.factor(luv7_ab))
+colnames(luv7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countLUV <- luv7_abc %>% group_by(cSum) %>% count(n=n())
+countLUV <- as.data.frame(countLUV)
+countLUV <- countLUV[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countLUV$luv7_decr_Days <- countLUV$n-1
+countLUV <- countLUV[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countLUV2 <- subset(countLUV, countLUV$luv7_decr_Days>0)
+summary(countLUV2$luv7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+luv7_decr_Days_grouped <- countLUV2 %>% group_by(luv7_decr_Days) %>% count(n=n())
+luv7_decr_Days_grouped <- luv7_decr_Days_grouped[,-3]
+```
+
+```{r}
+luv7_decr_Days_grouped
+```
+
+```{r}
+
+median(luv7_decr_Days_grouped$luv7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+luv7_b1 <- ifelse(LUV$today2lag7>1, 0,1)
+
+
+luv7_b2 <- cumsum(luv7_b1)
+
+luv7_b3 <- as.data.frame(as.factor(luv7_b2))
+colnames(luv7_b3) <- 'cSum'
+
+countLUV1 <- luv7_b3 %>% group_by(cSum) %>% count(n=n())
+countLUV1 <- as.data.frame(countLUV1)
+countLUV1 <- countLUV1[,-3]
+
+countLUV1$luv7_incr_Days <- countLUV1$n-1
+countLUV1 <- countLUV1[,-2]
+
+countLUV3 <- subset(countLUV1, countLUV1$luv7_incr_Days>0)
+summary(countLUV3$luv7_incr_Days)
+
+luv7_incr_Days_grouped <- countLUV3 %>% group_by(luv7_incr_Days) %>% count(n=n())
+luv7_incr_Days_grouped <- luv7_incr_Days_grouped[,-3]
+```
+
+```{r}
+luv7_incr_Days_grouped
+```
+
+```{r}
+median(luv7_incr_Days_grouped$luv7_incr_Days)
+```
+
+***
+
+```{r}
+M <- subset(remaining36_g, remaining36_g$stockName=='M')
+
+M <- M[complete.cases(M),]
+
+m7_a <- ifelse(M$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for m7 <- <- ifelse(M$today2lag7>1, 1,0)
+m7_ab <- cumsum(m7_a)
+
+m7_abc <- as.data.frame(as.factor(m7_ab))
+colnames(m7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countM <- m7_abc %>% group_by(cSum) %>% count(n=n())
+countM <- as.data.frame(countM)
+countM <- countM[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countM$m7_decr_Days <- countM$n-1
+countM <- countM[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countM2 <- subset(countM, countM$m7_decr_Days>0)
+summary(countM2$m7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+m7_decr_Days_grouped <- countM2 %>% group_by(m7_decr_Days) %>% count(n=n())
+m7_decr_Days_grouped <- m7_decr_Days_grouped[,-3]
+```
+
+```{r}
+m7_decr_Days_grouped
+```
+
+```{r}
+
+median(m7_decr_Days_grouped$m7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+m7_b1 <- ifelse(M$today2lag7>1, 0,1)
+
+
+m7_b2 <- cumsum(m7_b1)
+
+m7_b3 <- as.data.frame(as.factor(m7_b2))
+colnames(m7_b3) <- 'cSum'
+
+countM1 <- m7_b3 %>% group_by(cSum) %>% count(n=n())
+countM1 <- as.data.frame(countM1)
+countM1 <- countM1[,-3]
+
+countM1$m7_incr_Days <- countM1$n-1
+countM1 <- countM1[,-2]
+
+countM3 <- subset(countM1, countM1$m7_incr_Days>0)
+summary(countM3$m7_incr_Days)
+
+m7_incr_Days_grouped <- countM3 %>% group_by(m7_incr_Days) %>% count(n=n())
+m7_incr_Days_grouped <- m7_incr_Days_grouped[,-3]
+```
+
+```{r}
+m7_incr_Days_grouped
+```
+
+```{r}
+median(m7_incr_Days_grouped$m7_incr_Days)
+```
+
+
+***
+
+
+```{r}
+MGM <- subset(remaining36_g, remaining36_g$stockName=='MGM')
+
+MGM <- MGM[complete.cases(MGM),]
+
+mgm7_a <- ifelse(MGM$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for mgm7 <- <- ifelse(MGM$today2lag7>1, 1,0)
+mgm7_ab <- cumsum(mgm7_a)
+
+mgm7_abc <- as.data.frame(as.factor(mgm7_ab))
+colnames(mgm7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countMGM <- mgm7_abc %>% group_by(cSum) %>% count(n=n())
+countMGM <- as.data.frame(countMGM)
+countMGM <- countMGM[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countMGM$mgm7_decr_Days <- countMGM$n-1
+countMGM <- countMGM[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countMGM2 <- subset(countMGM, countMGM$mgm7_decr_Days>0)
+summary(countMGM2$mgm7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+mgm7_decr_Days_grouped <- countMGM2 %>% group_by(mgm7_decr_Days) %>% count(n=n())
+mgm7_decr_Days_grouped <- mgm7_decr_Days_grouped[,-3]
+```
+
+```{r}
+mgm7_decr_Days_grouped
+```
+
+```{r}
+
+median(mgm7_decr_Days_grouped$mgm7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+mgm7_b1 <- ifelse(MGM$today2lag7>1, 0,1)
+
+
+mgm7_b2 <- cumsum(mgm7_b1)
+
+mgm7_b3 <- as.data.frame(as.factor(mgm7_b2))
+colnames(mgm7_b3) <- 'cSum'
+
+countMGM1 <- mgm7_b3 %>% group_by(cSum) %>% count(n=n())
+countMGM1 <- as.data.frame(countMGM1)
+countMGM1 <- countMGM1[,-3]
+
+countMGM1$mgm7_incr_Days <- countMGM1$n-1
+countMGM1 <- countMGM1[,-2]
+
+countMGM3 <- subset(countMGM1, countMGM1$mgm7_incr_Days>0)
+summary(countMGM3$mgm7_incr_Days)
+
+mgm7_incr_Days_grouped <- countMGM3 %>% group_by(mgm7_incr_Days) %>% count(n=n())
+mgm7_incr_Days_grouped <- mgm7_incr_Days_grouped[,-3]
+```
+
+```{r}
+mgm7_incr_Days_grouped
+```
+
+```{r}
+median(mgm7_incr_Days_grouped$mgm7_incr_Days)
+```
+
+***
+
+
+```{r}
+MSFT <- subset(remaining36_g, remaining36_g$stockName=='MSFT')
+
+MSFT <- MSFT[complete.cases(MSFT),]
+
+msft7_a <- ifelse(MSFT$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for msft7 <- <- ifelse(MSFT$today2lag7>1, 1,0)
+msft7_ab <- cumsum(msft7_a)
+
+msft7_abc <- as.data.frame(as.factor(msft7_ab))
+colnames(msft7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countMSFT <- msft7_abc %>% group_by(cSum) %>% count(n=n())
+countMSFT <- as.data.frame(countMSFT)
+countMSFT <- countMSFT[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countMSFT$msft7_decr_Days <- countMSFT$n-1
+countMSFT <- countMSFT[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countMSFT2 <- subset(countMSFT, countMSFT$msft7_decr_Days>0)
+summary(countMSFT2$msft7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+msft7_decr_Days_grouped <- countMSFT2 %>% group_by(msft7_decr_Days) %>% count(n=n())
+msft7_decr_Days_grouped <- msft7_decr_Days_grouped[,-3]
+```
+
+```{r}
+msft7_decr_Days_grouped
+```
+
+```{r}
+
+median(msft7_decr_Days_grouped$msft7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+msft7_b1 <- ifelse(MSFT$today2lag7>1, 0,1)
+
+
+msft7_b2 <- cumsum(msft7_b1)
+
+msft7_b3 <- as.data.frame(as.factor(msft7_b2))
+colnames(msft7_b3) <- 'cSum'
+
+countMSFT1 <- msft7_b3 %>% group_by(cSum) %>% count(n=n())
+countMSFT1 <- as.data.frame(countMSFT1)
+countMSFT1 <- countMSFT1[,-3]
+
+countMSFT1$msft7_incr_Days <- countMSFT1$n-1
+countMSFT1 <- countMSFT1[,-2]
+
+countMSFT3 <- subset(countMSFT1, countMSFT1$msft7_incr_Days>0)
+summary(countMSFT3$msft7_incr_Days)
+
+msft7_incr_Days_grouped <- countMSFT3 %>% group_by(msft7_incr_Days) %>% count(n=n())
+msft7_incr_Days_grouped <- msft7_incr_Days_grouped[,-3]
+```
+
+```{r}
+msft7_incr_Days_grouped
+```
+
+```{r}
+median(msft7_incr_Days_grouped$msft7_incr_Days)
+```
+
+***
+
+
+```{r}
+NSANY <- subset(remaining36_g, remaining36_g$stockName=='NSANY')
+
+NSANY <- NSANY[complete.cases(NSANY),]
+
+nsany7_a <- ifelse(NSANY$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for nsany7 <- <- ifelse(NSANY$today2lag7>1, 1,0)
+nsany7_ab <- cumsum(nsany7_a)
+
+nsany7_abc <- as.data.frame(as.factor(nsany7_ab))
+colnames(nsany7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countNSANY <- nsany7_abc %>% group_by(cSum) %>% count(n=n())
+countNSANY <- as.data.frame(countNSANY)
+countNSANY <- countNSANY[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countNSANY$nsany7_decr_Days <- countNSANY$n-1
+countNSANY <- countNSANY[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countNSANY2 <- subset(countNSANY, countNSANY$nsany7_decr_Days>0)
+summary(countNSANY2$nsany7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+nsany7_decr_Days_grouped <- countNSANY2 %>% group_by(nsany7_decr_Days) %>% count(n=n())
+nsany7_decr_Days_grouped <- nsany7_decr_Days_grouped[,-3]
+```
+
+```{r}
+nsany7_decr_Days_grouped
+```
+
+```{r}
+
+median(nsany7_decr_Days_grouped$nsany7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+nsany7_b1 <- ifelse(NSANY$today2lag7>1, 0,1)
+
+
+nsany7_b2 <- cumsum(nsany7_b1)
+
+nsany7_b3 <- as.data.frame(as.factor(nsany7_b2))
+colnames(nsany7_b3) <- 'cSum'
+
+countNSANY1 <- nsany7_b3 %>% group_by(cSum) %>% count(n=n())
+countNSANY1 <- as.data.frame(countNSANY1)
+countNSANY1 <- countNSANY1[,-3]
+
+countNSANY1$nsany7_incr_Days <- countNSANY1$n-1
+countNSANY1 <- countNSANY1[,-2]
+
+countNSANY3 <- subset(countNSANY1, countNSANY1$nsany7_incr_Days>0)
+summary(countNSANY3$nsany7_incr_Days)
+
+nsany7_incr_Days_grouped <- countNSANY3 %>% group_by(nsany7_incr_Days) %>% count(n=n())
+nsany7_incr_Days_grouped <- nsany7_incr_Days_grouped[,-3]
+```
+
+```{r}
+nsany7_incr_Days_grouped
+```
+
+```{r}
+median(nsany7_incr_Days_grouped$nsany7_incr_Days)
+```
+
+***
+
+
+```{r}
+NUS <- subset(remaining36_g, remaining36_g$stockName=='NUS')
+
+NUS <- NUS[complete.cases(NUS),]
+
+nus7_a <- ifelse(NUS$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for nus7 <- <- ifelse(NUS$today2lag7>1, 1,0)
+nus7_ab <- cumsum(nus7_a)
+
+nus7_abc <- as.data.frame(as.factor(nus7_ab))
+colnames(nus7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countNUS <- nus7_abc %>% group_by(cSum) %>% count(n=n())
+countNUS <- as.data.frame(countNUS)
+countNUS <- countNUS[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countNUS$nus7_decr_Days <- countNUS$n-1
+countNUS <- countNUS[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countNUS2 <- subset(countNUS, countNUS$nus7_decr_Days>0)
+summary(countNUS2$nus7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+nus7_decr_Days_grouped <- countNUS2 %>% group_by(nus7_decr_Days) %>% count(n=n())
+nus7_decr_Days_grouped <- nus7_decr_Days_grouped[,-3]
+```
+
+```{r}
+nus7_decr_Days_grouped
+```
+
+```{r}
+
+median(nus7_decr_Days_grouped$nus7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+nus7_b1 <- ifelse(NUS$today2lag7>1, 0,1)
+
+
+nus7_b2 <- cumsum(nus7_b1)
+
+nus7_b3 <- as.data.frame(as.factor(nus7_b2))
+colnames(nus7_b3) <- 'cSum'
+
+countNUS1 <- nus7_b3 %>% group_by(cSum) %>% count(n=n())
+countNUS1 <- as.data.frame(countNUS1)
+countNUS1 <- countNUS1[,-3]
+
+countNUS1$nus7_incr_Days <- countNUS1$n-1
+countNUS1 <- countNUS1[,-2]
+
+countNUS3 <- subset(countNUS1, countNUS1$nus7_incr_Days>0)
+summary(countNUS3$nus7_incr_Days)
+
+nus7_incr_Days_grouped <- countNUS3 %>% group_by(nus7_incr_Days) %>% count(n=n())
+nus7_incr_Days_grouped <- nus7_incr_Days_grouped[,-3]
+```
+
+```{r}
+nus7_incr_Days_grouped
+```
+
+```{r}
+median(nus7_incr_Days_grouped$nus7_incr_Days)
+```
+
+
+***
+
+
+```{r}
+ONCY <- subset(remaining36_g, remaining36_g$stockName=='ONCY')
+
+ONCY <- ONCY[complete.cases(ONCY),]
+
+oncy7_a <- ifelse(ONCY$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for oncy7 <- <- ifelse(ONCY$today2lag7>1, 1,0)
+oncy7_ab <- cumsum(oncy7_a)
+
+oncy7_abc <- as.data.frame(as.factor(oncy7_ab))
+colnames(oncy7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countONCY <- oncy7_abc %>% group_by(cSum) %>% count(n=n())
+countONCY <- as.data.frame(countONCY)
+countONCY <- countONCY[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countONCY$oncy7_decr_Days <- countONCY$n-1
+countONCY <- countONCY[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countONCY2 <- subset(countONCY, countONCY$oncy7_decr_Days>0)
+summary(countONCY2$oncy7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+oncy7_decr_Days_grouped <- countONCY2 %>% group_by(oncy7_decr_Days) %>% count(n=n())
+oncy7_decr_Days_grouped <- oncy7_decr_Days_grouped[,-3]
+```
+
+```{r}
+oncy7_decr_Days_grouped
+```
+
+```{r}
+
+median(oncy7_decr_Days_grouped$oncy7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+oncy7_b1 <- ifelse(ONCY$today2lag7>1, 0,1)
+
+
+oncy7_b2 <- cumsum(oncy7_b1)
+
+oncy7_b3 <- as.data.frame(as.factor(oncy7_b2))
+colnames(oncy7_b3) <- 'cSum'
+
+countONCY1 <- oncy7_b3 %>% group_by(cSum) %>% count(n=n())
+countONCY1 <- as.data.frame(countONCY1)
+countONCY1 <- countONCY1[,-3]
+
+countONCY1$oncy7_incr_Days <- countONCY1$n-1
+countONCY1 <- countONCY1[,-2]
+
+countONCY3 <- subset(countONCY1, countONCY1$oncy7_incr_Days>0)
+summary(countONCY3$oncy7_incr_Days)
+
+oncy7_incr_Days_grouped <- countONCY3 %>% group_by(oncy7_incr_Days) %>% count(n=n())
+oncy7_incr_Days_grouped <- oncy7_incr_Days_grouped[,-3]
+```
+
+```{r}
+oncy7_incr_Days_grouped
+```
+
+```{r}
+median(oncy7_incr_Days_grouped$oncy7_incr_Days)
+```
+
+***
+
+
+```{r}
+RRGB <- subset(remaining36_g, remaining36_g$stockName=='RRGB')
+
+RRGB <- RRGB[complete.cases(RRGB),]
+
+rrgb7_a <- ifelse(RRGB$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for rrgb7 <- <- ifelse(RRGB$today2lag7>1, 1,0)
+rrgb7_ab <- cumsum(rrgb7_a)
+
+rrgb7_abc <- as.data.frame(as.factor(rrgb7_ab))
+colnames(rrgb7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countRRGB <- rrgb7_abc %>% group_by(cSum) %>% count(n=n())
+countRRGB <- as.data.frame(countRRGB)
+countRRGB <- countRRGB[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countRRGB$rrgb7_decr_Days <- countRRGB$n-1
+countRRGB <- countRRGB[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countRRGB2 <- subset(countRRGB, countRRGB$rrgb7_decr_Days>0)
+summary(countRRGB2$rrgb7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+rrgb7_decr_Days_grouped <- countRRGB2 %>% group_by(rrgb7_decr_Days) %>% count(n=n())
+rrgb7_decr_Days_grouped <- rrgb7_decr_Days_grouped[,-3]
+```
+
+```{r}
+rrgb7_decr_Days_grouped
+```
+
+```{r}
+
+median(rrgb7_decr_Days_grouped$rrgb7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+rrgb7_b1 <- ifelse(RRGB$today2lag7>1, 0,1)
+
+
+rrgb7_b2 <- cumsum(rrgb7_b1)
+
+rrgb7_b3 <- as.data.frame(as.factor(rrgb7_b2))
+colnames(rrgb7_b3) <- 'cSum'
+
+countRRGB1 <- rrgb7_b3 %>% group_by(cSum) %>% count(n=n())
+countRRGB1 <- as.data.frame(countRRGB1)
+countRRGB1 <- countRRGB1[,-3]
+
+countRRGB1$rrgb7_incr_Days <- countRRGB1$n-1
+countRRGB1 <- countRRGB1[,-2]
+
+countRRGB3 <- subset(countRRGB1, countRRGB1$rrgb7_incr_Days>0)
+summary(countRRGB3$rrgb7_incr_Days)
+
+rrgb7_incr_Days_grouped <- countRRGB3 %>% group_by(rrgb7_incr_Days) %>% count(n=n())
+rrgb7_incr_Days_grouped <- rrgb7_incr_Days_grouped[,-3]
+```
+
+```{r}
+rrgb7_incr_Days_grouped
+```
+
+```{r}
+median(rrgb7_incr_Days_grouped$rrgb7_incr_Days)
+```
+
+
+***
+
+
+```{r}
+S <- subset(remaining36_g, remaining36_g$stockName=='S')
+
+S <- S[complete.cases(S),]
+
+s7_a <- ifelse(S$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for s7 <- <- ifelse(S$today2lag7>1, 1,0)
+s7_ab <- cumsum(s7_a)
+
+s7_abc <- as.data.frame(as.factor(s7_ab))
+colnames(s7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countS <- s7_abc %>% group_by(cSum) %>% count(n=n())
+countS <- as.data.frame(countS)
+countS <- countS[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countS$s7_decr_Days <- countS$n-1
+countS <- countS[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countS2 <- subset(countS, countS$s7_decr_Days>0)
+summary(countS2$s7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+s7_decr_Days_grouped <- countS2 %>% group_by(s7_decr_Days) %>% count(n=n())
+s7_decr_Days_grouped <- s7_decr_Days_grouped[,-3]
+```
+
+```{r}
+s7_decr_Days_grouped
+```
+
+```{r}
+
+median(s7_decr_Days_grouped$s7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+s7_b1 <- ifelse(S$today2lag7>1, 0,1)
+
+
+s7_b2 <- cumsum(s7_b1)
+
+s7_b3 <- as.data.frame(as.factor(s7_b2))
+colnames(s7_b3) <- 'cSum'
+
+countS1 <- s7_b3 %>% group_by(cSum) %>% count(n=n())
+countS1 <- as.data.frame(countS1)
+countS1 <- countS1[,-3]
+
+countS1$s7_incr_Days <- countS1$n-1
+countS1 <- countS1[,-2]
+
+countS3 <- subset(countS1, countS1$s7_incr_Days>0)
+summary(countS3$s7_incr_Days)
+
+s7_incr_Days_grouped <- countS3 %>% group_by(s7_incr_Days) %>% count(n=n())
+s7_incr_Days_grouped <- s7_incr_Days_grouped[,-3]
+```
+
+```{r}
+s7_incr_Days_grouped
+```
+
+```{r}
+median(s7_incr_Days_grouped$s7_incr_Days)
+```
+
+***
+
+```{r}
+SCE <- subset(remaining36_g, remaining36_g$stockName=='SCE')
+
+SCE <- SCE[complete.cases(SCE),]
+
+sce7_a <- ifelse(SCE$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for sce7 <- <- ifelse(SCE$today2lag7>1, 1,0)
+sce7_ab <- cumsum(sce7_a)
+
+sce7_abc <- as.data.frame(as.factor(sce7_ab))
+colnames(sce7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countSCE <- sce7_abc %>% group_by(cSum) %>% count(n=n())
+countSCE <- as.data.frame(countSCE)
+countSCE <- countSCE[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countSCE$sce7_decr_Days <- countSCE$n-1
+countSCE <- countSCE[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countSCE2 <- subset(countSCE, countSCE$sce7_decr_Days>0)
+summary(countSCE2$sce7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+sce7_decr_Days_grouped <- countSCE2 %>% group_by(sce7_decr_Days) %>% count(n=n())
+sce7_decr_Days_grouped <- sce7_decr_Days_grouped[,-3]
+```
+
+```{r}
+sce7_decr_Days_grouped
+```
+
+```{r}
+
+median(sce7_decr_Days_grouped$sce7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+sce7_b1 <- ifelse(SCE$today2lag7>1, 0,1)
+
+
+sce7_b2 <- cumsum(sce7_b1)
+
+sce7_b3 <- as.data.frame(as.factor(sce7_b2))
+colnames(sce7_b3) <- 'cSum'
+
+countSCE1 <- sce7_b3 %>% group_by(cSum) %>% count(n=n())
+countSCE1 <- as.data.frame(countSCE1)
+countSCE1 <- countSCE1[,-3]
+
+countSCE1$sce7_incr_Days <- countSCE1$n-1
+countSCE1 <- countSCE1[,-2]
+
+countSCE3 <- subset(countSCE1, countSCE1$sce7_incr_Days>0)
+summary(countSCE3$sce7_incr_Days)
+
+sce7_incr_Days_grouped <- countSCE3 %>% group_by(sce7_incr_Days) %>% count(n=n())
+sce7_incr_Days_grouped <- sce7_incr_Days_grouped[,-3]
+```
+
+```{r}
+sce7_incr_Days_grouped
+```
+
+```{r}
+median(sce7_incr_Days_grouped$sce7_incr_Days)
+```
+
+
+***
+
+```{r}
+SIG <- subset(remaining36_g, remaining36_g$stockName=='SIG')
+
+SIG <- SIG[complete.cases(SIG),]
+
+sig7_a <- ifelse(SIG$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for sig7 <- <- ifelse(SIG$today2lag7>1, 1,0)
+sig7_ab <- cumsum(sig7_a)
+
+sig7_abc <- as.data.frame(as.factor(sig7_ab))
+colnames(sig7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countSIG <- sig7_abc %>% group_by(cSum) %>% count(n=n())
+countSIG <- as.data.frame(countSIG)
+countSIG <- countSIG[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countSIG$sig7_decr_Days <- countSIG$n-1
+countSIG <- countSIG[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countSIG2 <- subset(countSIG, countSIG$sig7_decr_Days>0)
+summary(countSIG2$sig7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+sig7_decr_Days_grouped <- countSIG2 %>% group_by(sig7_decr_Days) %>% count(n=n())
+sig7_decr_Days_grouped <- sig7_decr_Days_grouped[,-3]
+```
+
+```{r}
+sig7_decr_Days_grouped
+```
+
+```{r}
+
+median(sig7_decr_Days_grouped$sig7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+sig7_b1 <- ifelse(SIG$today2lag7>1, 0,1)
+
+
+sig7_b2 <- cumsum(sig7_b1)
+
+sig7_b3 <- as.data.frame(as.factor(sig7_b2))
+colnames(sig7_b3) <- 'cSum'
+
+countSIG1 <- sig7_b3 %>% group_by(cSum) %>% count(n=n())
+countSIG1 <- as.data.frame(countSIG1)
+countSIG1 <- countSIG1[,-3]
+
+countSIG1$sig7_incr_Days <- countSIG1$n-1
+countSIG1 <- countSIG1[,-2]
+
+countSIG3 <- subset(countSIG1, countSIG1$sig7_incr_Days>0)
+summary(countSIG3$sig7_incr_Days)
+
+sig7_incr_Days_grouped <- countSIG3 %>% group_by(sig7_incr_Days) %>% count(n=n())
+sig7_incr_Days_grouped <- sig7_incr_Days_grouped[,-3]
+```
+
+```{r}
+sig7_incr_Days_grouped
+```
+
+```{r}
+median(sig7_incr_Days_grouped$sig7_incr_Days)
+```
+
+
+***
+
+```{r}
+T <- subset(remaining36_g, remaining36_g$stockName=='T')
+
+T <- T[complete.cases(T),]
+
+t7_a <- ifelse(T$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for t7 <- <- ifelse(T$today2lag7>1, 1,0)
+t7_ab <- cumsum(t7_a)
+
+t7_abc <- as.data.frame(as.factor(t7_ab))
+colnames(t7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countT <- t7_abc %>% group_by(cSum) %>% count(n=n())
+countT <- as.data.frame(countT)
+countT <- countT[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countT$t7_decr_Days <- countT$n-1
+countT <- countT[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countT2 <- subset(countT, countT$t7_decr_Days>0)
+summary(countT2$t7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+t7_decr_Days_grouped <- countT2 %>% group_by(t7_decr_Days) %>% count(n=n())
+t7_decr_Days_grouped <- t7_decr_Days_grouped[,-3]
+```
+
+```{r}
+t7_decr_Days_grouped
+```
+
+```{r}
+
+median(t7_decr_Days_grouped$t7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+t7_b1 <- ifelse(T$today2lag7>1, 0,1)
+
+
+t7_b2 <- cumsum(t7_b1)
+
+t7_b3 <- as.data.frame(as.factor(t7_b2))
+colnames(t7_b3) <- 'cSum'
+
+countT1 <- t7_b3 %>% group_by(cSum) %>% count(n=n())
+countT1 <- as.data.frame(countT1)
+countT1 <- countT1[,-3]
+
+countT1$t7_incr_Days <- countT1$n-1
+countT1 <- countT1[,-2]
+
+countT3 <- subset(countT1, countT1$t7_incr_Days>0)
+summary(countT3$t7_incr_Days)
+
+t7_incr_Days_grouped <- countT3 %>% group_by(t7_incr_Days) %>% count(n=n())
+t7_incr_Days_grouped <- t7_incr_Days_grouped[,-3]
+```
+
+```{r}
+t7_incr_Days_grouped
+```
+
+```{r}
+median(t7_incr_Days_grouped$t7_incr_Days)
+```
+
+
+***
+
+
+```{r}
+TGT <- subset(remaining36_g, remaining36_g$stockName=='TGT')
+
+TGT <- TGT[complete.cases(TGT),]
+
+tgt7_a <- ifelse(TGT$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for tgt7 <- <- ifelse(TGT$today2lag7>1, 1,0)
+tgt7_ab <- cumsum(tgt7_a)
+
+tgt7_abc <- as.data.frame(as.factor(tgt7_ab))
+colnames(tgt7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countTGT <- tgt7_abc %>% group_by(cSum) %>% count(n=n())
+countTGT <- as.data.frame(countTGT)
+countTGT <- countTGT[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countTGT$tgt7_decr_Days <- countTGT$n-1
+countTGT <- countTGT[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countTGT2 <- subset(countTGT, countTGT$tgt7_decr_Days>0)
+summary(countTGT2$tgt7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+tgt7_decr_Days_grouped <- countTGT2 %>% group_by(tgt7_decr_Days) %>% count(n=n())
+tgt7_decr_Days_grouped <- tgt7_decr_Days_grouped[,-3]
+```
+
+```{r}
+tgt7_decr_Days_grouped
+```
+
+```{r}
+
+median(tgt7_decr_Days_grouped$tgt7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+tgt7_b1 <- ifelse(TGT$today2lag7>1, 0,1)
+
+
+tgt7_b2 <- cumsum(tgt7_b1)
+
+tgt7_b3 <- as.data.frame(as.factor(tgt7_b2))
+colnames(tgt7_b3) <- 'cSum'
+
+countTGT1 <- tgt7_b3 %>% group_by(cSum) %>% count(n=n())
+countTGT1 <- as.data.frame(countTGT1)
+countTGT1 <- countTGT1[,-3]
+
+countTGT1$tgt7_incr_Days <- countTGT1$n-1
+countTGT1 <- countTGT1[,-2]
+
+countTGT3 <- subset(countTGT1, countTGT1$tgt7_incr_Days>0)
+summary(countTGT3$tgt7_incr_Days)
+
+tgt7_incr_Days_grouped <- countTGT3 %>% group_by(tgt7_incr_Days) %>% count(n=n())
+tgt7_incr_Days_grouped <- tgt7_incr_Days_grouped[,-3]
+```
+
+```{r}
+tgt7_incr_Days_grouped
+```
+
+```{r}
+median(tgt7_incr_Days_grouped$tgt7_incr_Days)
+```
+
+
+***
+
+
+```{r}
+TM <- subset(remaining36_g, remaining36_g$stockName=='TM')
+
+TM <- TM[complete.cases(TM),]
+
+tm7_a <- ifelse(TM$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for tm7 <- <- ifelse(TM$today2lag7>1, 1,0)
+tm7_ab <- cumsum(tm7_a)
+
+tm7_abc <- as.data.frame(as.factor(tm7_ab))
+colnames(tm7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countTM <- tm7_abc %>% group_by(cSum) %>% count(n=n())
+countTM <- as.data.frame(countTM)
+countTM <- countTM[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countTM$tm7_decr_Days <- countTM$n-1
+countTM <- countTM[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countTM2 <- subset(countTM, countTM$tm7_decr_Days>0)
+summary(countTM2$tm7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+tm7_decr_Days_grouped <- countTM2 %>% group_by(tm7_decr_Days) %>% count(n=n())
+tm7_decr_Days_grouped <- tm7_decr_Days_grouped[,-3]
+```
+
+```{r}
+tm7_decr_Days_grouped
+```
+
+```{r}
+
+median(tm7_decr_Days_grouped$tm7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+tm7_b1 <- ifelse(TM$today2lag7>1, 0,1)
+
+
+tm7_b2 <- cumsum(tm7_b1)
+
+tm7_b3 <- as.data.frame(as.factor(tm7_b2))
+colnames(tm7_b3) <- 'cSum'
+
+countTM1 <- tm7_b3 %>% group_by(cSum) %>% count(n=n())
+countTM1 <- as.data.frame(countTM1)
+countTM1 <- countTM1[,-3]
+
+countTM1$tm7_incr_Days <- countTM1$n-1
+countTM1 <- countTM1[,-2]
+
+countTM3 <- subset(countTM1, countTM1$tm7_incr_Days>0)
+summary(countTM3$tm7_incr_Days)
+
+tm7_incr_Days_grouped <- countTM3 %>% group_by(tm7_incr_Days) %>% count(n=n())
+tm7_incr_Days_grouped <- tm7_incr_Days_grouped[,-3]
+```
+
+```{r}
+tm7_incr_Days_grouped
+```
+
+```{r}
+median(tm7_incr_Days_grouped$tm7_incr_Days)
+```
+
+
+***
+
+
+```{r}
+UBSI <- subset(remaining36_g, remaining36_g$stockName=='UBSI')
+
+UBSI <- UBSI[complete.cases(UBSI),]
+
+ubsi7_a <- ifelse(UBSI$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for ubsi7 <- <- ifelse(UBSI$today2lag7>1, 1,0)
+ubsi7_ab <- cumsum(ubsi7_a)
+
+ubsi7_abc <- as.data.frame(as.factor(ubsi7_ab))
+colnames(ubsi7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countUBSI <- ubsi7_abc %>% group_by(cSum) %>% count(n=n())
+countUBSI <- as.data.frame(countUBSI)
+countUBSI <- countUBSI[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countUBSI$ubsi7_decr_Days <- countUBSI$n-1
+countUBSI <- countUBSI[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countUBSI2 <- subset(countUBSI, countUBSI$ubsi7_decr_Days>0)
+summary(countUBSI2$ubsi7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+ubsi7_decr_Days_grouped <- countUBSI2 %>% group_by(ubsi7_decr_Days) %>% count(n=n())
+ubsi7_decr_Days_grouped <- ubsi7_decr_Days_grouped[,-3]
+```
+
+```{r}
+ubsi7_decr_Days_grouped
+```
+
+```{r}
+
+median(ubsi7_decr_Days_grouped$ubsi7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+ubsi7_b1 <- ifelse(UBSI$today2lag7>1, 0,1)
+
+
+ubsi7_b2 <- cumsum(ubsi7_b1)
+
+ubsi7_b3 <- as.data.frame(as.factor(ubsi7_b2))
+colnames(ubsi7_b3) <- 'cSum'
+
+countUBSI1 <- ubsi7_b3 %>% group_by(cSum) %>% count(n=n())
+countUBSI1 <- as.data.frame(countUBSI1)
+countUBSI1 <- countUBSI1[,-3]
+
+countUBSI1$ubsi7_incr_Days <- countUBSI1$n-1
+countUBSI1 <- countUBSI1[,-2]
+
+countUBSI3 <- subset(countUBSI1, countUBSI1$ubsi7_incr_Days>0)
+summary(countUBSI3$ubsi7_incr_Days)
+
+ubsi7_incr_Days_grouped <- countUBSI3 %>% group_by(ubsi7_incr_Days) %>% count(n=n())
+ubsi7_incr_Days_grouped <- ubsi7_incr_Days_grouped[,-3]
+```
+
+```{r}
+ubsi7_incr_Days_grouped
+```
+
+```{r}
+median(ubsi7_incr_Days_grouped$ubsi7_incr_Days)
+```
+
+***
+
+
+
+
+```{r}
+VZ <- subset(remaining36_g, remaining36_g$stockName=='VZ')
+
+VZ <- VZ[complete.cases(VZ),]
+
+vz7_a <- ifelse(VZ$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for vz7 <- <- ifelse(VZ$today2lag7>1, 1,0)
+vz7_ab <- cumsum(vz7_a)
+
+vz7_abc <- as.data.frame(as.factor(vz7_ab))
+colnames(vz7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countVZ <- vz7_abc %>% group_by(cSum) %>% count(n=n())
+countVZ <- as.data.frame(countVZ)
+countVZ <- countVZ[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countVZ$vz7_decr_Days <- countVZ$n-1
+countVZ <- countVZ[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countVZ2 <- subset(countVZ, countVZ$vz7_decr_Days>0)
+summary(countVZ2$vz7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+vz7_decr_Days_grouped <- countVZ2 %>% group_by(vz7_decr_Days) %>% count(n=n())
+vz7_decr_Days_grouped <- vz7_decr_Days_grouped[,-3]
+```
+
+```{r}
+vz7_decr_Days_grouped
+```
+
+```{r}
+
+median(vz7_decr_Days_grouped$vz7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+vz7_b1 <- ifelse(VZ$today2lag7>1, 0,1)
+
+
+vz7_b2 <- cumsum(vz7_b1)
+
+vz7_b3 <- as.data.frame(as.factor(vz7_b2))
+colnames(vz7_b3) <- 'cSum'
+
+countVZ1 <- vz7_b3 %>% group_by(cSum) %>% count(n=n())
+countVZ1 <- as.data.frame(countVZ1)
+countVZ1 <- countVZ1[,-3]
+
+countVZ1$vz7_incr_Days <- countVZ1$n-1
+countVZ1 <- countVZ1[,-2]
+
+countVZ3 <- subset(countVZ1, countVZ1$vz7_incr_Days>0)
+summary(countVZ3$vz7_incr_Days)
+
+vz7_incr_Days_grouped <- countVZ3 %>% group_by(vz7_incr_Days) %>% count(n=n())
+vz7_incr_Days_grouped <- vz7_incr_Days_grouped[,-3]
+```
+
+```{r}
+vz7_incr_Days_grouped
+```
+
+```{r}
+median(vz7_incr_Days_grouped$vz7_incr_Days)
+```
+
+
+***
+
+
+
+
+```{r}
+WFC <- subset(remaining36_g, remaining36_g$stockName=='WFC')
+
+WFC <- WFC[complete.cases(WFC),]
+
+wfc7_a <- ifelse(WFC$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for wfc7 <- <- ifelse(WFC$today2lag7>1, 1,0)
+wfc7_ab <- cumsum(wfc7_a)
+
+wfc7_abc <- as.data.frame(as.factor(wfc7_ab))
+colnames(wfc7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countWFC <- wfc7_abc %>% group_by(cSum) %>% count(n=n())
+countWFC <- as.data.frame(countWFC)
+countWFC <- countWFC[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countWFC$wfc7_decr_Days <- countWFC$n-1
+countWFC <- countWFC[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countWFC2 <- subset(countWFC, countWFC$wfc7_decr_Days>0)
+summary(countWFC2$wfc7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+wfc7_decr_Days_grouped <- countWFC2 %>% group_by(wfc7_decr_Days) %>% count(n=n())
+wfc7_decr_Days_grouped <- wfc7_decr_Days_grouped[,-3]
+```
+
+```{r}
+wfc7_decr_Days_grouped
+```
+
+```{r}
+
+median(wfc7_decr_Days_grouped$wfc7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+wfc7_b1 <- ifelse(WFC$today2lag7>1, 0,1)
+
+
+wfc7_b2 <- cumsum(wfc7_b1)
+
+wfc7_b3 <- as.data.frame(as.factor(wfc7_b2))
+colnames(wfc7_b3) <- 'cSum'
+
+countWFC1 <- wfc7_b3 %>% group_by(cSum) %>% count(n=n())
+countWFC1 <- as.data.frame(countWFC1)
+countWFC1 <- countWFC1[,-3]
+
+countWFC1$wfc7_incr_Days <- countWFC1$n-1
+countWFC1 <- countWFC1[,-2]
+
+countWFC3 <- subset(countWFC1, countWFC1$wfc7_incr_Days>0)
+summary(countWFC3$wfc7_incr_Days)
+
+wfc7_incr_Days_grouped <- countWFC3 %>% group_by(wfc7_incr_Days) %>% count(n=n())
+wfc7_incr_Days_grouped <- wfc7_incr_Days_grouped[,-3]
+```
+
+```{r}
+wfc7_incr_Days_grouped
+```
+
+```{r}
+median(wfc7_incr_Days_grouped$wfc7_incr_Days)
+```
+
+
+***
+
+
+
+
+```{r}
+WM <- subset(remaining36_g, remaining36_g$stockName=='WM')
+
+WM <- WM[complete.cases(WM),]
+
+wm7_a <- ifelse(WM$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for wm7 <- <- ifelse(WM$today2lag7>1, 1,0)
+wm7_ab <- cumsum(wm7_a)
+
+wm7_abc <- as.data.frame(as.factor(wm7_ab))
+colnames(wm7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countWM <- wm7_abc %>% group_by(cSum) %>% count(n=n())
+countWM <- as.data.frame(countWM)
+countWM <- countWM[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countWM$wm7_decr_Days <- countWM$n-1
+countWM <- countWM[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countWM2 <- subset(countWM, countWM$wm7_decr_Days>0)
+summary(countWM2$wm7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+wm7_decr_Days_grouped <- countWM2 %>% group_by(wm7_decr_Days) %>% count(n=n())
+wm7_decr_Days_grouped <- wm7_decr_Days_grouped[,-3]
+```
+
+```{r}
+wm7_decr_Days_grouped
+```
+
+```{r}
+
+median(wm7_decr_Days_grouped$wm7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+wm7_b1 <- ifelse(WM$today2lag7>1, 0,1)
+
+
+wm7_b2 <- cumsum(wm7_b1)
+
+wm7_b3 <- as.data.frame(as.factor(wm7_b2))
+colnames(wm7_b3) <- 'cSum'
+
+countWM1 <- wm7_b3 %>% group_by(cSum) %>% count(n=n())
+countWM1 <- as.data.frame(countWM1)
+countWM1 <- countWM1[,-3]
+
+countWM1$wm7_incr_Days <- countWM1$n-1
+countWM1 <- countWM1[,-2]
+
+countWM3 <- subset(countWM1, countWM1$wm7_incr_Days>0)
+summary(countWM3$wm7_incr_Days)
+
+wm7_incr_Days_grouped <- countWM3 %>% group_by(wm7_incr_Days) %>% count(n=n())
+wm7_incr_Days_grouped <- wm7_incr_Days_grouped[,-3]
+```
+
+```{r}
+wm7_incr_Days_grouped
+```
+
+```{r}
+median(wm7_incr_Days_grouped$wm7_incr_Days)
+```
+
+***
+
+
+
+
+```{r}
+WWE <- subset(remaining36_g, remaining36_g$stockName=='WWE')
+
+WWE <- WWE[complete.cases(WWE),]
+
+wwe7_a <- ifelse(WWE$today2lag7>1, 1,0)
+
+# get cumulative sum of the number of times today's stock increased from 7 days ago,
+# the day will be repeated if it didn't increase. For example '10' is repeated 21 times, this 
+# counts the number of times the value decreased when setting the variable in the previous 
+# code block for wwe7 <- <- ifelse(WWE$today2lag7>1, 1,0)
+wwe7_ab <- cumsum(wwe7_a)
+
+wwe7_abc <- as.data.frame(as.factor(wwe7_ab))
+colnames(wwe7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countWWE <- wwe7_abc %>% group_by(cSum) %>% count(n=n())
+countWWE <- as.data.frame(countWWE)
+countWWE <- countWWE[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countWWE$wwe7_decr_Days <- countWWE$n-1
+countWWE <- countWWE[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countWWE2 <- subset(countWWE, countWWE$wwe7_decr_Days>0)
+summary(countWWE2$wwe7_decr_Days)
+
+# this table shows how many sets of cumulative days decreasing there were in lag 7
+wwe7_decr_Days_grouped <- countWWE2 %>% group_by(wwe7_decr_Days) %>% count(n=n())
+wwe7_decr_Days_grouped <- wwe7_decr_Days_grouped[,-3]
+```
+
+```{r}
+wwe7_decr_Days_grouped
+```
+
+```{r}
+
+median(wwe7_decr_Days_grouped$wwe7_decr_Days)
+```
+
+```{r}
+
+#assign a 1 to decreasing values
+wwe7_b1 <- ifelse(WWE$today2lag7>1, 0,1)
+
+
+wwe7_b2 <- cumsum(wwe7_b1)
+
+wwe7_b3 <- as.data.frame(as.factor(wwe7_b2))
+colnames(wwe7_b3) <- 'cSum'
+
+countWWE1 <- wwe7_b3 %>% group_by(cSum) %>% count(n=n())
+countWWE1 <- as.data.frame(countWWE1)
+countWWE1 <- countWWE1[,-3]
+
+countWWE1$wwe7_incr_Days <- countWWE1$n-1
+countWWE1 <- countWWE1[,-2]
+
+countWWE3 <- subset(countWWE1, countWWE1$wwe7_incr_Days>0)
+summary(countWWE3$wwe7_incr_Days)
+
+wwe7_incr_Days_grouped <- countWWE3 %>% group_by(wwe7_incr_Days) %>% count(n=n())
+wwe7_incr_Days_grouped <- wwe7_incr_Days_grouped[,-3]
+```
+
+```{r}
+wwe7_incr_Days_grouped
+```
+
+```{r}
+median(wwe7_incr_Days_grouped$wwe7_incr_Days)
+```
+
+***
+***
+***
+
+```{r}
+FFIN <- subset(Close17_dow, Close17_dow$DOW_down_median=='FFIN')
+
+#assign a 1 to increasing values
+ffin7 <- ifelse(FFIN$today2lag7>1, 1,0)
+
+ffin7_a <- na.omit(ffin7)
+
+ffin7_ab <- cumsum(ffin7_a)
+
+ffin7_abc <- as.data.frame(as.factor(ffin7_ab))
+colnames(ffin7_abc) <- 'cSum'
+
+# get the count of how many instances or days there are, the more counts, the more 
+# days that were decreasing stock values for today's value to 7 days prior value.
+countFFIN <- ffin7_abc %>% group_by(cSum) %>% count(n=n())
+countFFIN <- as.data.frame(countFFIN)
+countFFIN <- countFFIN[,-3]
+
+# remove this additional day, so that the number of days in a row decreasing is measured
+countFFIN$decr_Days <- countFFIN$n-1
+countFFIN <- countFFIN[,-2]
+
+#this is a set of only those days decreasing at least one day in the lag 7 comparison
+countFFIN1 <- subset(countFFIN, countFFIN$decr_Days>0)
+summary(countFFIN1$decr_Days)
+
+mxffin_d <- max(countFFIN1$decr_Days)
+mdnffin_d <- median(countFFIN1$decr_Days)
+q3ffin_d <- as.numeric(as.character(summary(countFFIN1$decr_Days)["3rd Qu."]))
+```
+
+```{r}
+#assign a 1 to decreasing values
+ffin7_b <- ifelse(FFIN$today2lag7>1, 0,1)
+
+#rm NAs
+ffin7_b1 <- na.omit(ffin7_b) 
+
+#counts the 
+ffin7_b2 <- cumsum(ffin7_b1)
+
+ffin7_b3 <- as.data.frame(as.factor(ffin7_b2))
+colnames(ffin7_b3) <- 'cSum'
+
+countFFIN2 <- ffin7_b3 %>% group_by(cSum) %>% count(n=n())
+countFFIN2 <- as.data.frame(countFFIN2)
+countFFIN2 <- countFFIN2[,-3]
+
+countFFIN2$incr_Days <- countFFIN2$n-1
+countFFIN2 <- countFFIN2[,-2]
+
+countFFIN3 <- subset(countFFIN2, countFFIN2$incr_Days>0)
+summary(countFFIN3$incr_Days)
+
+mxffin_i <- max(countFFIN3$incr_Days)
+mdnffin_i <- median(countFFIN3$incr_Days)
+q3ffin_i <- as.numeric(as.character(summary(countFFIN3$incr_Days)["3rd Qu."]))
+
 
 ```
 
 
+***
+
+Start making the table of statistics for the remaining 36 stocks, using the first set of 17 that were in the best performing portfolio compared to the DOW.
+
+This gets the average and the median stock values from the start and end of this time series from Jan 3, 2007 to Feb 14, 2020.
 ```{r}
+close53_avg <- Close53_g %>% group_by(stockName) %>% summarise_at(vars(stockDayValue),
+                                                                  mean)
+close53_median <- Close53_g %>% group_by(stockName) %>% summarise_at(vars(stockDayValue),
+                                                                  median)
+colnames(close53_avg)[2] <- 'avgStockValue'
+colnames(close53_median)[2] <- 'medianStockValue'
 
 ```
 
-```{r}
 
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+first17 <- dROI17_lag7_d[,-c(1,4)]
+row.names(first17) <- row.names(dROI17_lag7_d)
+
+Remaining36 <- remaining36[order(remaining36$Date),]
+
+remaining36_st_fi <- Remaining36[c(1,length(remaining36$Date)),]
+remaining36_st_fi_t <- as.data.frame(t(remaining36_st_fi))
+colnames(remaining36_st_fi_t) <- c('startValue', 'finalValue')
+
+remaining36_st_fi_t <- remaining36_st_fi_t[-1,]
+last36 <- remaining36_st_fi_t
+
+last36$startValue <- as.numeric(as.character(last36$startValue))
+last36$finalValue <- as.numeric(as.character(last36$finalValue))
+
+last36$stock_ROI <- last36$finalValue/last36$startValue
+
+last36$medn_cSum_decr_L7 <- 'median cSum down L7'
+last36$Q3_cSum_decr_L7 <- '3rd Qntl cSum down L7'
+last36$max_cSum_decr_L7 <- 'max cSum down L7'
+last36$medn_cSum_incr_L7 <- 'median cSum up L7'
+last36$Q3_cSum_incr_L7 <- '3rd Qntl cSun up L7'
+last36$max_cSum_incr_L7 <- 'max cSum up L7'
+
+all53 <- rbind(first17, last36)
+
+all53$stockName <- row.names(all53)
+
+all_53 <- merge(close53_avg, all53, by.x='stockName', by.y='stockName')
+All53 <- merge(close53_median, all_53, by.x='stockName', by.y='stockName')
+head(All53)
 ```
 
 
+Add these statistics to their respective stock instance in the All53 table now that we have the table, there are 36 stock statistics on the number of times the stock increases and decreases in this time span that need to be filled in. Carefully find and replace the names of each of the remaining 36 stock for the lower and upper instances in the block below. Then after running each chunk of code, the All53 table will be filled in.
+
+AAL-American Airlines:
 ```{r}
+mdnaal_d <- median(countAAL2$aal7_decr_Days)
+q3aal_d <- as.numeric(as.character(summary(countAAL2$aal7_decr_Days)["3rd Qu."]))
+mxaal_d <- max(countAAL2$aal7_decr_Days)
+
+mdnaal_i <- median(countAAL3$aal7_incr_Days)
+q3aal_i <- as.numeric(as.character(summary(countAAL3$aal7_incr_Days)["3rd Qu."]))
+mxaal_i <- max(countAAL3$aal7_incr_Days)
+
+aal_g <- grep('AAL', All53$stockName )
+
+All53[aal_g,7:12] <- c(mdnaal_d,q3aal_d,mxaal_d,mdnaal_i,q3aal_i,mxaal_i)
 
 ```
 
-
+The above code chunk filled in the AAL stock statistical information.
 ```{r}
+head(All53)
+
+```
+
+Now to fill in the other 35 stocks for our completed ML table of stats (for now).
+
+ARWR-Arrowhead Pharmaceuticals:
+```{r}
+mdnarwr_d <- median(countARWR2$arwr7_decr_Days)
+q3arwr_d <- as.numeric(as.character(summary(countARWR2$arwr7_decr_Days)["3rd Qu."]))
+mxarwr_d <- max(countARWR2$arwr7_decr_Days)
+
+mdnarwr_i <- median(countARWR3$arwr7_incr_Days)
+q3arwr_i <- as.numeric(as.character(summary(countARWR3$arwr7_incr_Days)["3rd Qu."]))
+mxarwr_i <- max(countARWR3$arwr7_incr_Days)
+
+arwr_g <- grep('ARWR', All53$stockName )
+
+All53[arwr_g,7:12] <- c(mdnarwr_d,q3arwr_d,mxarwr_d,mdnarwr_i,q3arwr_i,mxarwr_i)
+
+```
+
+C-Citigroup:
+```{r}
+mdnc_d <- median(countC2$c7_decr_Days)
+q3c_d <- as.numeric(as.character(summary(countC2$c7_decr_Days)["3rd Qu."]))
+mxc_d <- max(countC2$c7_decr_Days)
+
+mdnc_i <- median(countC3$c7_incr_Days)
+q3c_i <- as.numeric(as.character(summary(countC3$c7_incr_Days)["3rd Qu."]))
+mxc_i <- max(countC3$c7_incr_Days)
+
+c_g <- grep('C', All53$stockName )
+
+All53[c_g,7:12] <- c(mdnc_d,q3c_d,mxc_d,mdnc_i,q3c_i,mxc_i)
 
 ```
 
