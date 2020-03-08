@@ -3,8 +3,8 @@ title: "ROI on Hand Picked Stocks 2007-2020"
 author: "Janis Corona"
 date: 'February and March 2020'
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 This is a project that is for now analyzing some hand picked stock to see if a program can be written based on the analysis of how certain stocks perform from 2007-2020. It looks at cyclical patterns of highs and lows, adds in the DOW highs and lows, the unemployment highs and lows, then mean and median values of daily changes various date fields for day of the week and month. The idea is to get the best performing stocks, analyze them with subsets of the worst performing stocks, get the specific features of each stock to describe it as a profit or loss forecasted stock to invest in based on its current stats, and more. 
@@ -861,6 +861,8 @@ ggplot(data = sub1tidy, aes(x=Year, y=Value,group=Stock)) +
 
 The above line chart shows that SCE.PB is on its own scale that outweighs the scale of the other smaller valued stocks, there is also volatility and cyclical movements in SCE.PB which makes it a good choice to further analyze with timelines of web article events that could have triggered these changes in value of a steady increase in 2015, a high jump increase in 2016, then a steep decline throughout 2017 and 2018, then a huge jump of an increase to the same level at 2016. This is a utility company so government contracts could be involved with all that entails, and possible fires causing damage and settlements in the declining years. But for now it is just speculation and assumptions.
 
+--update-- This stock SCE doesn't belong here. It didn't get categorized as numeric to begin with, and used factors instead, creating that chart above. I am working on it but many thousands of code have to be altered as they were based on column indexing when rearranging the features. So there are actually only 52 and not 53 stocks in our time series. Sce stock also doesn't have the same amount of observations as the other stocks do when turned to numeric.--
+
 The other stocks are getting limited spotlight above, and they need their own scale as SCE.PB pushed down their scaled visual line charts.
 
 
@@ -1444,7 +1446,7 @@ The portfolio mean was 84 USD in 2015 and 147 USD in 2020. The 2015 portfolio wa
 ```{r}
 76/5
 ```
-So, with a return of 76% on top of the value invested in 2015 figuratively for this example, that is 15.2% annual interest earned each of five years. This is called pooling, that the wins over compensate for the losses and it is used in health insurance companies as well as financial portfolios like 401k investment tools.
+So, with a return of 76% on top of the value invested in 2015 figuratively for this example, that is `76/5` or 15.2% annual interest earned each of five years. This is called pooling, that the wins over compensate for the losses and it is used in health insurance companies as well as financial portfolios like 401k investment tools.
 
 ***
 
@@ -7431,69 +7433,6 @@ median(wwe7_incr_Days_grouped$wwe7_incr_Days)
 ***
 ***
 
-```{r}
-FFIN <- subset(Close17_dow, Close17_dow$DOW_down_median=='FFIN')
-
-#assign a 1 to increasing values
-ffin7 <- ifelse(FFIN$today2lag7>1, 1,0)
-
-ffin7_a <- na.omit(ffin7)
-
-ffin7_ab <- cumsum(ffin7_a)
-
-ffin7_abc <- as.data.frame(as.factor(ffin7_ab))
-colnames(ffin7_abc) <- 'cSum'
-
-# get the count of how many instances or days there are, the more counts, the more 
-# days that were decreasing stock values for today's value to 7 days prior value.
-countFFIN <- ffin7_abc %>% group_by(cSum) %>% count(n=n())
-countFFIN <- as.data.frame(countFFIN)
-countFFIN <- countFFIN[,-3]
-
-# remove this additional day, so that the number of days in a row decreasing is measured
-countFFIN$decr_Days <- countFFIN$n-1
-countFFIN <- countFFIN[,-2]
-
-#this is a set of only those days decreasing at least one day in the lag 7 comparison
-countFFIN1 <- subset(countFFIN, countFFIN$decr_Days>0)
-summary(countFFIN1$decr_Days)
-
-mxffin_d <- max(countFFIN1$decr_Days)
-mdnffin_d <- median(countFFIN1$decr_Days)
-q3ffin_d <- as.numeric(as.character(summary(countFFIN1$decr_Days)["3rd Qu."]))
-```
-
-```{r}
-#assign a 1 to decreasing values
-ffin7_b <- ifelse(FFIN$today2lag7>1, 0,1)
-
-#rm NAs
-ffin7_b1 <- na.omit(ffin7_b) 
-
-#counts the 
-ffin7_b2 <- cumsum(ffin7_b1)
-
-ffin7_b3 <- as.data.frame(as.factor(ffin7_b2))
-colnames(ffin7_b3) <- 'cSum'
-
-countFFIN2 <- ffin7_b3 %>% group_by(cSum) %>% count(n=n())
-countFFIN2 <- as.data.frame(countFFIN2)
-countFFIN2 <- countFFIN2[,-3]
-
-countFFIN2$incr_Days <- countFFIN2$n-1
-countFFIN2 <- countFFIN2[,-2]
-
-countFFIN3 <- subset(countFFIN2, countFFIN2$incr_Days>0)
-summary(countFFIN3$incr_Days)
-
-mxffin_i <- max(countFFIN3$incr_Days)
-mdnffin_i <- median(countFFIN3$incr_Days)
-q3ffin_i <- as.numeric(as.character(summary(countFFIN3$incr_Days)["3rd Qu."]))
-
-
-```
-
-
 ***
 
 Start making the table of statistics for the remaining 36 stocks, using the first set of 17 that were in the best performing portfolio compared to the DOW.
@@ -7989,5 +7928,4163 @@ ALL_65 <- rbind(ALL_53,other12)
 write.csv(ALL_53, 'ALL_53.csv', row.names=FALSE)
 write.csv(ALL_65, 'ALL_65.csv', row.names=FALSE)
 
+```
+
+I noticed early in this script that SCE belongs to the other data set because of a class type that converted to numeric using the factors. That was why the plot early on of SCE was so choppy. Lets make a new data set to corresond to this new information.
+
+```{r}
+sce1 <- grep('SCE', ALL_53$stock)
+ALL_52 <- ALL_53[-sce1,]
+ALL_65_b <- ALL_65
+ALL_65_b[sce1,3:13] <- NA
+ALL_65_b <- ALL_65_b[order(ALL_65_b$stock,na.last=TRUE),]
+```
+
+
+```{r}
+write.csv(ALL_65_b, 'ALL_65_b.csv', row.names=FALSE)
+write.csv(ALL_52, 'ALL_52.csv', row.names=FALSE)
+
+
+```
+
+***
+
+***
+
+
+***
+
+
+This R markdown file shows all the work to gather statistical information on counts and other behind the scenes stock information on 52 hand picked stocks with time series information from Jan 2007- Feb 2020 compared to the 17 stock information of the same in the ROI_HandPickedStocks.Rmd file. 
+
+Lets use the data set we created in the ROI-HandPickedStocks.Rmd file, ALL52 data set, in the 'ALL_52.csv' file to see how well the machine learning does on this data frame.
+```{r}
+ALL_52 <- read.csv('ALL_52.csv', sep=',', header=TRUE, na.strings=c('',' '))
+```
+
+Lets first get the median value for these stocks' ROI.
+```{r}
+colnames(ALL_52)
+
+```
+
+Lets add in some columns features for classifying this data. One to show if the stock has a low or high ROI based on the median ROI for these 52 stocks, one to show if the stock decreases more or less than the median number of times the stock has decreased from 2007-2020, and one to show if the stock increases more or less than the median number of times all stocks increased.
+```{r}
+med52ROI <- median(ALL_52$stock_ROI)
+med52ROI
+ALL_52$ROI_Low_High <- ifelse(ALL_52$stock_ROI > med52ROI,'High',
+                              'Low')
+med52Decr <- median(ALL_52$medn_cSum_decr_L7)
+med52Decr
+ALL_52$MedCountsDecreasing <- ifelse(ALL_52$medn_cSum_decr_L7 > med52Decr,
+                                     'High Decreasing Counts',
+                                     'Low Decreasing Counts')
+
+med52Incr <- median(ALL_52$medn_cSum_incr_L7)
+med52Incr
+ALL_52$MedCountsIncreasing <- ifelse(ALL_52$medn_cSum_incr_L7 > med52Incr, 
+                                     'High Increasing Counts', 
+                                     'Low Increase Counts')
+
+```
+
+```{r}
+
+row.names(ALL_52) <- ALL_52$stock
+ALL_52_ML <- ALL_52[,-c(1:3)]
+
+
+write.csv(ALL_52, 'ALL_52_ml.csv', row.names=TRUE)
+write.csv(ALL_52_ML, 'ALL_52_ML1.csv', row.names=TRUE)
+```
+
+
+
+```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
+library(lubridate)
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(grid)
+library(gridExtra)
+library(egg)
+library(gtable)
+library(e1071)
+library(caret)
+library(randomForest)
+library(MASS)
+library(gbm)
+
+```
+
+```{r}
+set.seed(12356789)
+
+inTrain <- createDataPartition(y=ALL_52_ML$ROI_Low_High, p=0.7, list=FALSE)
+
+trainingSet <- ALL_52_ML[inTrain,]
+testingSet <- ALL_52_ML[-inTrain,]
+
+
+```
+
+
+
+```{r}
+rfMod <- train(ROI_Low_High~., method='rf', data=(trainingSet), 
+               trControl=trainControl(method='cv'), number=5)
+plot(rfMod)
+
+
+```
+
+
+
+
+```{r}
+predRF <- predict(rfMod, testingSet)
+
+predDF <- data.frame(predRF, type=testingSet$ROI_Low_High)
+predDF
+
+sum <- sum(predRF==testingSet$ROI_Low_High) 
+length <- length(testingSet$ROI_Low_High)
+accuracy_rfMod <- (sum/length) 
+accuracy_rfMod
+
+```
+
+
+```{r}
+results <- c(round(accuracy_rfMod,2), round(100,2))
+results <- as.factor(results)
+results <- t(data.frame(results))
+
+colnames(results) <- colnames(predDF)
+Results <- rbind(predDF, results) 
+Results
+
+```
+
+
+```{r}
+knnMod <- train(ROI_Low_High ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+plot(knnMod)
+
+```
+
+
+```{r}
+rpartMod <- train(ROI_Low_High ~ ., method='rpart', tuneLength=7, data=trainingSet) 
+
+```
+
+```{r, message=FALSE, warning=FALSE, error=FALSE}
+glmMod <- train(ROI_Low_High ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r}
+predKNN <- predict(knnMod, testingSet)
+predRPART <- predict(rpartMod, testingSet)
+predGLM <- predict(glmMod, testingSet)
+
+```
+
+
+```{r}
+length=length(testingSet$ROI_Low_High)
+
+sumKNN <- sum(predKNN==testingSet$ROI_Low_High)
+sumRPart <- sum(predRPART==testingSet$ROI_Low_High)
+sumGLM <- sum(predGLM==testingSet$ROI_Low_High)
+
+```
+
+```{r}
+accuracy_KNN <- sumKNN/length 
+accuracy_RPART <- sumRPart/length 
+accuracy_GLM <- sumGLM/length 
+
+```
+
+
+```{r}
+predDF2 <- data.frame(predRF,predKNN,predRPART,predGLM, 
+                      TYPE=testingSet$ROI_Low_High)
+colnames(predDF2) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+
+results <- c(round(accuracy_rfMod,2),  
+             round(accuracy_KNN,2), 
+             round(accuracy_RPART,2),
+             round(accuracy_GLM,2), 
+             round(100,2))
+
+results <- as.factor(results)
+results <- t(data.frame(results))
+colnames(results) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+Results <- rbind(predDF2, results) 
+Results
+
+
+```
+
+
+***
+
+Lets add in columns for each stock from the number of times the stock increased or decreased in this time span of 2007-2020, and also how many times the stock had that many days of increasing or decreasing. So that, lets say the stock increased 23 days, but from 2007-2020, the stock actually had time periods it increased 23 days 8 times. This could also be a useful feature to have about the stock. We will go back to our ROI-HandPickedStocks.Rmd file to grab these values we made for the last 36 stocks not in the set of 17 best stocks that had positive median values of daily changes when the DOW was down and unemployment was higher than the month before.
+
+
+```{r}
+
+aal7_gd <- aal7_decr_Days_grouped
+aal7_gi <- aal7_incr_Days_grouped
+
+
+arwr7_gd <- arwr7_decr_Days_grouped
+arwr7_gi <- arwr7_incr_Days_grouped
+
+c7_gd <- c7_decr_Days_grouped
+c7_gi <- c7_incr_Days_grouped
+
+
+cvx7_gd <- cvx7_decr_Days_grouped
+cvx7_gi <- cvx7_incr_Days_grouped
+
+epd7_gd <- epd7_decr_Days_grouped
+epd7_gi <- epd7_incr_Days_grouped
+
+
+f7_gd <- f7_decr_Days_grouped
+f7_gi <- f7_incr_Days_grouped
+
+ftr7_gd <- ftr7_decr_Days_grouped
+ftr7_gi <- ftr7_incr_Days_grouped
+
+
+hmc7_gd <- hmc7_decr_Days_grouped
+hmc7_gi <- hmc7_incr_Days_grouped
+
+hoft7_gd <- hoft7_decr_Days_grouped
+hoft7_gi <- hoft7_incr_Days_grouped
+
+
+hrb7_gd <- hrb7_decr_Days_grouped
+hrb7_gi <- hrb7_incr_Days_grouped
+
+hst7_gd <- hst7_decr_Days_grouped
+hst7_gi <- hst7_incr_Days_grouped
+
+
+ino7_gd <- ino7_decr_Days_grouped
+ino7_gi <- ino7_incr_Days_grouped
+
+jblu7_gd <- jblu7_decr_Days_grouped
+jblu7_gi <- jblu7_incr_Days_grouped
+
+
+kgji7_gd <- kgji7_decr_Days_grouped
+kgji7_gi <- kgji7_incr_Days_grouped
+
+kss7_gd <- kss7_decr_Days_grouped
+kss7_gi <- kss7_incr_Days_grouped
+
+
+luv7_gd <- luv7_decr_Days_grouped
+luv7_gi <- luv7_incr_Days_grouped
+
+m7_gd <- m7_decr_Days_grouped
+m7_gi <- m7_incr_Days_grouped
+
+
+mgm7_gd <- mgm7_decr_Days_grouped
+mgm7_gi <- mgm7_incr_Days_grouped
+
+msft7_gd <- msft7_decr_Days_grouped
+msft7_gi <- msft7_incr_Days_grouped
+
+
+nsany7_gd <- nsany7_decr_Days_grouped
+nsany7_gi <- nsany7_incr_Days_grouped
+
+nus7_gd <- nus7_decr_Days_grouped
+nus7_gi <- nus7_incr_Days_grouped
+
+
+oncy7_gd <- oncy7_decr_Days_grouped
+oncy7_gi <- oncy7_incr_Days_grouped
+
+rrgb7_gd <- rrgb7_decr_Days_grouped
+rrgb7_gi <- rrgb7_incr_Days_grouped
+
+
+s7_gd <- s7_decr_Days_grouped
+s7_gi <- s7_incr_Days_grouped
+
+sig7_gd <- sig7_decr_Days_grouped
+sig7_gi <- sig7_incr_Days_grouped
+
+
+t7_gd <- t7_decr_Days_grouped
+t7_gi <- t7_incr_Days_grouped
+
+tg7_gd <- tgt7_decr_Days_grouped
+tgt7_gi <- tgt7_incr_Days_grouped
+
+
+tm7_gd <- tm7_decr_Days_grouped
+tm7_gi <- tm7_incr_Days_grouped
+
+ubsi7_gd <- ubsi7_decr_Days_grouped
+ubsi7_gi <- ubsi7_incr_Days_grouped
+
+
+vz7_gd <- vz7_decr_Days_grouped
+vz7_gi <- vz7_incr_Days_grouped
+
+wfc7_gd <- wfc7_decr_Days_grouped
+wfc7_gi <- wfc7_incr_Days_grouped
+
+
+wm7_gd <- wm7_decr_Days_grouped
+wm7_gi <- wm7_incr_Days_grouped
+
+wwe7_gd <- wwe7_decr_Days_grouped
+wwe7_gi <- wwe7_incr_Days_grouped
+
+
+```
+
+
+The groups by each count of cumulative sums of days that increased or decreased and counts the number of times there were that number of days that increased or decreased before changing to the opposite direction in increasing or decreasing. These values were obtained by taking the date of each instance's stock value to the stock value 7 days earlier using the lag of the stock value with a value of 7 from the ROI-HandPickedStocks.Rmd file.
+```{r}
+ffin7_decr_Days_grouped <- countFFIN1 %>% group_by(decr_Days) %>% count(n=n())
+ffin7_decr_Days_grouped <- ffin7_decr_Days_grouped[-3]
+colnames(ffin7_decr_Days_grouped)[1] <- c('ffin_decr_Days')
+
+ffin7_incr_Days_grouped <- countFFIN2 %>% group_by(incr_Days) %>% count(n=n())
+ffin7_incr_Days_grouped <- ffin7_incr_Days_grouped[-3]
+colnames(ffin7_incr_Days_grouped)[1] <- c('ffin_incr_Days')
+
+ffin7_gd <- ffin7_decr_Days_grouped
+ffin7_gi <- ffin7_incr_Days_grouped
+
+```
+
+
+```{r}
+aap7_decr_Days_grouped <- countAAP1 %>% group_by(decr_Days) %>% count(n=n())
+aap7_decr_Days_grouped <- aap7_decr_Days_grouped[-3]
+colnames(aap7_decr_Days_grouped)[1] <- c('aap_decr_Days')
+
+aap7_incr_Days_grouped <- countAAP2 %>% group_by(incr_Days) %>% count(n=n())
+aap7_incr_Days_grouped <- aap7_incr_Days_grouped[-3]
+colnames(aap7_incr_Days_grouped)[1] <- c('aap_incr_Days')
+
+aap7_gd <- aap7_decr_Days_grouped
+aap7_gi <- aap7_incr_Days_grouped
+
+
+```
+
+
+```{r}
+addy7_decr_Days_grouped <- countADDYY1 %>% group_by(decr_Days) %>% count(n=n())
+addy7_decr_Days_grouped <- addy7_decr_Days_grouped[-3]
+colnames(addy7_decr_Days_grouped)[1] <- c('addy_decr_Days')
+
+addy7_incr_Days_grouped <- countADDYY2 %>% group_by(incr_Days) %>% count(n=n())
+addy7_incr_Days_grouped <- addy7_incr_Days_grouped[-3]
+colnames(addy7_incr_Days_grouped)[1] <- c('addy_incr_Days')
+
+addy7_gd <- addy7_decr_Days_grouped
+addy7_gi <- addy7_incr_Days_grouped
+
+
+```
+
+
+```{r}
+amzn7_decr_Days_grouped <- countAMZN1 %>% group_by(decr_Days) %>% count(n=n())
+amzn7_decr_Days_grouped <- amzn7_decr_Days_grouped[-3]
+colnames(amzn7_decr_Days_grouped)[1] <- c('amzn_decr_Days')
+
+amzn7_incr_Days_grouped <- countAMZN2 %>% group_by(incr_Days) %>% count(n=n())
+amzn7_incr_Days_grouped <- amzn7_incr_Days_grouped[-3]
+colnames(amzn7_incr_Days_grouped)[1] <- c('amzn_incr_Days')
+
+amzn7_gd <- amzn7_decr_Days_grouped
+amzn7_gi <- amzn7_incr_Days_grouped
+
+
+```
+
+
+
+```{r}
+cost7_decr_Days_grouped <- countCOST1 %>% group_by(decr_Days) %>% count(n=n())
+cost7_decr_Days_grouped <- cost7_decr_Days_grouped[-3]
+colnames(cost7_decr_Days_grouped)[1] <- c('cost_decr_Days')
+
+cost7_incr_Days_grouped <- countCOST2 %>% group_by(incr_Days) %>% count(n=n())
+cost7_incr_Days_grouped <- cost7_incr_Days_grouped[-3]
+colnames(cost7_incr_Days_grouped)[1] <- c('cost_incr_Days')
+
+cost7_gd <- cost7_decr_Days_grouped
+cost7_gi <- cost7_incr_Days_grouped
+
+```
+
+
+```{r}
+dltr7_decr_Days_grouped <- countDLTR1 %>% group_by(decr_Days) %>% count(n=n())
+dltr7_decr_Days_grouped <- dltr7_decr_Days_grouped[-3]
+colnames(dltr7_decr_Days_grouped)[1] <- c('dltr_decr_Days')
+
+dltr7_incr_Days_grouped <- countDLTR2 %>% group_by(incr_Days) %>% count(n=n())
+dltr7_incr_Days_grouped <- dltr7_incr_Days_grouped[-3]
+colnames(dltr7_incr_Days_grouped)[1] <- c('dltr_incr_Days')
+
+dltr7_gd <- dltr7_decr_Days_grouped
+dltr7_gi <- dltr7_incr_Days_grouped
+
+```
+
+
+```{r}
+goog7_decr_Days_grouped <- countGOOG1 %>% group_by(decr_Days) %>% count(n=n())
+goog7_decr_Days_grouped <- goog7_decr_Days_grouped[-3]
+colnames(goog7_decr_Days_grouped)[1] <- c('goog_decr_Days')
+
+goog7_incr_Days_grouped <- countGOOG2 %>% group_by(incr_Days) %>% count(n=n())
+goog7_incr_Days_grouped <- goog7_incr_Days_grouped[-3]
+colnames(goog7_incr_Days_grouped)[1] <- c('goog_incr_Days')
+
+goog7_gd <- goog7_decr_Days_grouped
+goog7_gi <- goog7_incr_Days_grouped
+
+```
+
+
+```{r}
+hd7_decr_Days_grouped <- countHD1 %>% group_by(decr_Days) %>% count(n=n())
+hd7_decr_Days_grouped <- hd7_decr_Days_grouped[-3]
+colnames(hd7_decr_Days_grouped)[1] <- c('hd_decr_Days')
+
+hd7_incr_Days_grouped <- countHD2 %>% group_by(incr_Days) %>% count(n=n())
+hd7_incr_Days_grouped <- hd7_incr_Days_grouped[-3]
+colnames(hd7_incr_Days_grouped)[1] <- c('hd_incr_Days')
+
+hd7_gd <- hd7_decr_Days_grouped
+hd7_gi <- hd7_incr_Days_grouped
+
+```
+
+
+```{r}
+jnj7_decr_Days_grouped <- countJNJ1 %>% group_by(decr_Days) %>% count(n=n())
+jnj7_decr_Days_grouped <- jnj7_decr_Days_grouped[-3]
+colnames(jnj7_decr_Days_grouped)[1] <- c('jnj_decr_Days')
+
+jnj7_incr_Days_grouped <- countJNJ2 %>% group_by(incr_Days) %>% count(n=n())
+jnj7_incr_Days_grouped <- jnj7_incr_Days_grouped[-3]
+colnames(jnj7_incr_Days_grouped)[1] <- c('jnj_incr_Days')
+
+jnj7_gd <- jnj7_decr_Days_grouped
+jnj7_gi <- jnj7_incr_Days_grouped
+
+```
+
+
+```{r}
+nflx7_decr_Days_grouped <- countNFLX1 %>% group_by(decr_Days) %>% count(n=n())
+nflx7_decr_Days_grouped <- nflx7_decr_Days_grouped[-3]
+colnames(nflx7_decr_Days_grouped)[1] <- c('nflx_decr_Days')
+
+nflx7_incr_Days_grouped <- countNFLX2 %>% group_by(incr_Days) %>% count(n=n())
+nflx7_incr_Days_grouped <- nflx7_incr_Days_grouped[-3]
+colnames(nflx7_incr_Days_grouped)[1] <- c('nflx_incr_Days')
+
+nflx7_gd <- nflx7_decr_Days_grouped
+nflx7_gi <- nflx7_incr_Days_grouped
+
+```
+
+
+```{r}
+nke7_decr_Days_grouped <- countNKE1 %>% group_by(decr_Days) %>% count(n=n())
+nke7_decr_Days_grouped <- nke7_decr_Days_grouped[-3]
+colnames(nke7_decr_Days_grouped)[1] <- c('nke_decr_Days')
+
+nke7_incr_Days_grouped <- countNKE2 %>% group_by(incr_Days) %>% count(n=n())
+nke7_incr_Days_grouped <- nke7_incr_Days_grouped[-3]
+colnames(nke7_incr_Days_grouped)[1] <- c('nke_incr_Days')
+
+nke7_gd <- nke7_decr_Days_grouped
+nke7_gi <- nke7_incr_Days_grouped
+
+```
+
+```{r}
+pcg7_decr_Days_grouped <- countPCG1 %>% group_by(decr_Days) %>% count(n=n())
+pcg7_decr_Days_grouped <- pcg7_decr_Days_grouped[-3]
+colnames(pcg7_decr_Days_grouped)[1] <- c('pcg_decr_Days')
+
+pcg7_incr_Days_grouped <- countPCG2 %>% group_by(incr_Days) %>% count(n=n())
+pcg7_incr_Days_grouped <- pcg7_incr_Days_grouped[-3]
+colnames(pcg7_incr_Days_grouped)[1] <- c('pcg_incr_Days')
+
+pcg7_gd <- pcg7_decr_Days_grouped
+pcg7_gi <- pcg7_incr_Days_grouped
+
+```
+
+
+```{r}
+rost7_decr_Days_grouped <- countROST1 %>% group_by(decr_Days) %>% count(n=n())
+rost7_decr_Days_grouped <- rost7_decr_Days_grouped[-3]
+colnames(rost7_decr_Days_grouped)[1] <- c('rost_decr_Days')
+
+rost7_incr_Days_grouped <- countROST2 %>% group_by(incr_Days) %>% count(n=n())
+rost7_incr_Days_grouped <- rost7_incr_Days_grouped[-3]
+colnames(rost7_incr_Days_grouped)[1] <- c('rost_incr_Days')
+
+rost7_gd <- rost7_decr_Days_grouped
+rost7_gi <- rost7_incr_Days_grouped
+
+```
+
+
+```{r}
+teva7_decr_Days_grouped <- countTEVA1 %>% group_by(decr_Days) %>% count(n=n())
+teva7_decr_Days_grouped <- teva7_decr_Days_grouped[-3]
+colnames(teva7_decr_Days_grouped)[1] <- c('teva_decr_Days')
+
+teva7_incr_Days_grouped <- countTEVA2 %>% group_by(incr_Days) %>% count(n=n())
+teva7_incr_Days_grouped <- teva7_incr_Days_grouped[-3]
+colnames(teva7_incr_Days_grouped)[1] <- c('teva_incr_Days')
+
+teva7_gd <- teva7_decr_Days_grouped
+teva7_gi <- teva7_incr_Days_grouped
+
+```
+
+
+```{r}
+tjx7_decr_Days_grouped <- countTJX1 %>% group_by(decr_Days) %>% count(n=n())
+tjx7_decr_Days_grouped <- tjx7_decr_Days_grouped[-3]
+colnames(tjx7_decr_Days_grouped)[1] <- c('tjx_decr_Days')
+
+tjx7_incr_Days_grouped <- countTJX2 %>% group_by(incr_Days) %>% count(n=n())
+tjx7_incr_Days_grouped <- tjx7_incr_Days_grouped[-3]
+colnames(tjx7_incr_Days_grouped)[1] <- c('tjx_incr_Days')
+
+tjx7_gd <- tjx7_decr_Days_grouped
+tjx7_gi <- tjx7_incr_Days_grouped
+
+```
+
+ 
+
+```{r}
+wmt7_decr_Days_grouped <- countWMT1 %>% group_by(decr_Days) %>% count(n=n())
+wmt7_decr_Days_grouped <- wmt7_decr_Days_grouped[-3]
+colnames(wmt7_decr_Days_grouped)[1] <- c('wmt_decr_Days')
+
+wmt7_incr_Days_grouped <- countWMT2 %>% group_by(incr_Days) %>% count(n=n())
+wmt7_incr_Days_grouped <- wmt7_incr_Days_grouped[-3]
+colnames(wmt7_incr_Days_grouped)[1] <- c('wmt_incr_Days')
+
+wmt7_gd <- wmt7_decr_Days_grouped
+wmt7_gi <- wmt7_incr_Days_grouped
+
+```
+
+
+```{r}
+xom7_decr_Days_grouped <- countXOM1 %>% group_by(decr_Days) %>% count(n=n())
+xom7_decr_Days_grouped <- xom7_decr_Days_grouped[-3]
+colnames(xom7_decr_Days_grouped)[1] <- c('xom_decr_Days')
+
+xom7_incr_Days_grouped <- countXOM2 %>% group_by(incr_Days) %>% count(n=n())
+xom7_incr_Days_grouped <- xom7_incr_Days_grouped[-3]
+colnames(xom7_incr_Days_grouped)[1] <- c('xom_incr_Days')
+
+xom7_gd <- xom7_decr_Days_grouped
+xom7_gi <- xom7_incr_Days_grouped
+
+```
+
+***
+
+Now that we have the grouped counts of how many times a stock in this set increased or decreased consecutively from 2007-2020. We can add these values to our dataset of ALL_52.
+```{r}
+
+ALL_52$MedianDecrDayGroup <- 'Median Decreasing Group'
+ALL_52$MedianDecrDayCounts <- 'median N times Group Decr'
+
+ALL_52$Q3DecrDayGroup <- '3rd Quantile Decreasing Group'
+ALL_52$Q3DecrDayCounts <- '3rd Quantile N times Group Decr'
+
+ALL_52$MaxDecrDayGroup <- 'Max Decreasing Group'
+ALL_52$MaxDecrDayCounts <- 'Max N times Group Decr'
+
+ALL_52$MedianIncrDayGroup <- 'group incr median'
+ALL_52$MedianIncrDayCounts <- 'median N times Group Incr'
+
+ALL_52$Q3IncrDayGroup <- 'group incr 3rd quantile'
+ALL_52$Q3IncrDayCounts <- '3rd Quantile N times Group Incr'
+
+ALL_52$MaxIncrDayGroup <- 'group incr max'
+ALL_52$MaxIncrDayCounts <- 'Max N times Group Incr'
+
+
+```
+
+AAL
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+aal7_gd <- aal7_decr_Days_grouped
+aal7_gi <- aal7_incr_Days_grouped
+
+#removes the row names 
+row.names(aal7_gd) <- NULL
+row.names(aal7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+aal7_gd <- aal7_gd[order(aal7_gd$n),]
+aal7_gi <- aal7_gi[order(aal7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnaal_d <- as.numeric(floor(quantile(aal7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(aal7_gd$n)/2)
+mdnaal_d1 <- as.numeric(aal7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3aal_d <- as.numeric(floor(quantile(aal7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(aal7_gd$n)*.75)
+q3aal_d1 <- as.numeric(aal7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxaal_d <- as.numeric(floor(quantile(aal7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxaal_d1 <- as.numeric(aal7_gd[length(aal7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnaal_i <- as.numeric(floor(quantile(aal7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(aal7_gi$n)/2)
+mdnaal_i1 <- as.numeric(aal7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3aal_i <- as.numeric(floor(quantile(aal7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(aal7_gi$n)*.75)
+q3aal_i1 <- as.numeric(aal7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxaal_i <- as.numeric(floor(quantile(aal7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxaal_i1 <- as.numeric(aal7_gi[length(aal7_gi$n),1])
+
+
+aal_g <- grep('AAL', ALL_52$stock)
+
+ALL_52[aal_g,18:29] <- c(mdnaal_d1, mdnaal_d, q3aal_d1, q3aal_d,
+                         mxaal_d1, mxaal_d, mdnaal_i1, mdnaal_i,
+                         q3aal_i1, q3aal_i, mxaal_i1, mxaal_i)
+
+```
+
+AAP
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+aap7_gd <- aap7_decr_Days_grouped
+aap7_gi <- aap7_incr_Days_grouped
+
+#removes the row names 
+row.names(aap7_gd) <- NULL
+row.names(aap7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+aap7_gd <- aap7_gd[order(aap7_gd$n),]
+aap7_gi <- aap7_gi[order(aap7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnaap_d <- as.numeric(floor(quantile(aap7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(aap7_gd$n)/2)
+mdnaap_d1 <- as.numeric(aap7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3aap_d <- as.numeric(floor(quantile(aap7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(aap7_gd$n)*.75)
+q3aap_d1 <- as.numeric(aap7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxaap_d <- as.numeric(floor(quantile(aap7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxaap_d1 <- as.numeric(aap7_gd[length(aap7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnaap_i <- as.numeric(floor(quantile(aap7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(aap7_gi$n)/2)
+mdnaap_i1 <- as.numeric(aap7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3aap_i <- as.numeric(floor(quantile(aap7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(aap7_gi$n)*.75)
+q3aap_i1 <- as.numeric(aap7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxaap_i <- as.numeric(floor(quantile(aap7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxaap_i1 <- as.numeric(aap7_gi[length(aap7_gi$n),1])
+
+
+aap_g <- grep('AAP', ALL_52$stock)
+
+ALL_52[aap_g,18:29] <- c(mdnaap_d1, mdnaap_d, q3aap_d1, q3aap_d,
+                         mxaap_d1, mxaap_d, mdnaap_i1, mdnaap_i,
+                         q3aap_i1, q3aap_i, mxaap_i1, mxaap_i)
+
+
+```
+
+ADDY
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+addy7_gd <- addy7_decr_Days_grouped
+addy7_gi <- addy7_incr_Days_grouped
+
+#removes the row names 
+row.names(addy7_gd) <- NULL
+row.names(addy7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+addy7_gd <- addy7_gd[order(addy7_gd$n),]
+addy7_gi <- addy7_gi[order(addy7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnaddy_d <- as.numeric(floor(quantile(addy7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(addy7_gd$n)/2)
+mdnaddy_d1 <- as.numeric(addy7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3addy_d <- as.numeric(floor(quantile(addy7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(addy7_gd$n)*.75)
+q3addy_d1 <- as.numeric(addy7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxaddy_d <- as.numeric(floor(quantile(addy7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxaddy_d1 <- as.numeric(addy7_gd[length(addy7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnaddy_i <- as.numeric(floor(quantile(addy7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(addy7_gi$n)/2)
+mdnaddy_i1 <- as.numeric(addy7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3addy_i <- as.numeric(floor(quantile(addy7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(addy7_gi$n)*.75)
+q3addy_i1 <- as.numeric(addy7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxaddy_i <- as.numeric(floor(quantile(addy7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxaddy_i1 <- as.numeric(addy7_gi[length(addy7_gi$n),1])
+
+
+addy_g <- grep('ADDY', ALL_52$stock)
+
+ALL_52[addy_g,18:29] <- c(mdnaddy_d1, mdnaddy_d, q3addy_d1, q3addy_d,
+                         mxaddy_d1, mxaddy_d, mdnaddy_i1, mdnaddy_i,
+                         q3addy_i1, q3addy_i, mxaddy_i1, mxaddy_i)
+
+
+```
+
+AMZN
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+amzn7_gd <- amzn7_decr_Days_grouped
+amzn7_gi <- amzn7_incr_Days_grouped
+
+#removes the row names 
+row.names(amzn7_gd) <- NULL
+row.names(amzn7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+amzn7_gd <- amzn7_gd[order(amzn7_gd$n),]
+amzn7_gi <- amzn7_gi[order(amzn7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnamzn_d <- as.numeric(floor(quantile(amzn7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(amzn7_gd$n)/2)
+mdnamzn_d1 <- as.numeric(amzn7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3amzn_d <- as.numeric(floor(quantile(amzn7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(amzn7_gd$n)*.75)
+q3amzn_d1 <- as.numeric(amzn7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxamzn_d <- as.numeric(floor(quantile(amzn7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxamzn_d1 <- as.numeric(amzn7_gd[length(amzn7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnamzn_i <- as.numeric(floor(quantile(amzn7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(amzn7_gi$n)/2)
+mdnamzn_i1 <- as.numeric(amzn7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3amzn_i <- as.numeric(floor(quantile(amzn7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(amzn7_gi$n)*.75)
+q3amzn_i1 <- as.numeric(amzn7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxamzn_i <- as.numeric(floor(quantile(amzn7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxamzn_i1 <- as.numeric(amzn7_gi[length(amzn7_gi$n),1])
+
+
+amzn_g <- grep('AMZN', ALL_52$stock)
+
+ALL_52[amzn_g,18:29] <- c(mdnamzn_d1, mdnamzn_d, q3amzn_d1, q3amzn_d,
+                         mxamzn_d1, mxamzn_d, mdnamzn_i1, mdnamzn_i,
+                         q3amzn_i1, q3amzn_i, mxamzn_i1, mxamzn_i)
+
+
+```
+
+ARWR
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+arwr7_gd <- arwr7_decr_Days_grouped
+arwr7_gi <- arwr7_incr_Days_grouped
+
+#removes the row names 
+row.names(arwr7_gd) <- NULL
+row.names(arwr7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+arwr7_gd <- arwr7_gd[order(arwr7_gd$n),]
+arwr7_gi <- arwr7_gi[order(arwr7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnarwr_d <- as.numeric(floor(quantile(arwr7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(arwr7_gd$n)/2)
+mdnarwr_d1 <- as.numeric(arwr7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3arwr_d <- as.numeric(floor(quantile(arwr7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(arwr7_gd$n)*.75)
+q3arwr_d1 <- as.numeric(arwr7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxarwr_d <- as.numeric(floor(quantile(arwr7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxarwr_d1 <- as.numeric(arwr7_gd[length(arwr7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnarwr_i <- as.numeric(floor(quantile(arwr7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(arwr7_gi$n)/2)
+mdnarwr_i1 <- as.numeric(arwr7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3arwr_i <- as.numeric(floor(quantile(arwr7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(arwr7_gi$n)*.75)
+q3arwr_i1 <- as.numeric(arwr7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxarwr_i <- as.numeric(floor(quantile(arwr7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxarwr_i1 <- as.numeric(arwr7_gi[length(arwr7_gi$n),1])
+
+
+arwr_g <- grep('ARWR', ALL_52$stock)
+
+ALL_52[arwr_g,18:29] <- c(mdnarwr_d1, mdnarwr_d, q3arwr_d1, q3arwr_d,
+                         mxarwr_d1, mxarwr_d, mdnarwr_i1, mdnarwr_i,
+                         q3arwr_i1, q3arwr_i, mxarwr_i1, mxarwr_i)
+
+
+```
+
+C
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+c7_gd <- c7_decr_Days_grouped
+c7_gi <- c7_incr_Days_grouped
+
+#removes the row names 
+row.names(c7_gd) <- NULL
+row.names(c7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+c7_gd <- c7_gd[order(c7_gd$n),]
+c7_gi <- c7_gi[order(c7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnc_d <- as.numeric(floor(quantile(c7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(c7_gd$n)/2)
+mdnc_d1 <- as.numeric(c7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3c_d <- as.numeric(floor(quantile(c7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(c7_gd$n)*.75)
+q3c_d1 <- as.numeric(c7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxc_d <- as.numeric(floor(quantile(c7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxc_d1 <- as.numeric(c7_gd[length(c7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnc_i <- as.numeric(floor(quantile(c7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(c7_gi$n)/2)
+mdnc_i1 <- as.numeric(c7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3c_i <- as.numeric(floor(quantile(c7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(c7_gi$n)*.75)
+q3c_i1 <- as.numeric(c7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxc_i <- as.numeric(floor(quantile(c7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxc_i1 <- as.numeric(c7_gi[length(c7_gi$n),1])
+
+
+c_g <- grep('^C$', ALL_52$stock)
+
+ALL_52[c_g,18:29] <- c(mdnc_d1, mdnc_d, q3c_d1, q3c_d,
+                         mxc_d1, mxc_d, mdnc_i1, mdnc_i,
+                         q3c_i1, q3c_i, mxc_i1, mxc_i)
+
+
+```
+
+COST
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+cost7_gd <- cost7_decr_Days_grouped
+cost7_gi <- cost7_incr_Days_grouped
+
+#removes the row names 
+row.names(cost7_gd) <- NULL
+row.names(cost7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+cost7_gd <- cost7_gd[order(cost7_gd$n),]
+cost7_gi <- cost7_gi[order(cost7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdncost_d <- as.numeric(floor(quantile(cost7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(cost7_gd$n)/2)
+mdncost_d1 <- as.numeric(cost7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3cost_d <- as.numeric(floor(quantile(cost7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(cost7_gd$n)*.75)
+q3cost_d1 <- as.numeric(cost7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxcost_d <- as.numeric(floor(quantile(cost7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxcost_d1 <- as.numeric(cost7_gd[length(cost7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdncost_i <- as.numeric(floor(quantile(cost7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(cost7_gi$n)/2)
+mdncost_i1 <- as.numeric(cost7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3cost_i <- as.numeric(floor(quantile(cost7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(cost7_gi$n)*.75)
+q3cost_i1 <- as.numeric(cost7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxcost_i <- as.numeric(floor(quantile(cost7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxcost_i1 <- as.numeric(cost7_gi[length(cost7_gi$n),1])
+
+
+cost_g <- grep('COST', ALL_52$stock)
+
+ALL_52[cost_g,18:29] <- c(mdncost_d1, mdncost_d, q3cost_d1, q3cost_d,
+                         mxcost_d1, mxcost_d, mdncost_i1, mdncost_i,
+                         q3cost_i1, q3cost_i, mxcost_i1, mxcost_i)
+
+
+```
+
+CVX
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+cvx7_gd <- cvx7_decr_Days_grouped
+cvx7_gi <- cvx7_incr_Days_grouped
+
+#removes the row names 
+row.names(cvx7_gd) <- NULL
+row.names(cvx7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+cvx7_gd <- cvx7_gd[order(cvx7_gd$n),]
+cvx7_gi <- cvx7_gi[order(cvx7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdncvx_d <- as.numeric(floor(quantile(cvx7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(cvx7_gd$n)/2)
+mdncvx_d1 <- as.numeric(cvx7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3cvx_d <- as.numeric(floor(quantile(cvx7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(cvx7_gd$n)*.75)
+q3cvx_d1 <- as.numeric(cvx7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxcvx_d <- as.numeric(floor(quantile(cvx7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxcvx_d1 <- as.numeric(cvx7_gd[length(cvx7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdncvx_i <- as.numeric(floor(quantile(cvx7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(cvx7_gi$n)/2)
+mdncvx_i1 <- as.numeric(cvx7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3cvx_i <- as.numeric(floor(quantile(cvx7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(cvx7_gi$n)*.75)
+q3cvx_i1 <- as.numeric(cvx7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxcvx_i <- as.numeric(floor(quantile(cvx7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxcvx_i1 <- as.numeric(cvx7_gi[length(cvx7_gi$n),1])
+
+
+cvx_g <- grep('CVX', ALL_52$stock)
+
+ALL_52[cvx_g,18:29] <- c(mdncvx_d1, mdncvx_d, q3cvx_d1, q3cvx_d,
+                         mxcvx_d1, mxcvx_d, mdncvx_i1, mdncvx_i,
+                         q3cvx_i1, q3cvx_i, mxcvx_i1, mxcvx_i)
+
+
+```
+
+DLTR
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+dltr7_gd <- dltr7_decr_Days_grouped
+dltr7_gi <- dltr7_incr_Days_grouped
+
+#removes the row names 
+row.names(dltr7_gd) <- NULL
+row.names(dltr7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+dltr7_gd <- dltr7_gd[order(dltr7_gd$n),]
+dltr7_gi <- dltr7_gi[order(dltr7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdndltr_d <- as.numeric(floor(quantile(dltr7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(dltr7_gd$n)/2)
+mdndltr_d1 <- as.numeric(dltr7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3dltr_d <- as.numeric(floor(quantile(dltr7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(dltr7_gd$n)*.75)
+q3dltr_d1 <- as.numeric(dltr7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxdltr_d <- as.numeric(floor(quantile(dltr7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxdltr_d1 <- as.numeric(dltr7_gd[length(dltr7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdndltr_i <- as.numeric(floor(quantile(dltr7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(dltr7_gi$n)/2)
+mdndltr_i1 <- as.numeric(dltr7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3dltr_i <- as.numeric(floor(quantile(dltr7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(dltr7_gi$n)*.75)
+q3dltr_i1 <- as.numeric(dltr7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxdltr_i <- as.numeric(floor(quantile(dltr7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxdltr_i1 <- as.numeric(dltr7_gi[length(dltr7_gi$n),1])
+
+
+dltr_g <- grep('DLTR', ALL_52$stock)
+
+ALL_52[dltr_g,18:29] <- c(mdndltr_d1, mdndltr_d, q3dltr_d1, q3dltr_d,
+                         mxdltr_d1, mxdltr_d, mdndltr_i1, mdndltr_i,
+                         q3dltr_i1, q3dltr_i, mxdltr_i1, mxdltr_i)
+
+
+```
+
+EPD
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+epd7_gd <- epd7_decr_Days_grouped
+epd7_gi <- epd7_incr_Days_grouped
+
+#removes the row names 
+row.names(epd7_gd) <- NULL
+row.names(epd7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+epd7_gd <- epd7_gd[order(epd7_gd$n),]
+epd7_gi <- epd7_gi[order(epd7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnepd_d <- as.numeric(floor(quantile(epd7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(epd7_gd$n)/2)
+mdnepd_d1 <- as.numeric(epd7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3epd_d <- as.numeric(floor(quantile(epd7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(epd7_gd$n)*.75)
+q3epd_d1 <- as.numeric(epd7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxepd_d <- as.numeric(floor(quantile(epd7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxepd_d1 <- as.numeric(epd7_gd[length(epd7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnepd_i <- as.numeric(floor(quantile(epd7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(epd7_gi$n)/2)
+mdnepd_i1 <- as.numeric(epd7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3epd_i <- as.numeric(floor(quantile(epd7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(epd7_gi$n)*.75)
+q3epd_i1 <- as.numeric(epd7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxepd_i <- as.numeric(floor(quantile(epd7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxepd_i1 <- as.numeric(epd7_gi[length(epd7_gi$n),1])
+
+
+epd_g <- grep('EPD', ALL_52$stock)
+
+ALL_52[epd_g,18:29] <- c(mdnepd_d1, mdnepd_d, q3epd_d1, q3epd_d,
+                         mxepd_d1, mxepd_d, mdnepd_i1, mdnepd_i,
+                         q3epd_i1, q3epd_i, mxepd_i1, mxepd_i)
+
+
+```
+
+F
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+f7_gd <- f7_decr_Days_grouped
+f7_gi <- f7_incr_Days_grouped
+
+#removes the row names 
+row.names(f7_gd) <- NULL
+row.names(f7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+f7_gd <- f7_gd[order(f7_gd$n),]
+f7_gi <- f7_gi[order(f7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnf_d <- as.numeric(floor(quantile(f7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(f7_gd$n)/2)
+mdnf_d1 <- as.numeric(f7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3f_d <- as.numeric(floor(quantile(f7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(f7_gd$n)*.75)
+q3f_d1 <- as.numeric(f7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxf_d <- as.numeric(floor(quantile(f7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxf_d1 <- as.numeric(f7_gd[length(f7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnf_i <- as.numeric(floor(quantile(f7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(f7_gi$n)/2)
+mdnf_i1 <- as.numeric(f7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3f_i <- as.numeric(floor(quantile(f7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(f7_gi$n)*.75)
+q3f_i1 <- as.numeric(f7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxf_i <- as.numeric(floor(quantile(f7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxf_i1 <- as.numeric(f7_gi[length(f7_gi$n),1])
+
+
+f_g <- grep('^F$', ALL_52$stock)
+
+ALL_52[f_g,18:29] <- c(mdnf_d1, mdnf_d, q3f_d1, q3f_d,
+                         mxf_d1, mxf_d, mdnf_i1, mdnf_i,
+                         q3f_i1, q3f_i, mxf_i1, mxf_i)
+
+
+```
+
+FFIN
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+ffin7_gd <- ffin7_decr_Days_grouped
+ffin7_gi <- ffin7_incr_Days_grouped
+
+#removes the row names 
+row.names(ffin7_gd) <- NULL
+row.names(ffin7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+ffin7_gd <- ffin7_gd[order(ffin7_gd$n),]
+ffin7_gi <- ffin7_gi[order(ffin7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnffin_d <- as.numeric(floor(quantile(ffin7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(ffin7_gd$n)/2)
+mdnffin_d1 <- as.numeric(ffin7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3ffin_d <- as.numeric(floor(quantile(ffin7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(ffin7_gd$n)*.75)
+q3ffin_d1 <- as.numeric(ffin7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxffin_d <- as.numeric(floor(quantile(ffin7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxffin_d1 <- as.numeric(ffin7_gd[length(ffin7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnffin_i <- as.numeric(floor(quantile(ffin7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(ffin7_gi$n)/2)
+mdnffin_i1 <- as.numeric(ffin7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3ffin_i <- as.numeric(floor(quantile(ffin7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(ffin7_gi$n)*.75)
+q3ffin_i1 <- as.numeric(ffin7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxffin_i <- as.numeric(floor(quantile(ffin7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxffin_i1 <- as.numeric(ffin7_gi[length(ffin7_gi$n),1])
+
+
+ffin_g <- grep('FFIN', ALL_52$stock)
+
+ALL_52[ffin_g,18:29] <- c(mdnffin_d1, mdnffin_d, q3ffin_d1, q3ffin_d,
+                         mxffin_d1, mxffin_d, mdnffin_i1, mdnffin_i,
+                         q3ffin_i1, q3ffin_i, mxffin_i1, mxffin_i)
+
+
+```
+
+FTR
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+ftr7_gd <- ftr7_decr_Days_grouped
+ftr7_gi <- ftr7_incr_Days_grouped
+
+#removes the row names 
+row.names(ftr7_gd) <- NULL
+row.names(ftr7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+ftr7_gd <- ftr7_gd[order(ftr7_gd$n),]
+ftr7_gi <- ftr7_gi[order(ftr7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnftr_d <- as.numeric(floor(quantile(ftr7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(ftr7_gd$n)/2)
+mdnftr_d1 <- as.numeric(ftr7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3ftr_d <- as.numeric(floor(quantile(ftr7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(ftr7_gd$n)*.75)
+q3ftr_d1 <- as.numeric(ftr7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxftr_d <- as.numeric(floor(quantile(ftr7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxftr_d1 <- as.numeric(ftr7_gd[length(ftr7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnftr_i <- as.numeric(floor(quantile(ftr7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(ftr7_gi$n)/2)
+mdnftr_i1 <- as.numeric(ftr7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3ftr_i <- as.numeric(floor(quantile(ftr7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(ftr7_gi$n)*.75)
+q3ftr_i1 <- as.numeric(ftr7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxftr_i <- as.numeric(floor(quantile(ftr7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxftr_i1 <- as.numeric(ftr7_gi[length(ftr7_gi$n),1])
+
+
+ftr_g <- grep('FTR', ALL_52$stock)
+
+ALL_52[ftr_g,18:29] <- c(mdnftr_d1, mdnftr_d, q3ftr_d1, q3ftr_d,
+                         mxftr_d1, mxftr_d, mdnftr_i1, mdnftr_i,
+                         q3ftr_i1, q3ftr_i, mxftr_i1, mxftr_i)
+
+
+```
+
+GOOG
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+goog7_gd <- goog7_decr_Days_grouped
+goog7_gi <- goog7_incr_Days_grouped
+
+#removes the row names 
+row.names(goog7_gd) <- NULL
+row.names(goog7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+goog7_gd <- goog7_gd[order(goog7_gd$n),]
+goog7_gi <- goog7_gi[order(goog7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdngoog_d <- as.numeric(floor(quantile(goog7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(goog7_gd$n)/2)
+mdngoog_d1 <- as.numeric(goog7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3goog_d <- as.numeric(floor(quantile(goog7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(goog7_gd$n)*.75)
+q3goog_d1 <- as.numeric(goog7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxgoog_d <- as.numeric(floor(quantile(goog7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxgoog_d1 <- as.numeric(goog7_gd[length(goog7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdngoog_i <- as.numeric(floor(quantile(goog7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(goog7_gi$n)/2)
+mdngoog_i1 <- as.numeric(goog7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3goog_i <- as.numeric(floor(quantile(goog7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(goog7_gi$n)*.75)
+q3goog_i1 <- as.numeric(goog7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxgoog_i <- as.numeric(floor(quantile(goog7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxgoog_i1 <- as.numeric(goog7_gi[length(goog7_gi$n),1])
+
+
+goog_g <- grep('GOOG', ALL_52$stock)
+
+ALL_52[goog_g,18:29] <- c(mdngoog_d1, mdngoog_d, q3goog_d1, q3goog_d,
+                         mxgoog_d1, mxgoog_d, mdngoog_i1, mdngoog_i,
+                         q3goog_i1, q3goog_i, mxgoog_i1, mxgoog_i)
+
+
+```
+
+HD
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+hd7_gd <- hd7_decr_Days_grouped
+hd7_gi <- hd7_incr_Days_grouped
+
+#removes the row names 
+row.names(hd7_gd) <- NULL
+row.names(hd7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+hd7_gd <- hd7_gd[order(hd7_gd$n),]
+hd7_gi <- hd7_gi[order(hd7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnhd_d <- as.numeric(floor(quantile(hd7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(hd7_gd$n)/2)
+mdnhd_d1 <- as.numeric(hd7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3hd_d <- as.numeric(floor(quantile(hd7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(hd7_gd$n)*.75)
+q3hd_d1 <- as.numeric(hd7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxhd_d <- as.numeric(floor(quantile(hd7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxhd_d1 <- as.numeric(hd7_gd[length(hd7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnhd_i <- as.numeric(floor(quantile(hd7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(hd7_gi$n)/2)
+mdnhd_i1 <- as.numeric(hd7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3hd_i <- as.numeric(floor(quantile(hd7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(hd7_gi$n)*.75)
+q3hd_i1 <- as.numeric(hd7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxhd_i <- as.numeric(floor(quantile(hd7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxhd_i1 <- as.numeric(hd7_gi[length(hd7_gi$n),1])
+
+
+hd_g <- grep('HD', ALL_52$stock)
+
+ALL_52[hd_g,18:29] <- c(mdnhd_d1, mdnhd_d, q3hd_d1, q3hd_d,
+                         mxhd_d1, mxhd_d, mdnhd_i1, mdnhd_i,
+                         q3hd_i1, q3hd_i, mxhd_i1, mxhd_i)
+
+
+```
+
+HMC
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+hmc7_gd <- hmc7_decr_Days_grouped
+hmc7_gi <- hmc7_incr_Days_grouped
+
+#removes the row names 
+row.names(hmc7_gd) <- NULL
+row.names(hmc7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+hmc7_gd <- hmc7_gd[order(hmc7_gd$n),]
+hmc7_gi <- hmc7_gi[order(hmc7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnhmc_d <- as.numeric(floor(quantile(hmc7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(hmc7_gd$n)/2)
+mdnhmc_d1 <- as.numeric(hmc7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3hmc_d <- as.numeric(floor(quantile(hmc7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(hmc7_gd$n)*.75)
+q3hmc_d1 <- as.numeric(hmc7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxhmc_d <- as.numeric(floor(quantile(hmc7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxhmc_d1 <- as.numeric(hmc7_gd[length(hmc7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnhmc_i <- as.numeric(floor(quantile(hmc7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(hmc7_gi$n)/2)
+mdnhmc_i1 <- as.numeric(hmc7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3hmc_i <- as.numeric(floor(quantile(hmc7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(hmc7_gi$n)*.75)
+q3hmc_i1 <- as.numeric(hmc7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxhmc_i <- as.numeric(floor(quantile(hmc7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxhmc_i1 <- as.numeric(hmc7_gi[length(hmc7_gi$n),1])
+
+
+hmc_g <- grep('HMC', ALL_52$stock)
+
+ALL_52[hmc_g,18:29] <- c(mdnhmc_d1, mdnhmc_d, q3hmc_d1, q3hmc_d,
+                         mxhmc_d1, mxhmc_d, mdnhmc_i1, mdnhmc_i,
+                         q3hmc_i1, q3hmc_i, mxhmc_i1, mxhmc_i)
+
+
+```
+
+
+HOFT
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+hoft7_gd <- hoft7_decr_Days_grouped
+hoft7_gi <- hoft7_incr_Days_grouped
+
+#removes the row names 
+row.names(hoft7_gd) <- NULL
+row.names(hoft7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+hoft7_gd <- hoft7_gd[order(hoft7_gd$n),]
+hoft7_gi <- hoft7_gi[order(hoft7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnhoft_d <- as.numeric(floor(quantile(hoft7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(hoft7_gd$n)/2)
+mdnhoft_d1 <- as.numeric(hoft7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3hoft_d <- as.numeric(floor(quantile(hoft7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(hoft7_gd$n)*.75)
+q3hoft_d1 <- as.numeric(hoft7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxhoft_d <- as.numeric(floor(quantile(hoft7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxhoft_d1 <- as.numeric(hoft7_gd[length(hoft7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnhoft_i <- as.numeric(floor(quantile(hoft7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(hoft7_gi$n)/2)
+mdnhoft_i1 <- as.numeric(hoft7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3hoft_i <- as.numeric(floor(quantile(hoft7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(hoft7_gi$n)*.75)
+q3hoft_i1 <- as.numeric(hoft7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxhoft_i <- as.numeric(floor(quantile(hoft7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxhoft_i1 <- as.numeric(hoft7_gi[length(hoft7_gi$n),1])
+
+
+hoft_g <- grep('HOFT', ALL_52$stock)
+
+ALL_52[hoft_g,18:29] <- c(mdnhoft_d1, mdnhoft_d, q3hoft_d1, q3hoft_d,
+                         mxhoft_d1, mxhoft_d, mdnhoft_i1, mdnhoft_i,
+                         q3hoft_i1, q3hoft_i, mxhoft_i1, mxhoft_i)
+
+
+```
+
+HRB
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+hrb7_gd <- hrb7_decr_Days_grouped
+hrb7_gi <- hrb7_incr_Days_grouped
+
+#removes the row names 
+row.names(hrb7_gd) <- NULL
+row.names(hrb7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+hrb7_gd <- hrb7_gd[order(hrb7_gd$n),]
+hrb7_gi <- hrb7_gi[order(hrb7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnhrb_d <- as.numeric(floor(quantile(hrb7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(hrb7_gd$n)/2)
+mdnhrb_d1 <- as.numeric(hrb7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3hrb_d <- as.numeric(floor(quantile(hrb7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(hrb7_gd$n)*.75)
+q3hrb_d1 <- as.numeric(hrb7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxhrb_d <- as.numeric(floor(quantile(hrb7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxhrb_d1 <- as.numeric(hrb7_gd[length(hrb7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnhrb_i <- as.numeric(floor(quantile(hrb7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(hrb7_gi$n)/2)
+mdnhrb_i1 <- as.numeric(hrb7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3hrb_i <- as.numeric(floor(quantile(hrb7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(hrb7_gi$n)*.75)
+q3hrb_i1 <- as.numeric(hrb7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxhrb_i <- as.numeric(floor(quantile(hrb7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxhrb_i1 <- as.numeric(hrb7_gi[length(hrb7_gi$n),1])
+
+
+hrb_g <- grep('HRB', ALL_52$stock)
+
+ALL_52[hrb_g,18:29] <- c(mdnhrb_d1, mdnhrb_d, q3hrb_d1, q3hrb_d,
+                         mxhrb_d1, mxhrb_d, mdnhrb_i1, mdnhrb_i,
+                         q3hrb_i1, q3hrb_i, mxhrb_i1, mxhrb_i)
+
+
+```
+
+HST
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+hst7_gd <- hst7_decr_Days_grouped
+hst7_gi <- hst7_incr_Days_grouped
+
+#removes the row names 
+row.names(hst7_gd) <- NULL
+row.names(hst7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+hst7_gd <- hst7_gd[order(hst7_gd$n),]
+hst7_gi <- hst7_gi[order(hst7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnhst_d <- as.numeric(floor(quantile(hst7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(hst7_gd$n)/2)
+mdnhst_d1 <- as.numeric(hst7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3hst_d <- as.numeric(floor(quantile(hst7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(hst7_gd$n)*.75)
+q3hst_d1 <- as.numeric(hst7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxhst_d <- as.numeric(floor(quantile(hst7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxhst_d1 <- as.numeric(hst7_gd[length(hst7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnhst_i <- as.numeric(floor(quantile(hst7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(hst7_gi$n)/2)
+mdnhst_i1 <- as.numeric(hst7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3hst_i <- as.numeric(floor(quantile(hst7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(hst7_gi$n)*.75)
+q3hst_i1 <- as.numeric(hst7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxhst_i <- as.numeric(floor(quantile(hst7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxhst_i1 <- as.numeric(hst7_gi[length(hst7_gi$n),1])
+
+
+hst_g <- grep('HST', ALL_52$stock)
+
+ALL_52[hst_g,18:29] <- c(mdnhst_d1, mdnhst_d, q3hst_d1, q3hst_d,
+                         mxhst_d1, mxhst_d, mdnhst_i1, mdnhst_i,
+                         q3hst_i1, q3hst_i, mxhst_i1, mxhst_i)
+
+
+```
+
+INO
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+ino7_gd <- ino7_decr_Days_grouped
+ino7_gi <- ino7_incr_Days_grouped
+
+#removes the row names 
+row.names(ino7_gd) <- NULL
+row.names(ino7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+ino7_gd <- ino7_gd[order(ino7_gd$n),]
+ino7_gi <- ino7_gi[order(ino7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnino_d <- as.numeric(floor(quantile(ino7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(ino7_gd$n)/2)
+mdnino_d1 <- as.numeric(ino7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3ino_d <- as.numeric(floor(quantile(ino7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(ino7_gd$n)*.75)
+q3ino_d1 <- as.numeric(ino7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxino_d <- as.numeric(floor(quantile(ino7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxino_d1 <- as.numeric(ino7_gd[length(ino7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnino_i <- as.numeric(floor(quantile(ino7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(ino7_gi$n)/2)
+mdnino_i1 <- as.numeric(ino7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3ino_i <- as.numeric(floor(quantile(ino7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(ino7_gi$n)*.75)
+q3ino_i1 <- as.numeric(ino7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxino_i <- as.numeric(floor(quantile(ino7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxino_i1 <- as.numeric(ino7_gi[length(ino7_gi$n),1])
+
+
+ino_g <- grep('INO', ALL_52$stock)
+
+ALL_52[ino_g,18:29] <- c(mdnino_d1, mdnino_d, q3ino_d1, q3ino_d,
+                         mxino_d1, mxino_d, mdnino_i1, mdnino_i,
+                         q3ino_i1, q3ino_i, mxino_i1, mxino_i)
+
+
+```
+
+JBLU
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+jblu7_gd <- jblu7_decr_Days_grouped
+jblu7_gi <- jblu7_incr_Days_grouped
+
+#removes the row names 
+row.names(jblu7_gd) <- NULL
+row.names(jblu7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+jblu7_gd <- jblu7_gd[order(jblu7_gd$n),]
+jblu7_gi <- jblu7_gi[order(jblu7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnjblu_d <- as.numeric(floor(quantile(jblu7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(jblu7_gd$n)/2)
+mdnjblu_d1 <- as.numeric(jblu7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3jblu_d <- as.numeric(floor(quantile(jblu7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(jblu7_gd$n)*.75)
+q3jblu_d1 <- as.numeric(jblu7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxjblu_d <- as.numeric(floor(quantile(jblu7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxjblu_d1 <- as.numeric(jblu7_gd[length(jblu7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnjblu_i <- as.numeric(floor(quantile(jblu7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(jblu7_gi$n)/2)
+mdnjblu_i1 <- as.numeric(jblu7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3jblu_i <- as.numeric(floor(quantile(jblu7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(jblu7_gi$n)*.75)
+q3jblu_i1 <- as.numeric(jblu7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxjblu_i <- as.numeric(floor(quantile(jblu7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxjblu_i1 <- as.numeric(jblu7_gi[length(jblu7_gi$n),1])
+
+
+jblu_g <- grep('JBLU', ALL_52$stock)
+
+ALL_52[jblu_g,18:29] <- c(mdnjblu_d1, mdnjblu_d, q3jblu_d1, q3jblu_d,
+                         mxjblu_d1, mxjblu_d, mdnjblu_i1, mdnjblu_i,
+                         q3jblu_i1, q3jblu_i, mxjblu_i1, mxjblu_i)
+
+
+```
+
+JNJ
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+jnj7_gd <- jnj7_decr_Days_grouped
+jnj7_gi <- jnj7_incr_Days_grouped
+
+#removes the row names 
+row.names(jnj7_gd) <- NULL
+row.names(jnj7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+jnj7_gd <- jnj7_gd[order(jnj7_gd$n),]
+jnj7_gi <- jnj7_gi[order(jnj7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnjnj_d <- as.numeric(floor(quantile(jnj7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(jnj7_gd$n)/2)
+mdnjnj_d1 <- as.numeric(jnj7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3jnj_d <- as.numeric(floor(quantile(jnj7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(jnj7_gd$n)*.75)
+q3jnj_d1 <- as.numeric(jnj7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxjnj_d <- as.numeric(floor(quantile(jnj7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxjnj_d1 <- as.numeric(jnj7_gd[length(jnj7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnjnj_i <- as.numeric(floor(quantile(jnj7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(jnj7_gi$n)/2)
+mdnjnj_i1 <- as.numeric(jnj7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3jnj_i <- as.numeric(floor(quantile(jnj7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(jnj7_gi$n)*.75)
+q3jnj_i1 <- as.numeric(jnj7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxjnj_i <- as.numeric(floor(quantile(jnj7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxjnj_i1 <- as.numeric(jnj7_gi[length(jnj7_gi$n),1])
+
+
+jnj_g <- grep('JNJ', ALL_52$stock)
+
+ALL_52[jnj_g,18:29] <- c(mdnjnj_d1, mdnjnj_d, q3jnj_d1, q3jnj_d,
+                         mxjnj_d1, mxjnj_d, mdnjnj_i1, mdnjnj_i,
+                         q3jnj_i1, q3jnj_i, mxjnj_i1, mxjnj_i)
+
+
+```
+
+JPM
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+jpm7_gd <- jpm7_decr_Days_grouped
+jpm7_gi <- jpm7_incr_Days_grouped
+
+#removes the row names 
+row.names(jpm7_gd) <- NULL
+row.names(jpm7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+jpm7_gd <- jpm7_gd[order(jpm7_gd$n),]
+jpm7_gi <- jpm7_gi[order(jpm7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnjpm_d <- as.numeric(floor(quantile(jpm7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(jpm7_gd$n)/2)
+mdnjpm_d1 <- as.numeric(jpm7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3jpm_d <- as.numeric(floor(quantile(jpm7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(jpm7_gd$n)*.75)
+q3jpm_d1 <- as.numeric(jpm7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxjpm_d <- as.numeric(floor(quantile(jpm7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxjpm_d1 <- as.numeric(jpm7_gd[length(jpm7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnjpm_i <- as.numeric(floor(quantile(jpm7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(jpm7_gi$n)/2)
+mdnjpm_i1 <- as.numeric(jpm7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3jpm_i <- as.numeric(floor(quantile(jpm7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(jpm7_gi$n)*.75)
+q3jpm_i1 <- as.numeric(jpm7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxjpm_i <- as.numeric(floor(quantile(jpm7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxjpm_i1 <- as.numeric(jpm7_gi[length(jpm7_gi$n),1])
+
+
+jpm_g <- grep('JPM', ALL_52$stock)
+
+ALL_52[jpm_g,18:29] <- c(mdnjpm_d1, mdnjpm_d, q3jpm_d1, q3jpm_d,
+                         mxjpm_d1, mxjpm_d, mdnjpm_i1, mdnjpm_i,
+                         q3jpm_i1, q3jpm_i, mxjpm_i1, mxjpm_i)
+
+
+```
+
+JWN
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+jwn7_gd <- jwn7_decr_Days_grouped
+jwn7_gi <- jwn7_incr_Days_grouped
+
+#removes the row names 
+row.names(jwn7_gd) <- NULL
+row.names(jwn7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+jwn7_gd <- jwn7_gd[order(jwn7_gd$n),]
+jwn7_gi <- jwn7_gi[order(jwn7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnjwn_d <- as.numeric(floor(quantile(jwn7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(jwn7_gd$n)/2)
+mdnjwn_d1 <- as.numeric(jwn7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3jwn_d <- as.numeric(floor(quantile(jwn7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(jwn7_gd$n)*.75)
+q3jwn_d1 <- as.numeric(jwn7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxjwn_d <- as.numeric(floor(quantile(jwn7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxjwn_d1 <- as.numeric(jwn7_gd[length(jwn7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnjwn_i <- as.numeric(floor(quantile(jwn7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(jwn7_gi$n)/2)
+mdnjwn_i1 <- as.numeric(jwn7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3jwn_i <- as.numeric(floor(quantile(jwn7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(jwn7_gi$n)*.75)
+q3jwn_i1 <- as.numeric(jwn7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxjwn_i <- as.numeric(floor(quantile(jwn7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxjwn_i1 <- as.numeric(jwn7_gi[length(jwn7_gi$n),1])
+
+
+jwn_g <- grep('JWN', ALL_52$stock)
+
+ALL_52[jwn_g,18:29] <- c(mdnjwn_d1, mdnjwn_d, q3jwn_d1, q3jwn_d,
+                         mxjwn_d1, mxjwn_d, mdnjwn_i1, mdnjwn_i,
+                         q3jwn_i1, q3jwn_i, mxjwn_i1, mxjwn_i)
+
+
+```
+
+KGJI
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+kgji7_gd <- kgji7_decr_Days_grouped
+kgji7_gi <- kgji7_incr_Days_grouped
+
+#removes the row names 
+row.names(kgji7_gd) <- NULL
+row.names(kgji7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+kgji7_gd <- kgji7_gd[order(kgji7_gd$n),]
+kgji7_gi <- kgji7_gi[order(kgji7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnkgji_d <- as.numeric(floor(quantile(kgji7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(kgji7_gd$n)/2)
+mdnkgji_d1 <- as.numeric(kgji7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3kgji_d <- as.numeric(floor(quantile(kgji7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(kgji7_gd$n)*.75)
+q3kgji_d1 <- as.numeric(kgji7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxkgji_d <- as.numeric(floor(quantile(kgji7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxkgji_d1 <- as.numeric(kgji7_gd[length(kgji7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnkgji_i <- as.numeric(floor(quantile(kgji7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(kgji7_gi$n)/2)
+mdnkgji_i1 <- as.numeric(kgji7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3kgji_i <- as.numeric(floor(quantile(kgji7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(kgji7_gi$n)*.75)
+q3kgji_i1 <- as.numeric(kgji7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxkgji_i <- as.numeric(floor(quantile(kgji7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxkgji_i1 <- as.numeric(kgji7_gi[length(kgji7_gi$n),1])
+
+
+kgji_g <- grep('KGJI', ALL_52$stock)
+
+ALL_52[kgji_g,18:29] <- c(mdnkgji_d1, mdnkgji_d, q3kgji_d1, q3kgji_d,
+                         mxkgji_d1, mxkgji_d, mdnkgji_i1, mdnkgji_i,
+                         q3kgji_i1, q3kgji_i, mxkgji_i1, mxkgji_i)
+
+
+```
+
+KSS
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+kss7_gd <- kss7_decr_Days_grouped
+kss7_gi <- kss7_incr_Days_grouped
+
+#removes the row names 
+row.names(kss7_gd) <- NULL
+row.names(kss7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+kss7_gd <- kss7_gd[order(kss7_gd$n),]
+kss7_gi <- kss7_gi[order(kss7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnkss_d <- as.numeric(floor(quantile(kss7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(kss7_gd$n)/2)
+mdnkss_d1 <- as.numeric(kss7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3kss_d <- as.numeric(floor(quantile(kss7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(kss7_gd$n)*.75)
+q3kss_d1 <- as.numeric(kss7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxkss_d <- as.numeric(floor(quantile(kss7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxkss_d1 <- as.numeric(kss7_gd[length(kss7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnkss_i <- as.numeric(floor(quantile(kss7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(kss7_gi$n)/2)
+mdnkss_i1 <- as.numeric(kss7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3kss_i <- as.numeric(floor(quantile(kss7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(kss7_gi$n)*.75)
+q3kss_i1 <- as.numeric(kss7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxkss_i <- as.numeric(floor(quantile(kss7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxkss_i1 <- as.numeric(kss7_gi[length(kss7_gi$n),1])
+
+
+kss_g <- grep('KSS', ALL_52$stock)
+
+ALL_52[kss_g,18:29] <- c(mdnkss_d1, mdnkss_d, q3kss_d1, q3kss_d,
+                         mxkss_d1, mxkss_d, mdnkss_i1, mdnkss_i,
+                         q3kss_i1, q3kss_i, mxkss_i1, mxkss_i)
+
+
+```
+
+LUV
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+luv7_gd <- luv7_decr_Days_grouped
+luv7_gi <- luv7_incr_Days_grouped
+
+#removes the row names 
+row.names(luv7_gd) <- NULL
+row.names(luv7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+luv7_gd <- luv7_gd[order(luv7_gd$n),]
+luv7_gi <- luv7_gi[order(luv7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnluv_d <- as.numeric(floor(quantile(luv7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(luv7_gd$n)/2)
+mdnluv_d1 <- as.numeric(luv7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3luv_d <- as.numeric(floor(quantile(luv7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(luv7_gd$n)*.75)
+q3luv_d1 <- as.numeric(luv7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxluv_d <- as.numeric(floor(quantile(luv7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxluv_d1 <- as.numeric(luv7_gd[length(luv7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnluv_i <- as.numeric(floor(quantile(luv7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(luv7_gi$n)/2)
+mdnluv_i1 <- as.numeric(luv7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3luv_i <- as.numeric(floor(quantile(luv7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(luv7_gi$n)*.75)
+q3luv_i1 <- as.numeric(luv7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxluv_i <- as.numeric(floor(quantile(luv7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxluv_i1 <- as.numeric(luv7_gi[length(luv7_gi$n),1])
+
+
+luv_g <- grep('LUV', ALL_52$stock)
+
+ALL_52[luv_g,18:29] <- c(mdnluv_d1, mdnluv_d, q3luv_d1, q3luv_d,
+                         mxluv_d1, mxluv_d, mdnluv_i1, mdnluv_i,
+                         q3luv_i1, q3luv_i, mxluv_i1, mxluv_i)
+
+
+```
+
+M
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+m7_gd <- m7_decr_Days_grouped
+m7_gi <- m7_incr_Days_grouped
+
+#removes the row names 
+row.names(m7_gd) <- NULL
+row.names(m7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+m7_gd <- m7_gd[order(m7_gd$n),]
+m7_gi <- m7_gi[order(m7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnm_d <- as.numeric(floor(quantile(m7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(m7_gd$n)/2)
+mdnm_d1 <- as.numeric(m7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3m_d <- as.numeric(floor(quantile(m7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(m7_gd$n)*.75)
+q3m_d1 <- as.numeric(m7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxm_d <- as.numeric(floor(quantile(m7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxm_d1 <- as.numeric(m7_gd[length(m7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnm_i <- as.numeric(floor(quantile(m7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(m7_gi$n)/2)
+mdnm_i1 <- as.numeric(m7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3m_i <- as.numeric(floor(quantile(m7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(m7_gi$n)*.75)
+q3m_i1 <- as.numeric(m7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxm_i <- as.numeric(floor(quantile(m7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxm_i1 <- as.numeric(m7_gi[length(m7_gi$n),1])
+
+
+m_g <- grep('^M$', ALL_52$stock)
+
+ALL_52[m_g,18:29] <- c(mdnm_d1, mdnm_d, q3m_d1, q3m_d,
+                         mxm_d1, mxm_d, mdnm_i1, mdnm_i,
+                         q3m_i1, q3m_i, mxm_i1, mxm_i)
+
+
+```
+
+MGM
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+mgm7_gd <- mgm7_decr_Days_grouped
+mgm7_gi <- mgm7_incr_Days_grouped
+
+#removes the row names 
+row.names(mgm7_gd) <- NULL
+row.names(mgm7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+mgm7_gd <- mgm7_gd[order(mgm7_gd$n),]
+mgm7_gi <- mgm7_gi[order(mgm7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnmgm_d <- as.numeric(floor(quantile(mgm7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(mgm7_gd$n)/2)
+mdnmgm_d1 <- as.numeric(mgm7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3mgm_d <- as.numeric(floor(quantile(mgm7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(mgm7_gd$n)*.75)
+q3mgm_d1 <- as.numeric(mgm7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxmgm_d <- as.numeric(floor(quantile(mgm7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxmgm_d1 <- as.numeric(mgm7_gd[length(mgm7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnmgm_i <- as.numeric(floor(quantile(mgm7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(mgm7_gi$n)/2)
+mdnmgm_i1 <- as.numeric(mgm7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3mgm_i <- as.numeric(floor(quantile(mgm7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(mgm7_gi$n)*.75)
+q3mgm_i1 <- as.numeric(mgm7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxmgm_i <- as.numeric(floor(quantile(mgm7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxmgm_i1 <- as.numeric(mgm7_gi[length(mgm7_gi$n),1])
+
+
+mgm_g <- grep('MGM', ALL_52$stock)
+
+ALL_52[mgm_g,18:29] <- c(mdnmgm_d1, mdnmgm_d, q3mgm_d1, q3mgm_d,
+                         mxmgm_d1, mxmgm_d, mdnmgm_i1, mdnmgm_i,
+                         q3mgm_i1, q3mgm_i, mxmgm_i1, mxmgm_i)
+
+
+```
+
+
+MSFT
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+msft7_gd <- msft7_decr_Days_grouped
+msft7_gi <- msft7_incr_Days_grouped
+
+#removes the row names 
+row.names(msft7_gd) <- NULL
+row.names(msft7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+msft7_gd <- msft7_gd[order(msft7_gd$n),]
+msft7_gi <- msft7_gi[order(msft7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnmsft_d <- as.numeric(floor(quantile(msft7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(msft7_gd$n)/2)
+mdnmsft_d1 <- as.numeric(msft7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3msft_d <- as.numeric(floor(quantile(msft7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(msft7_gd$n)*.75)
+q3msft_d1 <- as.numeric(msft7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxmsft_d <- as.numeric(floor(quantile(msft7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxmsft_d1 <- as.numeric(msft7_gd[length(msft7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnmsft_i <- as.numeric(floor(quantile(msft7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(msft7_gi$n)/2)
+mdnmsft_i1 <- as.numeric(msft7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3msft_i <- as.numeric(floor(quantile(msft7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(msft7_gi$n)*.75)
+q3msft_i1 <- as.numeric(msft7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxmsft_i <- as.numeric(floor(quantile(msft7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxmsft_i1 <- as.numeric(msft7_gi[length(msft7_gi$n),1])
+
+
+msft_g <- grep('MSFT', ALL_52$stock)
+
+ALL_52[msft_g,18:29] <- c(mdnmsft_d1, mdnmsft_d, q3msft_d1, q3msft_d,
+                         mxmsft_d1, mxmsft_d, mdnmsft_i1, mdnmsft_i,
+                         q3msft_i1, q3msft_i, mxmsft_i1, mxmsft_i)
+
+
+```
+
+
+NFLX
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+nflx7_gd <- nflx7_decr_Days_grouped
+nflx7_gi <- nflx7_incr_Days_grouped
+
+#removes the row names 
+row.names(nflx7_gd) <- NULL
+row.names(nflx7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+nflx7_gd <- nflx7_gd[order(nflx7_gd$n),]
+nflx7_gi <- nflx7_gi[order(nflx7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnnflx_d <- as.numeric(floor(quantile(nflx7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(nflx7_gd$n)/2)
+mdnnflx_d1 <- as.numeric(nflx7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3nflx_d <- as.numeric(floor(quantile(nflx7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(nflx7_gd$n)*.75)
+q3nflx_d1 <- as.numeric(nflx7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxnflx_d <- as.numeric(floor(quantile(nflx7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxnflx_d1 <- as.numeric(nflx7_gd[length(nflx7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnnflx_i <- as.numeric(floor(quantile(nflx7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(nflx7_gi$n)/2)
+mdnnflx_i1 <- as.numeric(nflx7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3nflx_i <- as.numeric(floor(quantile(nflx7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(nflx7_gi$n)*.75)
+q3nflx_i1 <- as.numeric(nflx7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxnflx_i <- as.numeric(floor(quantile(nflx7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxnflx_i1 <- as.numeric(nflx7_gi[length(nflx7_gi$n),1])
+
+
+nflx_g <- grep('NFLX', ALL_52$stock)
+
+ALL_52[nflx_g,18:29] <- c(mdnnflx_d1, mdnnflx_d, q3nflx_d1, q3nflx_d,
+                         mxnflx_d1, mxnflx_d, mdnnflx_i1, mdnnflx_i,
+                         q3nflx_i1, q3nflx_i, mxnflx_i1, mxnflx_i)
+
+
+```
+
+NKE
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+nke7_gd <- nke7_decr_Days_grouped
+nke7_gi <- nke7_incr_Days_grouped
+
+#removes the row names 
+row.names(nke7_gd) <- NULL
+row.names(nke7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+nke7_gd <- nke7_gd[order(nke7_gd$n),]
+nke7_gi <- nke7_gi[order(nke7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnnke_d <- as.numeric(floor(quantile(nke7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(nke7_gd$n)/2)
+mdnnke_d1 <- as.numeric(nke7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3nke_d <- as.numeric(floor(quantile(nke7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(nke7_gd$n)*.75)
+q3nke_d1 <- as.numeric(nke7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxnke_d <- as.numeric(floor(quantile(nke7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxnke_d1 <- as.numeric(nke7_gd[length(nke7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnnke_i <- as.numeric(floor(quantile(nke7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(nke7_gi$n)/2)
+mdnnke_i1 <- as.numeric(nke7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3nke_i <- as.numeric(floor(quantile(nke7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(nke7_gi$n)*.75)
+q3nke_i1 <- as.numeric(nke7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxnke_i <- as.numeric(floor(quantile(nke7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxnke_i1 <- as.numeric(nke7_gi[length(nke7_gi$n),1])
+
+
+nke_g <- grep('NKE', ALL_52$stock)
+
+ALL_52[nke_g,18:29] <- c(mdnnke_d1, mdnnke_d, q3nke_d1, q3nke_d,
+                         mxnke_d1, mxnke_d, mdnnke_i1, mdnnke_i,
+                         q3nke_i1, q3nke_i, mxnke_i1, mxnke_i)
+
+
+```
+
+NSANY
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+nsany7_gd <- nsany7_decr_Days_grouped
+nsany7_gi <- nsany7_incr_Days_grouped
+
+#removes the row names 
+row.names(nsany7_gd) <- NULL
+row.names(nsany7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+nsany7_gd <- nsany7_gd[order(nsany7_gd$n),]
+nsany7_gi <- nsany7_gi[order(nsany7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnnsany_d <- as.numeric(floor(quantile(nsany7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(nsany7_gd$n)/2)
+mdnnsany_d1 <- as.numeric(nsany7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3nsany_d <- as.numeric(floor(quantile(nsany7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(nsany7_gd$n)*.75)
+q3nsany_d1 <- as.numeric(nsany7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxnsany_d <- as.numeric(floor(quantile(nsany7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxnsany_d1 <- as.numeric(nsany7_gd[length(nsany7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnnsany_i <- as.numeric(floor(quantile(nsany7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(nsany7_gi$n)/2)
+mdnnsany_i1 <- as.numeric(nsany7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3nsany_i <- as.numeric(floor(quantile(nsany7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(nsany7_gi$n)*.75)
+q3nsany_i1 <- as.numeric(nsany7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxnsany_i <- as.numeric(floor(quantile(nsany7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxnsany_i1 <- as.numeric(nsany7_gi[length(nsany7_gi$n),1])
+
+
+nsany_g <- grep('NSANY', ALL_52$stock)
+
+ALL_52[nsany_g,18:29] <- c(mdnnsany_d1, mdnnsany_d, q3nsany_d1, q3nsany_d,
+                         mxnsany_d1, mxnsany_d, mdnnsany_i1, mdnnsany_i,
+                         q3nsany_i1, q3nsany_i, mxnsany_i1, mxnsany_i)
+
+
+```
+
+NUS
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+nus7_gd <- nus7_decr_Days_grouped
+nus7_gi <- nus7_incr_Days_grouped
+
+#removes the row names 
+row.names(nus7_gd) <- NULL
+row.names(nus7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+nus7_gd <- nus7_gd[order(nus7_gd$n),]
+nus7_gi <- nus7_gi[order(nus7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnnus_d <- as.numeric(floor(quantile(nus7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(nus7_gd$n)/2)
+mdnnus_d1 <- as.numeric(nus7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3nus_d <- as.numeric(floor(quantile(nus7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(nus7_gd$n)*.75)
+q3nus_d1 <- as.numeric(nus7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxnus_d <- as.numeric(floor(quantile(nus7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxnus_d1 <- as.numeric(nus7_gd[length(nus7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnnus_i <- as.numeric(floor(quantile(nus7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(nus7_gi$n)/2)
+mdnnus_i1 <- as.numeric(nus7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3nus_i <- as.numeric(floor(quantile(nus7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(nus7_gi$n)*.75)
+q3nus_i1 <- as.numeric(nus7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxnus_i <- as.numeric(floor(quantile(nus7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxnus_i1 <- as.numeric(nus7_gi[length(nus7_gi$n),1])
+
+
+nus_g <- grep('NUS', ALL_52$stock)
+
+ALL_52[nus_g,18:29] <- c(mdnnus_d1, mdnnus_d, q3nus_d1, q3nus_d,
+                         mxnus_d1, mxnus_d, mdnnus_i1, mdnnus_i,
+                         q3nus_i1, q3nus_i, mxnus_i1, mxnus_i)
+
+
+```
+
+ONCY
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+oncy7_gd <- oncy7_decr_Days_grouped
+oncy7_gi <- oncy7_incr_Days_grouped
+
+#removes the row names 
+row.names(oncy7_gd) <- NULL
+row.names(oncy7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+oncy7_gd <- oncy7_gd[order(oncy7_gd$n),]
+oncy7_gi <- oncy7_gi[order(oncy7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnoncy_d <- as.numeric(floor(quantile(oncy7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(oncy7_gd$n)/2)
+mdnoncy_d1 <- as.numeric(oncy7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3oncy_d <- as.numeric(floor(quantile(oncy7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(oncy7_gd$n)*.75)
+q3oncy_d1 <- as.numeric(oncy7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxoncy_d <- as.numeric(floor(quantile(oncy7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxoncy_d1 <- as.numeric(oncy7_gd[length(oncy7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnoncy_i <- as.numeric(floor(quantile(oncy7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(oncy7_gi$n)/2)
+mdnoncy_i1 <- as.numeric(oncy7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3oncy_i <- as.numeric(floor(quantile(oncy7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(oncy7_gi$n)*.75)
+q3oncy_i1 <- as.numeric(oncy7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxoncy_i <- as.numeric(floor(quantile(oncy7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxoncy_i1 <- as.numeric(oncy7_gi[length(oncy7_gi$n),1])
+
+
+oncy_g <- grep('ONCY', ALL_52$stock)
+
+ALL_52[oncy_g,18:29] <- c(mdnoncy_d1, mdnoncy_d, q3oncy_d1, q3oncy_d,
+                         mxoncy_d1, mxoncy_d, mdnoncy_i1, mdnoncy_i,
+                         q3oncy_i1, q3oncy_i, mxoncy_i1, mxoncy_i)
+
+
+```
+
+PCG
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+pcg7_gd <- pcg7_decr_Days_grouped
+pcg7_gi <- pcg7_incr_Days_grouped
+
+#removes the row names 
+row.names(pcg7_gd) <- NULL
+row.names(pcg7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+pcg7_gd <- pcg7_gd[order(pcg7_gd$n),]
+pcg7_gi <- pcg7_gi[order(pcg7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnpcg_d <- as.numeric(floor(quantile(pcg7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(pcg7_gd$n)/2)
+mdnpcg_d1 <- as.numeric(pcg7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3pcg_d <- as.numeric(floor(quantile(pcg7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(pcg7_gd$n)*.75)
+q3pcg_d1 <- as.numeric(pcg7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxpcg_d <- as.numeric(floor(quantile(pcg7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxpcg_d1 <- as.numeric(pcg7_gd[length(pcg7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnpcg_i <- as.numeric(floor(quantile(pcg7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(pcg7_gi$n)/2)
+mdnpcg_i1 <- as.numeric(pcg7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3pcg_i <- as.numeric(floor(quantile(pcg7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(pcg7_gi$n)*.75)
+q3pcg_i1 <- as.numeric(pcg7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxpcg_i <- as.numeric(floor(quantile(pcg7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxpcg_i1 <- as.numeric(pcg7_gi[length(pcg7_gi$n),1])
+
+
+pcg_g <- grep('PCG', ALL_52$stock)
+
+ALL_52[pcg_g,18:29] <- c(mdnpcg_d1, mdnpcg_d, q3pcg_d1, q3pcg_d,
+                         mxpcg_d1, mxpcg_d, mdnpcg_i1, mdnpcg_i,
+                         q3pcg_i1, q3pcg_i, mxpcg_i1, mxpcg_i)
+
+
+```
+
+ROST
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+rost7_gd <- rost7_decr_Days_grouped
+rost7_gi <- rost7_incr_Days_grouped
+
+#removes the row names 
+row.names(rost7_gd) <- NULL
+row.names(rost7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+rost7_gd <- rost7_gd[order(rost7_gd$n),]
+rost7_gi <- rost7_gi[order(rost7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnrost_d <- as.numeric(floor(quantile(rost7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(rost7_gd$n)/2)
+mdnrost_d1 <- as.numeric(rost7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3rost_d <- as.numeric(floor(quantile(rost7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(rost7_gd$n)*.75)
+q3rost_d1 <- as.numeric(rost7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxrost_d <- as.numeric(floor(quantile(rost7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxrost_d1 <- as.numeric(rost7_gd[length(rost7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnrost_i <- as.numeric(floor(quantile(rost7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(rost7_gi$n)/2)
+mdnrost_i1 <- as.numeric(rost7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3rost_i <- as.numeric(floor(quantile(rost7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(rost7_gi$n)*.75)
+q3rost_i1 <- as.numeric(rost7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxrost_i <- as.numeric(floor(quantile(rost7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxrost_i1 <- as.numeric(rost7_gi[length(rost7_gi$n),1])
+
+
+rost_g <- grep('ROST', ALL_52$stock)
+
+ALL_52[rost_g,18:29] <- c(mdnrost_d1, mdnrost_d, q3rost_d1, q3rost_d,
+                         mxrost_d1, mxrost_d, mdnrost_i1, mdnrost_i,
+                         q3rost_i1, q3rost_i, mxrost_i1, mxrost_i)
+
+
+```
+
+RRGB
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+rrgb7_gd <- rrgb7_decr_Days_grouped
+rrgb7_gi <- rrgb7_incr_Days_grouped
+
+#removes the row names 
+row.names(rrgb7_gd) <- NULL
+row.names(rrgb7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+rrgb7_gd <- rrgb7_gd[order(rrgb7_gd$n),]
+rrgb7_gi <- rrgb7_gi[order(rrgb7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnrrgb_d <- as.numeric(floor(quantile(rrgb7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(rrgb7_gd$n)/2)
+mdnrrgb_d1 <- as.numeric(rrgb7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3rrgb_d <- as.numeric(floor(quantile(rrgb7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(rrgb7_gd$n)*.75)
+q3rrgb_d1 <- as.numeric(rrgb7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxrrgb_d <- as.numeric(floor(quantile(rrgb7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxrrgb_d1 <- as.numeric(rrgb7_gd[length(rrgb7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnrrgb_i <- as.numeric(floor(quantile(rrgb7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(rrgb7_gi$n)/2)
+mdnrrgb_i1 <- as.numeric(rrgb7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3rrgb_i <- as.numeric(floor(quantile(rrgb7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(rrgb7_gi$n)*.75)
+q3rrgb_i1 <- as.numeric(rrgb7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxrrgb_i <- as.numeric(floor(quantile(rrgb7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxrrgb_i1 <- as.numeric(rrgb7_gi[length(rrgb7_gi$n),1])
+
+
+rrgb_g <- grep('RRGB', ALL_52$stock)
+
+ALL_52[rrgb_g,18:29] <- c(mdnrrgb_d1, mdnrrgb_d, q3rrgb_d1, q3rrgb_d,
+                         mxrrgb_d1, mxrrgb_d, mdnrrgb_i1, mdnrrgb_i,
+                         q3rrgb_i1, q3rrgb_i, mxrrgb_i1, mxrrgb_i)
+
+
+```
+
+S
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+s7_gd <- s7_decr_Days_grouped
+s7_gi <- s7_incr_Days_grouped
+
+#removes the row names 
+row.names(s7_gd) <- NULL
+row.names(s7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+s7_gd <- s7_gd[order(s7_gd$n),]
+s7_gi <- s7_gi[order(s7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdns_d <- as.numeric(floor(quantile(s7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(s7_gd$n)/2)
+mdns_d1 <- as.numeric(s7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3s_d <- as.numeric(floor(quantile(s7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(s7_gd$n)*.75)
+q3s_d1 <- as.numeric(s7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxs_d <- as.numeric(floor(quantile(s7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxs_d1 <- as.numeric(s7_gd[length(s7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdns_i <- as.numeric(floor(quantile(s7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(s7_gi$n)/2)
+mdns_i1 <- as.numeric(s7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3s_i <- as.numeric(floor(quantile(s7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(s7_gi$n)*.75)
+q3s_i1 <- as.numeric(s7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxs_i <- as.numeric(floor(quantile(s7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxs_i1 <- as.numeric(s7_gi[length(s7_gi$n),1])
+
+
+s_g <- grep('S$', ALL_52$stock)
+
+ALL_52[s_g,18:29] <- c(mdns_d1, mdns_d, q3s_d1, q3s_d,
+                         mxs_d1, mxs_d, mdns_i1, mdns_i,
+                         q3s_i1, q3s_i, mxs_i1, mxs_i)
+
+
+```
+
+SIG
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+sig7_gd <- sig7_decr_Days_grouped
+sig7_gi <- sig7_incr_Days_grouped
+
+#removes the row names 
+row.names(sig7_gd) <- NULL
+row.names(sig7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+sig7_gd <- sig7_gd[order(sig7_gd$n),]
+sig7_gi <- sig7_gi[order(sig7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnsig_d <- as.numeric(floor(quantile(sig7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(sig7_gd$n)/2)
+mdnsig_d1 <- as.numeric(sig7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3sig_d <- as.numeric(floor(quantile(sig7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(sig7_gd$n)*.75)
+q3sig_d1 <- as.numeric(sig7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxsig_d <- as.numeric(floor(quantile(sig7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxsig_d1 <- as.numeric(sig7_gd[length(sig7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnsig_i <- as.numeric(floor(quantile(sig7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(sig7_gi$n)/2)
+mdnsig_i1 <- as.numeric(sig7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3sig_i <- as.numeric(floor(quantile(sig7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(sig7_gi$n)*.75)
+q3sig_i1 <- as.numeric(sig7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxsig_i <- as.numeric(floor(quantile(sig7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxsig_i1 <- as.numeric(sig7_gi[length(sig7_gi$n),1])
+
+
+sig_g <- grep('SIG', ALL_52$stock)
+
+ALL_52[sig_g,18:29] <- c(mdnsig_d1, mdnsig_d, q3sig_d1, q3sig_d,
+                         mxsig_d1, mxsig_d, mdnsig_i1, mdnsig_i,
+                         q3sig_i1, q3sig_i, mxsig_i1, mxsig_i)
+
+
+```
+
+T
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+t7_gd <- t7_decr_Days_grouped
+t7_gi <- t7_incr_Days_grouped
+
+#removes the row names 
+row.names(t7_gd) <- NULL
+row.names(t7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+t7_gd <- t7_gd[order(t7_gd$n),]
+t7_gi <- t7_gi[order(t7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnt_d <- as.numeric(floor(quantile(t7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(t7_gd$n)/2)
+mdnt_d1 <- as.numeric(t7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3t_d <- as.numeric(floor(quantile(t7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(t7_gd$n)*.75)
+q3t_d1 <- as.numeric(t7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxt_d <- as.numeric(floor(quantile(t7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxt_d1 <- as.numeric(t7_gd[length(t7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnt_i <- as.numeric(floor(quantile(t7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(t7_gi$n)/2)
+mdnt_i1 <- as.numeric(t7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3t_i <- as.numeric(floor(quantile(t7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(t7_gi$n)*.75)
+q3t_i1 <- as.numeric(t7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxt_i <- as.numeric(floor(quantile(t7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxt_i1 <- as.numeric(t7_gi[length(t7_gi$n),1])
+
+
+t_g <- grep('^T$', ALL_52$stock)
+
+ALL_52[t_g,18:29] <- c(mdnt_d1, mdnt_d, q3t_d1, q3t_d,
+                         mxt_d1, mxt_d, mdnt_i1, mdnt_i,
+                         q3t_i1, q3t_i, mxt_i1, mxt_i)
+
+
+```
+
+TEVA
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+teva7_gd <- teva7_decr_Days_grouped
+teva7_gi <- teva7_incr_Days_grouped
+
+#removes the row names 
+row.names(teva7_gd) <- NULL
+row.names(teva7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+teva7_gd <- teva7_gd[order(teva7_gd$n),]
+teva7_gi <- teva7_gi[order(teva7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnteva_d <- as.numeric(floor(quantile(teva7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(teva7_gd$n)/2)
+mdnteva_d1 <- as.numeric(teva7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3teva_d <- as.numeric(floor(quantile(teva7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(teva7_gd$n)*.75)
+q3teva_d1 <- as.numeric(teva7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxteva_d <- as.numeric(floor(quantile(teva7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxteva_d1 <- as.numeric(teva7_gd[length(teva7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnteva_i <- as.numeric(floor(quantile(teva7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(teva7_gi$n)/2)
+mdnteva_i1 <- as.numeric(teva7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3teva_i <- as.numeric(floor(quantile(teva7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(teva7_gi$n)*.75)
+q3teva_i1 <- as.numeric(teva7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxteva_i <- as.numeric(floor(quantile(teva7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxteva_i1 <- as.numeric(teva7_gi[length(teva7_gi$n),1])
+
+
+teva_g <- grep('TEVA', ALL_52$stock)
+
+ALL_52[teva_g,18:29] <- c(mdnteva_d1, mdnteva_d, q3teva_d1, q3teva_d,
+                         mxteva_d1, mxteva_d, mdnteva_i1, mdnteva_i,
+                         q3teva_i1, q3teva_i, mxteva_i1, mxteva_i)
+
+
+```
+
+TGT
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+tgt7_gd <- tgt7_decr_Days_grouped
+tgt7_gi <- tgt7_incr_Days_grouped
+
+#removes the row names 
+row.names(tgt7_gd) <- NULL
+row.names(tgt7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+tgt7_gd <- tgt7_gd[order(tgt7_gd$n),]
+tgt7_gi <- tgt7_gi[order(tgt7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdntgt_d <- as.numeric(floor(quantile(tgt7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(tgt7_gd$n)/2)
+mdntgt_d1 <- as.numeric(tgt7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3tgt_d <- as.numeric(floor(quantile(tgt7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(tgt7_gd$n)*.75)
+q3tgt_d1 <- as.numeric(tgt7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxtgt_d <- as.numeric(floor(quantile(tgt7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxtgt_d1 <- as.numeric(tgt7_gd[length(tgt7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdntgt_i <- as.numeric(floor(quantile(tgt7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(tgt7_gi$n)/2)
+mdntgt_i1 <- as.numeric(tgt7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3tgt_i <- as.numeric(floor(quantile(tgt7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(tgt7_gi$n)*.75)
+q3tgt_i1 <- as.numeric(tgt7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxtgt_i <- as.numeric(floor(quantile(tgt7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxtgt_i1 <- as.numeric(tgt7_gi[length(tgt7_gi$n),1])
+
+
+tgt_g <- grep('TGT', ALL_52$stock)
+
+ALL_52[tgt_g,18:29] <- c(mdntgt_d1, mdntgt_d, q3tgt_d1, q3tgt_d,
+                         mxtgt_d1, mxtgt_d, mdntgt_i1, mdntgt_i,
+                         q3tgt_i1, q3tgt_i, mxtgt_i1, mxtgt_i)
+
+
+```
+
+TJX
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+tjx7_gd <- tjx7_decr_Days_grouped
+tjx7_gi <- tjx7_incr_Days_grouped
+
+#removes the row names 
+row.names(tjx7_gd) <- NULL
+row.names(tjx7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+tjx7_gd <- tjx7_gd[order(tjx7_gd$n),]
+tjx7_gi <- tjx7_gi[order(tjx7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdntjx_d <- as.numeric(floor(quantile(tjx7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(tjx7_gd$n)/2)
+mdntjx_d1 <- as.numeric(tjx7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3tjx_d <- as.numeric(floor(quantile(tjx7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(tjx7_gd$n)*.75)
+q3tjx_d1 <- as.numeric(tjx7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxtjx_d <- as.numeric(floor(quantile(tjx7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxtjx_d1 <- as.numeric(tjx7_gd[length(tjx7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdntjx_i <- as.numeric(floor(quantile(tjx7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(tjx7_gi$n)/2)
+mdntjx_i1 <- as.numeric(tjx7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3tjx_i <- as.numeric(floor(quantile(tjx7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(tjx7_gi$n)*.75)
+q3tjx_i1 <- as.numeric(tjx7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxtjx_i <- as.numeric(floor(quantile(tjx7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxtjx_i1 <- as.numeric(tjx7_gi[length(tjx7_gi$n),1])
+
+
+tjx_g <- grep('TJX', ALL_52$stock)
+
+ALL_52[tjx_g,18:29] <- c(mdntjx_d1, mdntjx_d, q3tjx_d1, q3tjx_d,
+                         mxtjx_d1, mxtjx_d, mdntjx_i1, mdntjx_i,
+                         q3tjx_i1, q3tjx_i, mxtjx_i1, mxtjx_i)
+
+
+```
+
+TM
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+tm7_gd <- tm7_decr_Days_grouped
+tm7_gi <- tm7_incr_Days_grouped
+
+#removes the row names 
+row.names(tm7_gd) <- NULL
+row.names(tm7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+tm7_gd <- tm7_gd[order(tm7_gd$n),]
+tm7_gi <- tm7_gi[order(tm7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdntm_d <- as.numeric(floor(quantile(tm7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(tm7_gd$n)/2)
+mdntm_d1 <- as.numeric(tm7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3tm_d <- as.numeric(floor(quantile(tm7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(tm7_gd$n)*.75)
+q3tm_d1 <- as.numeric(tm7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxtm_d <- as.numeric(floor(quantile(tm7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxtm_d1 <- as.numeric(tm7_gd[length(tm7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdntm_i <- as.numeric(floor(quantile(tm7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(tm7_gi$n)/2)
+mdntm_i1 <- as.numeric(tm7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3tm_i <- as.numeric(floor(quantile(tm7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(tm7_gi$n)*.75)
+q3tm_i1 <- as.numeric(tm7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxtm_i <- as.numeric(floor(quantile(tm7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxtm_i1 <- as.numeric(tm7_gi[length(tm7_gi$n),1])
+
+
+tm_g <- grep('^TM$', ALL_52$stock)
+
+ALL_52[tm_g,18:29] <- c(mdntm_d1, mdntm_d, q3tm_d1, q3tm_d,
+                         mxtm_d1, mxtm_d, mdntm_i1, mdntm_i,
+                         q3tm_i1, q3tm_i, mxtm_i1, mxtm_i)
+
+
+```
+
+UBSI
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+ubsi7_gd <- ubsi7_decr_Days_grouped
+ubsi7_gi <- ubsi7_incr_Days_grouped
+
+#removes the row names 
+row.names(ubsi7_gd) <- NULL
+row.names(ubsi7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+ubsi7_gd <- ubsi7_gd[order(ubsi7_gd$n),]
+ubsi7_gi <- ubsi7_gi[order(ubsi7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnubsi_d <- as.numeric(floor(quantile(ubsi7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(ubsi7_gd$n)/2)
+mdnubsi_d1 <- as.numeric(ubsi7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3ubsi_d <- as.numeric(floor(quantile(ubsi7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(ubsi7_gd$n)*.75)
+q3ubsi_d1 <- as.numeric(ubsi7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxubsi_d <- as.numeric(floor(quantile(ubsi7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxubsi_d1 <- as.numeric(ubsi7_gd[length(ubsi7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnubsi_i <- as.numeric(floor(quantile(ubsi7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(ubsi7_gi$n)/2)
+mdnubsi_i1 <- as.numeric(ubsi7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3ubsi_i <- as.numeric(floor(quantile(ubsi7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(ubsi7_gi$n)*.75)
+q3ubsi_i1 <- as.numeric(ubsi7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxubsi_i <- as.numeric(floor(quantile(ubsi7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxubsi_i1 <- as.numeric(ubsi7_gi[length(ubsi7_gi$n),1])
+
+
+ubsi_g <- grep('UBSI', ALL_52$stock)
+
+ALL_52[ubsi_g,18:29] <- c(mdnubsi_d1, mdnubsi_d, q3ubsi_d1, q3ubsi_d,
+                         mxubsi_d1, mxubsi_d, mdnubsi_i1, mdnubsi_i,
+                         q3ubsi_i1, q3ubsi_i, mxubsi_i1, mxubsi_i)
+
+
+```
+
+VZ
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+vz7_gd <- vz7_decr_Days_grouped
+vz7_gi <- vz7_incr_Days_grouped
+
+#removes the row names 
+row.names(vz7_gd) <- NULL
+row.names(vz7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+vz7_gd <- vz7_gd[order(vz7_gd$n),]
+vz7_gi <- vz7_gi[order(vz7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnvz_d <- as.numeric(floor(quantile(vz7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(vz7_gd$n)/2)
+mdnvz_d1 <- as.numeric(vz7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3vz_d <- as.numeric(floor(quantile(vz7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(vz7_gd$n)*.75)
+q3vz_d1 <- as.numeric(vz7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxvz_d <- as.numeric(floor(quantile(vz7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxvz_d1 <- as.numeric(vz7_gd[length(vz7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnvz_i <- as.numeric(floor(quantile(vz7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(vz7_gi$n)/2)
+mdnvz_i1 <- as.numeric(vz7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3vz_i <- as.numeric(floor(quantile(vz7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(vz7_gi$n)*.75)
+q3vz_i1 <- as.numeric(vz7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxvz_i <- as.numeric(floor(quantile(vz7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxvz_i1 <- as.numeric(vz7_gi[length(vz7_gi$n),1])
+
+
+vz_g <- grep('VZ', ALL_52$stock)
+
+ALL_52[vz_g,18:29] <- c(mdnvz_d1, mdnvz_d, q3vz_d1, q3vz_d,
+                         mxvz_d1, mxvz_d, mdnvz_i1, mdnvz_i,
+                         q3vz_i1, q3vz_i, mxvz_i1, mxvz_i)
+
+
+```
+
+WFC
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+wfc7_gd <- wfc7_decr_Days_grouped
+wfc7_gi <- wfc7_incr_Days_grouped
+
+#removes the row names 
+row.names(wfc7_gd) <- NULL
+row.names(wfc7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+wfc7_gd <- wfc7_gd[order(wfc7_gd$n),]
+wfc7_gi <- wfc7_gi[order(wfc7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnwfc_d <- as.numeric(floor(quantile(wfc7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(wfc7_gd$n)/2)
+mdnwfc_d1 <- as.numeric(wfc7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3wfc_d <- as.numeric(floor(quantile(wfc7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(wfc7_gd$n)*.75)
+q3wfc_d1 <- as.numeric(wfc7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxwfc_d <- as.numeric(floor(quantile(wfc7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxwfc_d1 <- as.numeric(wfc7_gd[length(wfc7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnwfc_i <- as.numeric(floor(quantile(wfc7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(wfc7_gi$n)/2)
+mdnwfc_i1 <- as.numeric(wfc7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3wfc_i <- as.numeric(floor(quantile(wfc7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(wfc7_gi$n)*.75)
+q3wfc_i1 <- as.numeric(wfc7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxwfc_i <- as.numeric(floor(quantile(wfc7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxwfc_i1 <- as.numeric(wfc7_gi[length(wfc7_gi$n),1])
+
+
+wfc_g <- grep('WFC', ALL_52$stock)
+
+ALL_52[wfc_g,18:29] <- c(mdnwfc_d1, mdnwfc_d, q3wfc_d1, q3wfc_d,
+                         mxwfc_d1, mxwfc_d, mdnwfc_i1, mdnwfc_i,
+                         q3wfc_i1, q3wfc_i, mxwfc_i1, mxwfc_i)
+
+
+```
+
+WM
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+wm7_gd <- wm7_decr_Days_grouped
+wm7_gi <- wm7_incr_Days_grouped
+
+#removes the row names 
+row.names(wm7_gd) <- NULL
+row.names(wm7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+wm7_gd <- wm7_gd[order(wm7_gd$n),]
+wm7_gi <- wm7_gi[order(wm7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnwm_d <- as.numeric(floor(quantile(wm7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(wm7_gd$n)/2)
+mdnwm_d1 <- as.numeric(wm7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3wm_d <- as.numeric(floor(quantile(wm7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(wm7_gd$n)*.75)
+q3wm_d1 <- as.numeric(wm7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxwm_d <- as.numeric(floor(quantile(wm7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxwm_d1 <- as.numeric(wm7_gd[length(wm7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnwm_i <- as.numeric(floor(quantile(wm7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(wm7_gi$n)/2)
+mdnwm_i1 <- as.numeric(wm7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3wm_i <- as.numeric(floor(quantile(wm7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(wm7_gi$n)*.75)
+q3wm_i1 <- as.numeric(wm7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxwm_i <- as.numeric(floor(quantile(wm7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxwm_i1 <- as.numeric(wm7_gi[length(wm7_gi$n),1])
+
+
+wm_g <- grep('^WM$', ALL_52$stock)
+
+ALL_52[wm_g,18:29] <- c(mdnwm_d1, mdnwm_d, q3wm_d1, q3wm_d,
+                         mxwm_d1, mxwm_d, mdnwm_i1, mdnwm_i,
+                         q3wm_i1, q3wm_i, mxwm_i1, mxwm_i)
+
+
+```
+
+WMT
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+wmt7_gd <- wmt7_decr_Days_grouped
+wmt7_gi <- wmt7_incr_Days_grouped
+
+#removes the row names 
+row.names(wmt7_gd) <- NULL
+row.names(wmt7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+wmt7_gd <- wmt7_gd[order(wmt7_gd$n),]
+wmt7_gi <- wmt7_gi[order(wmt7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnwmt_d <- as.numeric(floor(quantile(wmt7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(wmt7_gd$n)/2)
+mdnwmt_d1 <- as.numeric(wmt7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3wmt_d <- as.numeric(floor(quantile(wmt7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(wmt7_gd$n)*.75)
+q3wmt_d1 <- as.numeric(wmt7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxwmt_d <- as.numeric(floor(quantile(wmt7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxwmt_d1 <- as.numeric(wmt7_gd[length(wmt7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnwmt_i <- as.numeric(floor(quantile(wmt7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(wmt7_gi$n)/2)
+mdnwmt_i1 <- as.numeric(wmt7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3wmt_i <- as.numeric(floor(quantile(wmt7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(wmt7_gi$n)*.75)
+q3wmt_i1 <- as.numeric(wmt7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxwmt_i <- as.numeric(floor(quantile(wmt7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxwmt_i1 <- as.numeric(wmt7_gi[length(wmt7_gi$n),1])
+
+
+wmt_g <- grep('WMT$', ALL_52$stock)
+
+ALL_52[wmt_g,18:29] <- c(mdnwmt_d1, mdnwmt_d, q3wmt_d1, q3wmt_d,
+                         mxwmt_d1, mxwmt_d, mdnwmt_i1, mdnwmt_i,
+                         q3wmt_i1, q3wmt_i, mxwmt_i1, mxwmt_i)
+
+
+```
+
+WWE
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+wwe7_gd <- wwe7_decr_Days_grouped
+wwe7_gi <- wwe7_incr_Days_grouped
+
+#removes the row names 
+row.names(wwe7_gd) <- NULL
+row.names(wwe7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+wwe7_gd <- wwe7_gd[order(wwe7_gd$n),]
+wwe7_gi <- wwe7_gi[order(wwe7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnwwe_d <- as.numeric(floor(quantile(wwe7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(wwe7_gd$n)/2)
+mdnwwe_d1 <- as.numeric(wwe7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3wwe_d <- as.numeric(floor(quantile(wwe7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(wwe7_gd$n)*.75)
+q3wwe_d1 <- as.numeric(wwe7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxwwe_d <- as.numeric(floor(quantile(wwe7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxwwe_d1 <- as.numeric(wwe7_gd[length(wwe7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnwwe_i <- as.numeric(floor(quantile(wwe7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(wwe7_gi$n)/2)
+mdnwwe_i1 <- as.numeric(wwe7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3wwe_i <- as.numeric(floor(quantile(wwe7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(wwe7_gi$n)*.75)
+q3wwe_i1 <- as.numeric(wwe7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxwwe_i <- as.numeric(floor(quantile(wwe7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxwwe_i1 <- as.numeric(wwe7_gi[length(wwe7_gi$n),1])
+
+
+wwe_g <- grep('WWE', ALL_52$stock)
+
+ALL_52[wwe_g,18:29] <- c(mdnwwe_d1, mdnwwe_d, q3wwe_d1, q3wwe_d,
+                         mxwwe_d1, mxwwe_d, mdnwwe_i1, mdnwwe_i,
+                         q3wwe_i1, q3wwe_i, mxwwe_i1, mxwwe_i)
+
+
+```
+
+XOM
+```{r}
+#the grouped tables for the decreasing and increasing counts as sets
+#where each set of counts happened one or more times
+xom7_gd <- xom7_decr_Days_grouped
+xom7_gi <- xom7_incr_Days_grouped
+
+#removes the row names 
+row.names(xom7_gd) <- NULL
+row.names(xom7_gi) <- NULL
+
+#orders the tables by n counts of decreasing days, so indexing can be done
+xom7_gd <- xom7_gd[order(xom7_gd$n),]
+xom7_gi <- xom7_gi[order(xom7_gi$n),]
+
+#the median value of counts for the number of times a stock decr in this time span
+mdnxom_d <- as.numeric(floor(quantile(xom7_gd$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of decr days occurred in this time series
+c1 <- ceiling(length(xom7_gd$n)/2)
+mdnxom_d1 <- as.numeric(xom7_gd[c1,1])
+
+#the 3rd quantile of counts of sets decr days in this time span from a quantile tibble
+#has to be set to numeric
+q3xom_d <- as.numeric(floor(quantile(xom7_gd$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the decr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(xom7_gd$n)*.75)
+q3xom_d1 <- as.numeric(xom7_gd[c2,1])
+
+#the max value of times a set's decr days occurred in this time span
+mxxom_d <- as.numeric(floor(quantile(xom7_gd$n, probs=1, na.rm=TRUE)))
+
+#the set of decreasing days in the max counts
+mxxom_d1 <- as.numeric(xom7_gd[length(xom7_gd$n),1])
+
+
+#the median value of counts for the number of times a stock incr in this time span
+mdnxom_i <- as.numeric(floor(quantile(xom7_gi$n, probs=0.5, na.rm=TRUE)))
+
+#the index of the median number of times a sum of incr days occurred in this time series
+c1 <- ceiling(length(xom7_gi$n)/2)
+mdnxom_i1 <- as.numeric(xom7_gi[c1,1])
+
+#the 3rd quantile of counts of sets incr days in this time span from a quantile tibble
+#has to be set to numeric
+q3xom_i <- as.numeric(floor(quantile(xom7_gi$n, probs=0.75, na.rm=TRUE)))
+
+#the index of the 3rd quantile, to get the incr set that occured 75% of the time in counts for this time span
+c2 <- floor(length(xom7_gi$n)*.75)
+q3xom_i1 <- as.numeric(xom7_gi[c2,1])
+
+#the max value of times a set's incr days occurred in this time span
+mxxom_i <- as.numeric(floor(quantile(xom7_gi$n, probs=1, na.rm=TRUE)))
+
+#the set of increasing days in the max counts
+mxxom_i1 <- as.numeric(xom7_gi[length(xom7_gi$n),1])
+
+
+xom_g <- grep('XOM', ALL_52$stock)
+
+ALL_52[xom_g,18:29] <- c(mdnxom_d1, mdnxom_d, q3xom_d1, q3xom_d,
+                         mxxom_d1, mxxom_d, mdnxom_i1, mdnxom_i,
+                         q3xom_i1, q3xom_i, mxxom_i1, mxxom_i)
+
+
+```
+
+Write this file out to csv.
+```{r}
+write.csv(ALL_52, 'ALL_52_L7_grouped_counts.csv', row.names=TRUE)
 ```
 
