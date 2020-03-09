@@ -1,0 +1,117 @@
+---
+title: "ALL 52 counts lag7 stock values and skews each year 2007-2019"
+author: "Janis Corona"
+date: "3/9/2020"
+output: html_document
+---
+
+This script combines the 52 stocks we have data on and the lag7 price value counts for decreasing and increasing cumulative sums and groups of counts with the number of times that group occurred in each of the years from 2007 and up to 2020.
+
+Read in the tables.
+```{r}
+ALL_52_2007_2020 <- read.csv('ALL_52_groups_skews.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '))
+ALL_52_2007_2020 <- ALL_52_2007_2020[,-c(7,8)]
+colnames(ALL_52_2007_2020)[2:3] <- c('avgStockValue','medianStockValue')
+a0 <- ALL_52_2007_2020
+
+ALL_52_2019 <- read.csv('ALL_52_groups_skews.csv_2019.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a1 <- ALL_52_2019[,-c(2:3)]
+
+ALL_52_2018 <- read.csv('ALL_52_groups_skews.csv_2018.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a2 <- ALL_52_2018[,-c(2:3)]
+
+ALL_52_2017 <- read.csv('ALL_52_groups_skews.csv_2017.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a3 <- ALL_52_2017[,-c(2:3)]
+
+ALL_52_2016 <- read.csv('ALL_52_groups_skews.csv_2016.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a4 <- ALL_52_2016[,-c(2:3)]
+
+ALL_52_2015 <- read.csv('ALL_52_groups_skews.csv_2015.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a5 <- ALL_52_2015[,-c(2:3)]
+
+ALL_52_2014 <- read.csv('ALL_52_groups_skews.csv_2014.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a6 <- ALL_52_2014[,-c(2:3)]
+
+ALL_52_2013 <- read.csv('ALL_52_groups_skews.csv_2013.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a7 <- ALL_52_2013[,-c(2:3)]
+
+ALL_52_2012 <- read.csv('ALL_52_groups_skews.csv_2012.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a8 <- ALL_52_2012[,-c(2:3)]
+
+ALL_52_2011 <- read.csv('ALL_52_groups_skews.csv_2011.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a9 <- ALL_52_2011[,-c(2:3)]
+
+ALL_52_2010 <- read.csv('ALL_52_groups_skews.csv_2010.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a10 <- ALL_52_2010[,-c(2:3)]
+
+ALL_52_2009 <- read.csv('ALL_52_groups_skews.csv_2009.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a11 <- ALL_52_2009[,-c(2:3)]
+
+ALL_52_2008 <- read.csv('ALL_52_groups_skews.csv_2008.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a12 <- ALL_52_2008[,-c(2:3)]
+
+ALL_52_2007 <- read.csv('ALL_52_groups_skews.csv_2007.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' '),row.names=1)
+a13 <- ALL_52_2007[,-c(2:3)]
+
+
+
+
+```
+
+Combine the table data.
+```{r}
+A1 <- merge(a0,a1, by.x='stockName', by.y='stock_2019')
+
+A2 <- merge(A1,a2,by.x='stockName', by.y='stock_2018')
+
+A3 <- merge(A2,a3,by.x='stockName', by.y='stock_2017')
+
+A4 <- merge(A3,a4,by.x='stockName', by.y='stock_2016')
+
+A5 <- merge(A4,a5,by.x='stockName', by.y='stock_2015')
+
+A6 <- merge(A5,a6,by.x='stockName', by.y='stock_2014')
+
+A7 <- merge(A6,a7,by.x='stockName', by.y='stock_2013')
+
+A8 <- merge(A7,a8,by.x='stockName', by.y='stock_2012')
+
+A9 <- merge(A8,a9,by.x='stockName', by.y='stock_2011')
+
+A10 <- merge(A9,a10,by.x='stockName', by.y='stock_2010')
+
+A11 <- merge(A10,a11,by.x='stockName', by.y='stock_2009')
+
+A12 <- merge(A11,a12,by.x='stockName', by.y='stock_2008')
+
+A13 <- merge(A12,a13,by.x='stockName', by.y='stock_2007')
+
+```
+
+Rearrange the columns and add row names to the table of the stock names.
+```{r}
+A14 <- A13[,c(1,5,6,7,8,9,2:4,10:381)]
+row.names(A14) <- A14$stockName
+write.csv(A14, 'counts52stocksAndStats_fat.csv', row.names=TRUE)
+```
+
+This is great to look at as a long table of the useful data as meta data. The class type of each field will be factor for the 52 stocks.
+```{r}
+A15 <- as.data.frame(t(A14))
+write.csv(A15,'counts52stocksAndStats_long.csv', row.names=TRUE)
+```
+
