@@ -17,7 +17,7 @@ library(dplyr)
 Read in the tables.
 ```{r}
 ALL_52_2007_2020 <- read.csv('ALL_52_groups_skews.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '))
+                             na.strings=c('',' ','NA'))
 
 ALL_52_2007_2020 <- ALL_52_2007_2020[,-c(7,8)]
 colnames(ALL_52_2007_2020)[2:3] <- c('avgStockValue','medianStockValue')
@@ -25,57 +25,60 @@ a0 <- ALL_52_2007_2020
 colnames(a0)[c(2:30)] <- paste(colnames(a0)[c(2:30)],'_Jan2007Feb2020',sep='')
 
 ALL_52_2019 <- read.csv('ALL_52_groups_skews_2019.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a1 <- ALL_52_2019[,-c(2:3)]
 
 ALL_52_2018 <- read.csv('ALL_52_groups_skews_2018.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a2 <- ALL_52_2018[,-c(2:3)]
 
 ALL_52_2017 <- read.csv('ALL_52_groups_skews_2017.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a3 <- ALL_52_2017[,-c(2:3)]
 
 ALL_52_2016 <- read.csv('ALL_52_groups_skews_2016.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a4 <- ALL_52_2016[,-c(2:3)]
 
 ALL_52_2015 <- read.csv('ALL_52_groups_skews_2015.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a5 <- ALL_52_2015[,-c(2:3)]
 
 ALL_52_2014 <- read.csv('ALL_52_groups_skews_2014.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a6 <- ALL_52_2014[,-c(2:3)]
 
 ALL_52_2013 <- read.csv('ALL_52_groups_skews_2013.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a7 <- ALL_52_2013[,-c(2:3)]
 
 ALL_52_2012 <- read.csv('ALL_52_groups_skews_2012.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a8 <- ALL_52_2012[,-c(2:3)]
 
 ALL_52_2011 <- read.csv('ALL_52_groups_skews_2011.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a9 <- ALL_52_2011[,-c(2:3)]
 
 ALL_52_2010 <- read.csv('ALL_52_groups_skews_2010.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a10 <- ALL_52_2010[,-c(2:3)]
 
 ALL_52_2009 <- read.csv('ALL_52_groups_skews_2009.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a11 <- ALL_52_2009[,-c(2:3)]
 
 ALL_52_2008 <- read.csv('ALL_52_groups_skews_2008.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a12 <- ALL_52_2008[,-c(2:3)]
 
 ALL_52_2007 <- read.csv('ALL_52_groups_skews_2007.csv', sep=',', header=TRUE, 
-                             na.strings=c('',' '),row.names=1)
+                             na.strings=c('',' ','NA'),row.names=1)
 a13 <- ALL_52_2007[,-c(2:3)]
 
+ALL_52_2020 <- read.csv('ALL_52_groups_skews_2020.csv', sep=',', header=TRUE, 
+                             na.strings=c('',' ','NA'),row.names=1)
+a14 <- ALL_52_2020[,-c(2:3)]
 
 
 
@@ -109,11 +112,13 @@ A12 <- merge(A11,a12,by.x='stockName', by.y='stock_2008')
 
 A13 <- merge(A12,a13,by.x='stockName', by.y='stock_2007')
 
+A14 <- merge(A13,a14,by.x='stockName', by.y='stock_2020')
+
 ```
 
 Rearrange the columns and add row names to the table of the stock names.
 ```{r}
-A14 <- A13[,c(1,5,6,7,8,9,2:4,10:381)]
+A15 <- A14[,c(1,5,6,7,8,9,2:4,10:408)]
 row.names(A14) <- A14$stockName
 
 write.csv(A14, 'counts52stocksAndStats_fat.csv', row.names=TRUE)

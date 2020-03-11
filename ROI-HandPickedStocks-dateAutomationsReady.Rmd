@@ -7,23 +7,30 @@ output:
   word_document: default
 ---
 
-This program will take the 2019 year as a subset of data from 52 hand picked stocks from a portfolio of 65, where 53 originally had 2007-2020 data, but one was omitted due to not finding the factor error until thousands of dependent objects and lines of code later. 
+This program will take the 2007-2020 year as a subset of data from 52 hand picked stocks from a portfolio of 65, where 53 originally had 2007-2020 data, but one was omitted due to not finding the factor error until thousands of dependent objects and lines of code later. 
 
-This script depends on a few of the tables the ROI_HandPickedStocks.Rmd file produced and is almost entirely the same script with modifications to table outputs to fit this year subset.Change the two fields below to the start date and end date you want the subset to include. The dates for this script are for the year, and any dates after the START_DATE0 and before the END_DATE0 settings will be used.
+This script depends on a few of the tables the ROI_HandPickedStocks.Rmd file produced and is almost entirely the same script with modifications to table outputs to fit this year subset.
+- Close17_dow_lags.csv (lag 7, stock value 7 days earlier compared to todays instance value)
+- ROI_UE_2007_2020.csv (return in $ of investment with added UE)
+- dROI17.csv (the 17 best stock portfolio of pos median daily changes when DOW down and UE up)
+- yahooStockBasket.csv (in the folder not produced by the ROI_HandPickedStocks.Rmd file)
+
+Change the two fields below to the start date and end date you want the subset to include. The dates for this script are for the year, and any dates after the START_DATE0 and before the END_DATE0 settings will be used.
 
 ```{r, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
 library(lubridate)
 library(tidyr)
 library(dplyr)
 
-START_DATE0 <- '2018-12-31'
-END_DATE0 <- '2020-01-01'
+START_DATE0 <- '2019-12-31'
+END_DATE0 <- '2020-03-11'
 
 ```
 
 ```{r}
 
-Close2 <- read.csv('ROI_UE_2007_2020.csv', sep=',', header=TRUE, na.strings=c('',' '))
+Close2 <- read.csv('ROI_UE_2007_2020.csv', sep=',', header=TRUE, 
+                   na.strings=c('',' ','NA'))
 Close2$Date <- as.Date(Close2$Date)
 Close3 <- subset(Close2, Close2$Date > START_DATE0 &
                    Close2$Date < END_DATE0)
@@ -32,7 +39,7 @@ Close3 <- subset(Close2, Close2$Date > START_DATE0 &
 
 ```{r}
 Close17_dow <- read.csv('Close17_dow_lags.csv', sep=',', header=TRUE,
-                        na.strings=c('',' '))
+                        na.strings=c('',' ','NA'))
 Close17_dow$Date <- as.Date(Close17_dow$Date)
 ```
 
@@ -71,7 +78,8 @@ dROI17
 ```
 
 ```{r}
-stockNames <- read.csv('yahooStockBasket.csv', header=TRUE, sep=',', na.strings=c('',' '))
+stockNames <- read.csv('yahooStockBasket.csv', header=TRUE, sep=',', 
+                       na.strings=c('',' ','NA'))
 
 ```
 
