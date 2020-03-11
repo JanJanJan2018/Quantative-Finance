@@ -1,0 +1,105 @@
+"","stock_2017","stockInfo_2017","businessType_2017","medianStockValue_2017","avgStockValue_2017","MedianGrtrThanAvg_2017","startValue_2017","finalValue_2017","stock_ROI_2017","medn_cSum_decr_L7_2017","Q3_cSum_decr_L7_2017","max_cSum_decr_L7_2017","medn_cSum_incr_L7_2017","Q3_cSum_incr_L7_2017","max_cSum_incr_L7_2017","ROI_Low_High_2017","MedCountsDecreasing_2017","MedCountsIncreasing_2017","MedianDecrDayGroup_2017","MedianDecrDayCounts_2017","Q3DecrDayGroup_2017","Q3DecrDayCounts_2017","MaxDecrDayGroup_2017","MaxDecrDayCounts_2017","MedianIncrDayGroup_2017","MedianIncrDayCounts_2017","Q3IncrDayGroup_2017","Q3IncrDayCounts_2017","MaxIncrDayGroup_2017","MaxIncrDayCounts_2017"
+"1","AAL","American Airlines Group Inc. (AAL)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","airTravel",47.389999,47.4907172151394,0,46.3,52.03,1.12375809935205,5,12,30,5,11.25,20,"High","Low Decreasing Counts","Low Increase Counts","14","1","30","1","1","5","12","1","20","1","1","3"
+"2","AAP","Advance Auto Parts, Inc. (AAP)
+NYSE - NYSE Delayed Price. Currency in USD","autoParts",116.050003,122.574860701195,0,170.6,99.69,0.58,5,7,9,5,13,27,"Low","Low Decreasing Counts","Low Increase Counts","6","2","7","3","1","5","22","1","3","2","0","69"
+"3","ADDYY","adidas AG (ADDYY)
+Other OTC - Other OTC Delayed Price. Currency in USD","athleticShoes",100.330002,100.01852587251,1,77.55,99.82,1.29,4.5,10.5,29,8,9.75,16,"High","Low Decreasing Counts","High Increasing Counts","16","1","7","2","2","4","1","2","13","3","0","107"
+"4","AMZN","Amazon.com, Inc. (AMZN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","cloudComputing",967.98999,968.167011645418,0,753.67,1169.47,1.55,3,6.25,24,3,6.25,24,"High","Low Decreasing Counts","Low Increase Counts","17","1","1","2","15","3","9","1","7","3","0","149"
+"5","ARWR","Arrowhead Pharmaceuticals, Inc. (ARWR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","genotypePharmaceuticals",1.97,2.42637450199203,0,1.68,3.68,2.19047619047619,3,7,24,3,9.25,17,"High","Low Decreasing Counts","Low Increase Counts","24","1","5","2","3","4","10","1","12","1","1","6"
+"6","C","Citigroup Inc. (C)
+NYSE - NYSE Delayed Price. Currency in USD","bank",66.059998,65.6995218525896,1,60.59,74.41,1.22809044396765,4,22,7,4,22,7,"High","Low Decreasing Counts","Low Increase Counts","17","1","11","2","3","5","12","1","2","3","1","9"
+"7","COST","Costco Wholesale Corporation (COST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","retail",166.279999,167.407449936255,0,159.73,186.12,1.17,3,9.25,35,9,10.25,24,"High","Low Decreasing Counts","High Increasing Counts","13","1","20","1","1","4","2","3","1","4","0","144"
+"8","CVX","Chevron Corporation (CVX)
+NYSE - NYSE Delayed Price. Currency in USD","fuel",110.459999,111.45756974502,0,117.85,125.19,1.06228256257955,22,7,4,22,7,4,"Low","High Decreasing Counts","High Increasing Counts","7","2","8","2","1","10","9","3","3","4","1","8"
+"9","DLTR","Dollar Tree, Inc. (DLTR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","discountRetail",78.540001,82.038844498008,0,77.45,107.31,1.39,9.25,35,9,10.25,24,3,"High","High Decreasing Counts","High Increasing Counts","23","1","11","2","2","6","12","1","3","4","0","137"
+"10","EPD","Enterprise Products Partners L.P. (EPD)
+NYSE - NYSE Delayed Price. Currency in USD","fuel",26.84,26.6907569521912,1,26.91,26.51,0.98513563730955,7,8,21,5.5,11.25,21,"Low","High Decreasing Counts","Low Increase Counts","18","1","5","2","7","4","12","1","21","1","4","3"
+"11","F","Ford Motor Company (F)
+NYSE - NYSE Delayed Price. Currency in USD","automotive",11.74,11.7925896414343,0,12.59,12.49,0.992057188244639,2,6.75,33,2,7.5,24,"Low","Low Decreasing Counts","Low Increase Counts","16","1","33","1","1","9","3","2","6","3","1","9"
+"12","FFIN","First Financial Bankshares, Inc. (FFIN)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","bank",21.375,21.2730079521912,1,22.6,22.52,1,6.75,33,2,7.5,24,2,"Low","Low Decreasing Counts","High Increasing Counts","12","1","21","1","1","8","1","2","5","3","0","98"
+"13","FTR","Frontier Communications Corporation (FTR)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","communications",17.049999,22.9364939601594,0,53.7,6.76,0.125884543761639,35,9,10.25,24,3,9.25,"Low","High Decreasing Counts","High Increasing Counts","4","2","2","3","1","7","2","2","10","2","11","5"
+"14","GOOG","Alphabet Inc. (GOOG)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","cloudComputing",929.570007,921.780837310757,1,786.14,1046.4,1.33,8.5,12,22,5,6.5,20,"High","High Decreasing Counts","Low Increase Counts","18","1","1","2","12","2","1","3","7","4","0","139"
+"15","HD","The Home Depot, Inc. (HD)
+NYSE - NYSE Delayed Price. Currency in USD","homeRepair",153.5,155.342749155378,0,134.31,189.53,1.41,3,10,22,2.5,5.5,11,"High","Low Decreasing Counts","Low Increase Counts","4","2","10","2","1","8","4","3","1","4","0","136"
+"16","HMC","Honda Motor Co., Ltd. (HMC)
+NYSE - NYSE Delayed Price. Currency in USD","automotive",29.85,29.9091633944223,0,29.61,34.08,1.15096251266464,6.5,19,3,6.5,19,3,"High","Low Decreasing Counts","Low Increase Counts","11","1","16","1","1","6","14","1","16","1","1","13"
+"17","HOFT","Hooker Furniture Corporation (HOFT)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","furniture",42.150002,41.0180478286853,1,36.8,42.45,1.15353260869565,9,10.25,24,3,9.25,35,"High","High Decreasing Counts","Low Increase Counts","16","1","30","1","1","5","3","2","8","2","2","3"
+"18","HRB","H&R Block, Inc. (HRB)
+NYSE - NYSE Delayed Price. Currency in USD","taxService",25.870001,25.9171314860558,0,22.91,26.22,1.14447839371454,5,10.25,15,2.5,8.25,28,"High","Low Decreasing Counts","Low Increase Counts","11","1","5","2","1","5","28","1","3","3","2","6"
+"19","HST","Host Hotels & Resorts, Inc. (HST)
+NYSE - NYSE Delayed Price. Currency in USD","hotelTravel",18.379999,18.603864498008,0,19.13,19.85,1.03763721902771,10.25,24,3,9.25,35,9,"Low","High Decreasing Counts","High Increasing Counts","5","2","7","2","1","9","15","1","8","2","1","10"
+"20","INO","Inovio Pharmaceuticals, Inc. (INO)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","immunoPharmaceuticals",6.29,6.28175298804781,1,7.07,4.13,0.584158415841584,2,7,16,3,7,17,"Low","Low Decreasing Counts","Low Increase Counts","16","1","3","2","1","13","17","1","7","3","1","8"
+"21","JBLU","JetBlue Airways Corporation (JBLU)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","airTravel",20.959999,20.9437052191235,1,22.39,22.34,0.997766860205449,3,9,15,3,7,18,"Low","Low Decreasing Counts","Low Increase Counts","4","2","10","2","1","8","3","2","7","2","1","8"
+"22","JNJ","Johnson & Johnson (JNJ)
+NYSE - NYSE Delayed Price. Currency in USD","healthCarePharmaceuticals",131.550003,129.760517884462,1,115.84,139.72,1.21,7,9.5,33,7,10.25,15,"High","High Decreasing Counts","High Increasing Counts","33","1","2","2","9","2","11","1","15","1","0","129"
+"23","JPM","JPMorgan Chase & Co. (JPM)
+NYSE - NYSE Delayed Price. Currency in USD","bank",91.150002,92.0094818366534,0,87.23,106.94,1.22595437349536,24,3,6.25,24,3,6.25,"High","High Decreasing Counts","High Increasing Counts","4","2","10","2","1","5","8","2","9","3","1","7"
+"24","JWN","Nordstrom, Inc. (JWN)
+NYSE - NYSE Delayed Price. Currency in USD","retail",45.349998,44.9178486494024,1,47.62,47.38,0.994960100797984,4,7,19,2,7,17,"Low","Low Decreasing Counts","Low Increase Counts","19","1","10","2","1","7","17","2","7","4","1","11"
+"25","KGJI","Kingold Jewelry, Inc. (KGJI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","jewelry",1.71,1.68609561752988,1,1.26,2.02,1.6031746031746,3,9.25,18,3,4.75,17,"High","Low Decreasing Counts","Low Increase Counts","18","2","1","5","3","7","17","1","6","4","2","6"
+"26","KSS","Kohl's Corporation (KSS)
+NYSE - NYSE Delayed Price. Currency in USD","retail",40.459999,41.5462151115538,0,49.78,54.23,1.08939333065488,14,7.25,4,34,7.25,4,"Low","High Decreasing Counts","High Increasing Counts","6","2","34","3","6","2","34","3","6","2","34","3"
+"27","LUV","Southwest Airlines Co. (LUV)
+NYSE - NYSE Delayed Price. Currency in USD","airTravel",56.110001,56.7354979920319,0,49.98,65.45,1.30952380952381,8.5,19,32,2,7,37,"High","High Decreasing Counts","Low Increase Counts","22","1","23","1","7","3","17","1","37","1","1","6"
+"28","M","Macy's, Inc. (M)
+NYSE - NYSE Delayed Price. Currency in USD","retail",23.52,25.0884064103586,0,35.23,25.19,0.715015611694579,3,6.5,19,3,6.5,19,"Low","Low Decreasing Counts","Low Increase Counts","24","1","5","3","1","5","14","1","6","2","1","8"
+"29","MGM","MGM Resorts International (MGM)
+NYSE - NYSE Delayed Price. Currency in USD","hotelTravel",31.219999,30.7705577450199,1,29.48,33.39,1.13263229308005,6.25,24,3,6.25,24,3,"High","Low Decreasing Counts","Low Increase Counts","13","1","10","3","1","5","8","2","9","3","1","7"
+"30","MSFT","Microsoft Corporation (MSFT)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","CloudComputing",71.150002,71.9840242310757,0,62.58,85.54,1.3668903803132,24,3,9.25,35,9,10.25,"High","High Decreasing Counts","High Increasing Counts","10","1","28","2","1","8","2","2","7","3","1","11"
+"31","NFLX","Netflix, Inc. (NFLX)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","subsriptionEntertainment",162.429993,165.374263059761,0,127.49,191.96,1.51,24,2,6.75,33,2,7.5,"High","High Decreasing Counts","High Increasing Counts","19","1","7","2","1","5","2","2","5","4","0","126"
+"32","NKE","NIKE, Inc. (NKE)
+NYSE - NYSE Delayed Price. Currency in USD","athleticShoes",55.119999,55.7060160119522,0,51.98,62.55,1.2,7,11,31,5,7,22,"High","High Decreasing Counts","Low Increase Counts","16","1","2","2","7","3","7","2","1","3","0","122"
+"33","NSANY","Nissan Motor Co., Ltd. (NSANY)
+Other OTC - Other OTC Delayed Price. Currency in USD","automotive",19.709999,19.6755776334661,1,20.25,19.9,0.982716049382716,7.25,4,14,7.25,4,34,"Low","High Decreasing Counts","High Increasing Counts","16","1","7","2","1","5","8","2","12","3","1","5"
+"34","NUS","Nu Skin Enterprises, Inc. (NUS)
+NYSE - NYSE Delayed Price. Currency in USD","beautyProducts",59.25,58.6671712589641,1,48.77,68.23,1.3990157883945,34,7.25,4,14,7.25,4,"High","High Decreasing Counts","High Increasing Counts","2","4","1","7","2","4","1","7","2","4","1","7"
+"35","ONCY","Oncolytics Biotech Inc. (ONCY)
+NasdaqCM - NasdaqCM Real Time Price. Currency in USD","cancerPharmaceuticals",4.18,4.229203187251,0,2.09,5.415,2.59090909090909,7,4,22,7,4,22,"High","High Decreasing Counts","High Increasing Counts","23","1","3","3","2","5","2","2","3","3","1","10"
+"36","PCG","PG&E Corporation (PCG)
+NYSE - NYSE Delayed Price. Currency in USD","energyUtility",66.360001,63.91199212749,1,60.37,44.83,0.74,12,8.25,3,12,8.25,3,"Low","High Decreasing Counts","High Increasing Counts","13","1","3","2","1","8","7","2","3","3","0","107"
+"37","ROST","Ross Stores, Inc. (ROST)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","discountRetail",64.360001,64.1682072310757,1,65.61,80.25,1.22,3,9.25,35,9,10.25,24,"High","Low Decreasing Counts","High Increasing Counts","13","1","3","3","2","4","7","2","10","3","0","116"
+"38","RRGB","Red Robin Gourmet Burgers, Inc. (RRGB)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","restaurant",58,58.0271314223108,0,54.55,56.4,1.03391384051329,7,11,17,2,8.25,16,"Low","High Decreasing Counts","Low Increase Counts","16","1","8","2","1","4","12","1","16","1","1","8"
+"39","S","Sprint Corporation (S)
+NYSE - NYSE Delayed Price. Currency in USD","mobileCommunications",8.23,7.89836653386454,1,8.56,5.89,0.688084112149533,7.25,4,34,7.25,4,14,"Low","High Decreasing Counts","High Increasing Counts","11","4","1","3","11","4","1","3","11","4","1","3"
+"40","SIG","Signet Jewelers Limited (SIG)
+NYSE - NYSE Delayed Price. Currency in USD","jewelry",64.879997,64.6477687689243,1,94.94,56.55,0.595639351169159,4,14,7.25,4,34,7.25,"Low","Low Decreasing Counts","Low Increase Counts","2","2","5","2","7","4","12","1","26","2","3","3"
+"41","T","AT&T Inc. (T)
+NYSE - NYSE Delayed Price. Currency in USD","communications",38.5,38.5963744541833,0,43.02,38.88,0.903765690376569,9.25,35,9,10.25,24,3,"Low","High Decreasing Counts","High Increasing Counts","35","1","3","2","2","4","13","1","1","2","9","3"
+"42","TEVA","Teva Pharmaceutical Industries Limited (TEVA)
+NYSE - NYSE Delayed Price. Currency in USD","genericPharmaceuticals",30.700001,25.6220717290837,1,37.48,18.95,0.51,35,9,10.25,24,3,9.25,"Low","High Decreasing Counts","High Increasing Counts","3","2","8","2","1","4","29","1","5","4","0","93"
+"43","TGT","Target Corporation (TGT)
+NYSE - NYSE Delayed Price. Currency in USD","retail",57.299999,58.296294876494,0,72.75,65.25,0.896907216494845,9,10.25,24,3,9.25,35,"Low","High Decreasing Counts","Low Increase Counts","20","1","4","2","5","4","21","1","5","2","1","5"
+"44","TJX","The TJX Companies, Inc. (TJX)
+NYSE - NYSE Delayed Price. Currency in USD","discountRetail",36.955002,37.0224502749004,0,37.72,38.23,1.01,10.25,24,3,9.25,35,9,"Low","High Decreasing Counts","High Increasing Counts","21","1","9","3","1","5","6","2","11","2","0","117"
+"45","TM","Toyota Motor Corporation (TM)
+NYSE - NYSE Delayed Price. Currency in USD","automotive",113.279999,114.916414326693,0,118.55,127.17,1.07271193589203,24,3,9.25,35,9,10.25,"Low","High Decreasing Counts","High Increasing Counts","14","1","3","2","1","10","15","1","4","2","1","10"
+"46","UBSI","United Bankshares, Inc. (UBSI)
+NasdaqGS - NasdaqGS Real Time Price. Currency in USD","bank",38.25,38.7286852868526,0,46.1,34.75,0.753796095444685,7.25,4,14,7.25,4,34,"Low","High Decreasing Counts","High Increasing Counts","14","1","6","2","1","9","18","1","13","2","1","8"
+"47","VZ","Verizon Communications Inc. (VZ)
+NYSE - NYSE Delayed Price. Currency in USD","mobileCommunications",48.41,48.2367329721116,1,54.58,52.93,0.969769146207402,5,9,22,7,13,19,"Low","Low Decreasing Counts","High Increasing Counts","1","2","3","2","2","4","13","1","18","1","1","5"
+"48","WFC","Wells Fargo & Company (WFC)
+NYSE - NYSE Delayed Price. Currency in USD","bank",54.720001,54.9799203665339,0,56,60.67,1.08339285714286,2,6.75,33,2,7.5,24,"Low","Low Decreasing Counts","Low Increase Counts","28","1","8","2","2","3","9","1","10","3","3","5"
+"49","WM","Waste Management, Inc. (WM)
+NYSE - NYSE Delayed Price. Currency in USD","wasteUtility",73.989998,75.4068524342629,0,70.52,86.3,1.22376630743052,6.5,19,3,6.5,19,3,"High","Low Decreasing Counts","Low Increase Counts","22","1","7","3","1","8","2","3","4","3","1","12"
+"50","WMT","Walmart Inc. (WMT)
+NYSE - NYSE Delayed Price. Currency in USD","discountRetail",78.150002,78.9623906494024,0,68.66,98.75,1.44,3,9.25,35,9,10.25,24,"High","Low Decreasing Counts","High Increasing Counts","5","2","7","2","1","7","13","1","3","3","0","134"
+"51","WWE","World Wrestling Entertainment, Inc. (WWE)
+NYSE - NYSE Delayed Price. Currency in USD","sportsEntertainment",21.290001,22.4424700756972,0,18.24,30.58,1.6765350877193,4,11,20,2,6,16,"High","Low Decreasing Counts","Low Increase Counts","19","1","2","2","1","5","16","1","15","2","1","10"
+"52","XOM","Exxon Mobil Corporation (XOM)
+NYSE - NYSE Delayed Price. Currency in USD","fuel",81.93,81.8615937091633,1,90.89,83.64,0.92,3,6.5,19,3,6.5,19,"Low","Low Decreasing Counts","Low Increase Counts","8","2","3","4","1","11","3","2","5","3","0","96"
