@@ -1,0 +1,306 @@
+---
+title: "Stock Counts 52 Machine Learning"
+author: "Janis Corona"
+date: "3/12/2020"
+output:
+  word_document: default
+  html_document: default
+---
+
+This script takes the STOCK_COUNTS_52.csv table made in the matrix.Rmd script and runs known algorithms on it for machine learning results using the features in the table of counts from the time specified in making the table. It can predict with 100% accuracy what cycle you are in or how many days are increasing using the given data set and the random forest and generalized linear models for predictions. The file is at https://www.kaggle.com/janiscorona/stock-day-counts-increasing-and-decreasing-0720#STOCK_COUNTS_52.csv
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+library(e1071)
+library(caret)
+library(randomForest)
+library(MASS)
+library(gbm)
+```
+
+Now, lets switch from H2O to the other machine learning packages to analyze this large dataset.
+```{r}
+stock_52 <- read.csv('STOCK_COUNTS_52.csv', sep=',', header=TRUE, 
+                     na.strings=c('',' ','NA'))
+```
+
+
+```{r}
+head(stock_52)
+```
+
+
+```{r}
+colnames(stock_52)
+```
+
+Create a subset of the 52 stocks data of the AAL stock, make the rows the date column, and remove the other date columns and multicollinear columns that align with stockDayValue, like the lag7 and today2lag7 columns.
+```{r}
+stocks_52 <- stock_52[,c(1,4,9,12:21)]
+sAAL <- subset(stocks_52, stocks_52$stock =='AAL')
+row.names(sAAL) <- sAAL$Date
+sAAL <- sAAL[,-c(1:2)]
+head(sAAL)
+```
+
+Try predicting the number of increasing days this cycle for the AAL stock as a subset.
+```{r}
+set.seed(12356789)
+
+inTrain <- createDataPartition(y=sAAL$incrDaysThisCycle, p=0.7, list=FALSE)
+
+trainingSet <- sAAL[inTrain,]
+testingSet <- sAAL[-inTrain,]
+
+```
+
+
+
+```{r}
+rfMod <- train(incrDaysThisCycle ~ ., method='rf', data=(trainingSet), 
+               trControl=trainControl(method='cv'), number=5)
+```
+
+```{r}
+plot(rfMod)
+
+```
+
+
+
+
+```{r}
+predRF <- predict(rfMod, testingSet)
+
+predDF <- data.frame(predRF, IncreasingDaysThisCycle=testingSet$incrDaysThisCycle)
+predDF
+
+sum <- sum(predRF==testingSet$incrDaysThisCycle) 
+length <- length(testingSet$incrDaysThisCycle)
+accuracy_rfMod <- (sum/length) 
+accuracy_rfMod
+
+```
+
+
+```{r}
+results <- c(round(accuracy_rfMod,2), round(100,2))
+results <- as.factor(results)
+results <- t(data.frame(results))
+
+colnames(results) <- colnames(predDF)
+Results <- rbind(predDF, results) 
+Results
+
+```
+
+
+```{r}
+knnMod <- train(incrDaysThisCycle ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+```
+
+
+```{r}
+plot(knnMod)
+
+```
+
+
+```{r}
+rpartMod <- train(incrDaysThisCycle ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+glmMod <- train(incrDaysThisCycle ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r}
+predKNN <- predict(knnMod, testingSet)
+predRPART <- predict(rpartMod, testingSet)
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predGLM <- predict(glmMod, testingSet)
+```
+
+
+```{r}
+length=length(testingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumKNN <- sum(predKNN==testingSet$incrDaysThisCycle)
+sumRPart <- sum(predRPART==testingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumGLM <- sum(predGLM==testingSet$incrDaysThisCycle)
+
+```
+
+```{r}
+accuracy_KNN <- sumKNN/length 
+accuracy_RPART <- sumRPart/length 
+```
+
+```{r}
+accuracy_GLM <- sumGLM/length 
+
+```
+
+
+```{r}
+predDF2 <- data.frame(predRF,predKNN,predRPART,predGLM, 
+                      IncreasingDaysThisCycle=testingSet$incrDaysThisCycle)
+colnames(predDF2) <- c('RandomForest','KNN','Rpart','GLM','IncreasingDaysThisCycle')
+
+results <- c(round(accuracy_rfMod,2),  
+             round(accuracy_KNN,2), 
+             round(accuracy_RPART,2),
+             round(accuracy_GLM,2), 
+             round(100,2))
+
+results <- as.factor(results)
+results <- t(data.frame(results))
+colnames(results) <- c('RandomForest','KNN','Rpart','GLM','IncreasingDaysThisCycle')
+Results <- rbind(predDF2, results) 
+Results
+
+
+```
+
+
+***
+
+When looking at the above table, the errors are based on an exact match, but the values you notice as I do, are rounded up to the true value if greater than zero and zero if less than zero will give very near perfect results for predicting the number of days the cycle will be increasing. Lets test this out.
+
+```{r}
+predRF_round <- predict(rfMod, testingSet)
+
+predRF_round <- ifelse(predRF_round<0,0,round(predRF,0))
+
+predDF_round <- data.frame(predRF_round, IncreasingDaysThisCycle=testingSet$incrDaysThisCycle)
+predDF_round
+
+sum <- sum(predRF_round==testingSet$incrDaysThisCycle) 
+length <- length(testingSet$incrDaysThisCycle)
+accuracy_rfMod_round <- (sum/length) 
+accuracy_rfMod_round
+
+```
+
+
+```{r}
+results_round <- c(round(accuracy_rfMod_round,2), round(100,2))
+results_round <- as.factor(results_round)
+results_round <- t(data.frame(results_round))
+
+colnames(results_round) <- colnames(predDF_round)
+Results_round <- rbind(predDF_round, results_round) 
+Results_round
+
+```
+
+
+```{r}
+knnMod_round <- train(incrDaysThisCycle ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+rpartMod_round <- train(incrDaysThisCycle ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+glmMod_round <- train(incrDaysThisCycle ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r}
+predKNN <- predict(knnMod_round, testingSet)
+predKNN_round <- ifelse(predKNN<0,0,round(predKNN,0))
+
+predRPART <- predict(rpartMod_round, testingSet)
+predRPART_round <- ifelse(predRPART<0,0,round(predRPART,0))
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predGLM <- predict(glmMod_round, testingSet)
+predGLM_round <- ifelse(predGLM<0,0,round(predGLM,0))
+```
+
+
+```{r}
+length=length(testingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumKNN_round <- sum(predKNN_round==testingSet$incrDaysThisCycle)
+sumRPart_round <- sum(predRPART_round==testingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumGLM_round <- sum(predGLM_round==testingSet$incrDaysThisCycle)
+
+```
+
+```{r}
+accuracy_KNN_round <- sumKNN_round/length 
+accuracy_RPART_round <- sumRPart_round/length 
+```
+
+```{r}
+accuracy_GLM_round <- sumGLM_round/length 
+
+```
+
+
+```{r}
+predDF2_round <- data.frame(predRF_round,predKNN_round,predRPART_round,predGLM_round, 
+                      IncreasingDaysThisCycle=testingSet$incrDaysThisCycle)
+colnames(predDF2_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','IncreasingDaysThisCycle')
+
+results_round <- c(round(accuracy_rfMod_round,2),  
+             round(accuracy_KNN_round,2), 
+             round(accuracy_RPART_round,2),
+             round(accuracy_GLM_round,2), 
+             round(100,2))
+
+results_round <- as.factor(results_round)
+results_round <- t(data.frame(results_round))
+colnames(results_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','IncreasingDaysThisCycle')
+Results_round <- rbind(predDF2_round, results_round) 
+Results_round
+
+```
+
+Lets compare this to the table we just saw earlier when the values weren't rounded or zero if less than zero.
+```{r}
+Results
+
+```
+
+This certainly confirms that these algorithms are great for predicting the number of days that will continue to decrease with the features we selected and the models used in R, random forest, recursive partitioned trees, generalized linear models, and K-nearest neighbors for numeric data. 
+
+We can align the rounded table by indices with our sAAL testing set table to see what dates we can look at for clarity.
+```{r}
+sAAL$row <- row.names(sAAL)
+testingSet$row <- row.names(testingSet)
+Results_round$row <- row.names(Results_round)
+
+AAL <- merge(testingSet,Results_round, by.x='row', by.y='row')
+AAL
+```
+
+
+
+
+
