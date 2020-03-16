@@ -1,0 +1,799 @@
+---
+title: "Stock Counts 52 Machine Learning"
+author: "Janis Corona"
+date: "3/16/2020"
+output: html_document
+---
+
+This script takes the STOCK_COUNTS_52.csv table made in the matrix.Rmd script and runs known algorithms on it for machine learning results using the features in the table of counts from the time specified in making the table.
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+library(e1071)
+library(caret)
+library(randomForest)
+library(MASS)
+library(gbm)
+```
+
+These are the lag1 entries to compare to the next day or today stock values where today is the instance date.
+```{r}
+stocks_65 <- read.csv('ALL_65_stocks_countGroups_1999-01-01_2020-03-15_lag1.csv', sep=',', header=TRUE, 
+                     na.strings=c('',' ','NA'))
+```
+
+
+```{r}
+head(stocks_65)
+```
+
+
+```{r}
+colnames(stocks_65)
+```
+
+Create a subset of the 65 stocks data of the AAL stock.
+```{r}
+sAAL <- subset(stocks_65, stocks_65$stockName =='AAL')
+row.names(sAAL) <- sAAL$Date
+sAAL <- sAAL[,c(5,9,14:25)]
+head(sAAL)
+```
+
+```{r}
+str(sAAL)
+```
+
+
+Try predicting the number of increasing days this cycle for the AAL stock as a subset.
+```{r}
+set.seed(12356789)
+
+inTrain <- createDataPartition(y=sAAL$incrDaysThisCycle, p=0.7, list=FALSE)
+
+trainingSet <- sAAL[inTrain,]
+testingSet <- sAAL[-inTrain,]
+
+```
+
+
+
+```{r}
+rfMod <- train(incrDaysThisCycle ~ ., method='rf', data=(trainingSet), 
+               trControl=trainControl(method='cv'), number=5)
+```
+
+```{r}
+plot(rfMod)
+
+```
+
+
+
+
+```{r}
+predRF <- predict(rfMod, testingSet)
+
+predDF <- data.frame(predRF, type=testingSet$incrDaysThisCycle)
+predDF
+
+sum <- sum(predRF==testingSet$incrDaysThisCycle) 
+length <- length(testingSet$incrDaysThisCycle)
+accuracy_rfMod <- (sum/length) 
+accuracy_rfMod
+
+```
+
+
+```{r}
+results <- c(round(accuracy_rfMod,2), round(100,2))
+results <- as.factor(results)
+results <- t(data.frame(results))
+
+colnames(results) <- colnames(predDF)
+Results <- rbind(predDF, results) 
+Results
+
+```
+
+
+```{r}
+knnMod <- train(incrDaysThisCycle ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+```
+
+
+```{r}
+plot(knnMod)
+
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+rpartMod <- train(incrDaysThisCycle ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+glmMod <- train(incrDaysThisCycle ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predKNN <- predict(knnMod, testingSet)
+predRPART <- predict(rpartMod, testingSet)
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predGLM <- predict(glmMod, testingSet)
+```
+
+
+```{r}
+length=length(testingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumKNN <- sum(predKNN==testingSet$incrDaysThisCycle)
+sumRPart <- sum(predRPART==testingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumGLM <- sum(predGLM==testingSet$incrDaysThisCycle)
+
+```
+
+```{r}
+accuracy_KNN <- sumKNN/length 
+accuracy_RPART <- sumRPart/length 
+```
+
+```{r}
+accuracy_GLM <- sumGLM/length 
+
+```
+
+
+```{r}
+predDF2 <- data.frame(predRF,predKNN,predRPART,predGLM, 
+                      TYPE=testingSet$incrDaysThisCycle)
+colnames(predDF2) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+
+results <- c(round(accuracy_rfMod,2),  
+             round(accuracy_KNN,2), 
+             round(accuracy_RPART,2),
+             round(accuracy_GLM,2), 
+             round(100,2))
+
+results <- as.factor(results)
+results <- t(data.frame(results))
+colnames(results) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+Results <- rbind(predDF2, results) 
+Results
+
+
+```
+
+
+***
+
+When looking at the above table, the errors are based on an exact match, but the values you notice as I do, are rounded up to the true value if greater than zero and zero if less than zero will give very near perfect results for predicting the number of days the cycle will be increasing. Lets test this out.
+
+```{r}
+predRF_round <- predict(rfMod, testingSet)
+
+predRF_round <- ifelse(predRF_round<0,0,round(predRF,0))
+
+predDF_round <- data.frame(predRF_round, IncreasingDaysThisCycle=testingSet$incrDaysThisCycle)
+predDF_round
+
+sum <- sum(predRF_round==testingSet$incrDaysThisCycle) 
+length <- length(testingSet$incrDaysThisCycle)
+accuracy_rfMod_round <- (sum/length) 
+accuracy_rfMod_round
+
+```
+
+
+```{r}
+results_round <- c(round(accuracy_rfMod_round,2), round(100,2))
+results_round <- as.factor(results_round)
+results_round <- t(data.frame(results_round))
+
+colnames(results_round) <- colnames(predDF_round)
+Results_round <- rbind(predDF_round, results_round) 
+Results_round
+
+```
+
+
+```{r}
+knnMod_round <- train(incrDaysThisCycle ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+rpartMod_round <- train(incrDaysThisCycle ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+glmMod_round <- train(incrDaysThisCycle ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r}
+predKNN <- predict(knnMod_round, testingSet)
+predKNN_round <- ifelse(predKNN<0,0,round(predKNN,0))
+
+predRPART <- predict(rpartMod_round, testingSet)
+predRPART_round <- ifelse(predRPART<0,0,round(predRPART,0))
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predGLM <- predict(glmMod_round, testingSet)
+predGLM_round <- ifelse(predGLM<0,0,round(predGLM,0))
+```
+
+
+```{r}
+length=length(testingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumKNN_round <- sum(predKNN_round==testingSet$incrDaysThisCycle)
+sumRPart_round <- sum(predRPART_round==testingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumGLM_round <- sum(predGLM_round==testingSet$incrDaysThisCycle)
+
+```
+
+```{r}
+accuracy_KNN_round <- sumKNN_round/length 
+accuracy_RPART_round <- sumRPart_round/length 
+```
+
+```{r}
+accuracy_GLM_round <- sumGLM_round/length 
+
+```
+
+
+```{r}
+predDF2_round <- data.frame(predRF_round,predKNN_round,predRPART_round,predGLM_round, 
+                      IncreasingDaysThisCycle=testingSet$incrDaysThisCycle)
+colnames(predDF2_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','IncreasingDaysThisCycle')
+
+results_round <- c(round(accuracy_rfMod_round,2),  
+             round(accuracy_KNN_round,2), 
+             round(accuracy_RPART_round,2),
+             round(accuracy_GLM_round,2), 
+             round(100,2))
+
+results_round <- as.factor(results_round)
+results_round <- t(data.frame(results_round))
+colnames(results_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','IncreasingDaysThisCycle')
+Results_round <- rbind(predDF2_round, results_round) 
+Results_round
+
+```
+
+Lets compare this to the table we just saw earlier when the values weren't rounded or zero if less than zero.
+```{r}
+Results
+
+```
+
+This certainly confirms that these algorithms are great for predicting the number of days that will continue to decrease with the features we selected and the models used in R, random forest, recursive partitioned trees, generalized linear models, and K-nearest neighbors for numeric data. 
+
+We can align the rounded table by indices with our sAAL testing set table to see what dates we can look at for clarity.
+```{r}
+sAAL$row <- row.names(sAAL)
+testingSet$row <- row.names(testingSet)
+Results_round$row <- row.names(Results_round)
+
+AAL <- merge(testingSet,Results_round, by.x='row', by.y='row')
+AAL
+```
+
+
+
+***
+
+The above used the cumulative counts with the subsequent step vectors to get the predicted result for number of increasing days in the observation. How well does the machine learning do when removing those subsequent vectors to predict the number of days increasing with each observation? Keep the day of the week but remove the count/group of count columns other than the incrDaysThisCycle and the nTimesIncrDayCountsOccurs columns.
+```{r}
+sAAL_1 <- sAAL[,c(1:4,13:14)]
+colnames(sAAL_1)
+```
+
+```{r}
+set.seed(12356789)
+
+inTrain <- createDataPartition(y=sAAL_1$incrDaysThisCycle, p=0.7, list=FALSE)
+
+trainingSet <- sAAL_1[inTrain,]
+testingSet <- sAAL_1[-inTrain,]
+
+```
+
+
+
+```{r}
+rfMod <- train(incrDaysThisCycle ~ ., method='rf', data=(trainingSet), 
+               trControl=trainControl(method='cv'), number=5)
+```
+
+```{r}
+plot(rfMod)
+
+```
+
+
+
+
+```{r}
+predRF <- predict(rfMod, testingSet)
+
+predDF <- data.frame(predRF, type=testingSet$incrDaysThisCycle)
+predDF
+
+sum <- sum(predRF==testingSet$incrDaysThisCycle) 
+length <- length(testingSet$incrDaysThisCycle)
+accuracy_rfMod <- (sum/length) 
+accuracy_rfMod
+
+```
+
+
+```{r}
+results <- c(round(accuracy_rfMod,2), round(100,2))
+results <- as.factor(results)
+results <- t(data.frame(results))
+
+colnames(results) <- colnames(predDF)
+Results <- rbind(predDF, results) 
+Results
+
+```
+
+
+```{r}
+knnMod <- train(incrDaysThisCycle ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+```
+
+
+```{r}
+plot(knnMod)
+
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+rpartMod <- train(incrDaysThisCycle ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+glmMod <- train(incrDaysThisCycle ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predKNN <- predict(knnMod, testingSet)
+predRPART <- predict(rpartMod, testingSet)
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predGLM <- predict(glmMod, testingSet)
+```
+
+
+```{r}
+length=length(testingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumKNN <- sum(predKNN==testingSet$incrDaysThisCycle)
+sumRPart <- sum(predRPART==testingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumGLM <- sum(predGLM==testingSet$incrDaysThisCycle)
+
+```
+
+```{r}
+accuracy_KNN <- sumKNN/length 
+accuracy_RPART <- sumRPart/length 
+```
+
+```{r}
+accuracy_GLM <- sumGLM/length 
+
+```
+
+
+```{r}
+predDF2 <- data.frame(predRF,predKNN,predRPART,predGLM, 
+                      TYPE=testingSet$incrDaysThisCycle)
+colnames(predDF2) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+
+results <- c(round(accuracy_rfMod,2),  
+             round(accuracy_KNN,2), 
+             round(accuracy_RPART,2),
+             round(accuracy_GLM,2), 
+             round(100,2))
+
+results <- as.factor(results)
+results <- t(data.frame(results))
+colnames(results) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+Results <- rbind(predDF2, results) 
+Results
+
+
+```
+
+
+***
+
+When looking at the above table, the errors are based on an exact match, but the values you notice as I do, are rounded up to the true value if greater than zero and zero if less than zero will give very near perfect results for predicting the number of days the cycle will be increasing. Lets test this out.
+
+```{r}
+predRF_round <- predict(rfMod, testingSet)
+
+predRF_round <- ifelse(predRF_round<0,0,round(predRF,0))
+
+predDF_round <- data.frame(predRF_round, IncreasingDaysThisCycle=testingSet$incrDaysThisCycle)
+predDF_round
+
+sum <- sum(predRF_round==testingSet$incrDaysThisCycle) 
+length <- length(testingSet$incrDaysThisCycle)
+accuracy_rfMod_round <- (sum/length) 
+accuracy_rfMod_round
+
+```
+
+
+```{r}
+results_round <- c(round(accuracy_rfMod_round,2), round(100,2))
+results_round <- as.factor(results_round)
+results_round <- t(data.frame(results_round))
+
+colnames(results_round) <- colnames(predDF_round)
+Results_round <- rbind(predDF_round, results_round) 
+Results_round
+
+```
+
+
+```{r}
+knnMod_round <- train(incrDaysThisCycle ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+rpartMod_round <- train(incrDaysThisCycle ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+glmMod_round <- train(incrDaysThisCycle ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r}
+predKNN <- predict(knnMod_round, testingSet)
+predKNN_round <- ifelse(predKNN<0,0,round(predKNN,0))
+
+predRPART <- predict(rpartMod_round, testingSet)
+predRPART_round <- ifelse(predRPART<0,0,round(predRPART,0))
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predGLM <- predict(glmMod_round, testingSet)
+predGLM_round <- ifelse(predGLM<0,0,round(predGLM,0))
+```
+
+
+```{r}
+length=length(testingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumKNN_round <- sum(predKNN_round==testingSet$incrDaysThisCycle)
+sumRPart_round <- sum(predRPART_round==testingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumGLM_round <- sum(predGLM_round==testingSet$incrDaysThisCycle)
+
+```
+
+```{r}
+accuracy_KNN_round <- sumKNN_round/length 
+accuracy_RPART_round <- sumRPart_round/length 
+```
+
+```{r}
+accuracy_GLM_round <- sumGLM_round/length 
+
+```
+
+
+```{r}
+predDF2_round <- data.frame(predRF_round,predKNN_round,predRPART_round,predGLM_round, 
+                      IncreasingDaysThisCycle=testingSet$incrDaysThisCycle)
+colnames(predDF2_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','IncreasingDaysThisCycle')
+
+results_round <- c(round(accuracy_rfMod_round,2),  
+             round(accuracy_KNN_round,2), 
+             round(accuracy_RPART_round,2),
+             round(accuracy_GLM_round,2), 
+             round(100,2))
+
+results_round <- as.factor(results_round)
+results_round <- t(data.frame(results_round))
+colnames(results_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','IncreasingDaysThisCycle')
+Results_round <- rbind(predDF2_round, results_round) 
+Results_round
+
+```
+
+Lets compare this to the table we just saw earlier when the values weren't rounded or zero if less than zero.
+```{r}
+Results
+
+```
+
+This certainly confirms that these algorithms are great for predicting the number of days that will continue to decrease with the features we selected and the models used in R, random forest, recursive partitioned trees, generalized linear models, and K-nearest neighbors for numeric data. 
+
+We can align the rounded table by indices with our sAAL testing set table to see what dates we can look at for clarity.
+```{r}
+sAAL_1$Date <- row.names(sAAL_1)
+testingSet$Date <- row.names(testingSet)
+Results_round$Date <- row.names(Results_round)
+
+AAL_1 <- merge(testingSet,Results_round, by.x='Date', by.y='Date')
+tbl <- rbind(head(AAL_1),tail(AAL_1))
+tbl
+```
+
+
+```{r}
+Results_round$RandomForest_round <-
+  as.numeric(paste(Results_round$RandomForest_round))
+Results_round$KNN_round <-
+  as.numeric(paste(Results_round$KNN_round))
+Results_round$Rpart_round <-
+  as.numeric(paste(Results_round$Rpart_round))
+Results_round$GLM_round <-
+  as.numeric(paste(Results_round$GLM_round))
+Results_round$IncreasingDaysThisCycle <-
+  as.numeric(paste(Results_round$IncreasingDaysThisCycle))
+
+
+
+Results_round$mostVoted <- ifelse(
+                        (Results_round$RandomForest_round==Results_round$KNN_round |                        Results_round$RandomForest_round==Results_round$Rpart_round |                        Results_round$RandomForest_round==Results_round$GLM_round),
+                       
+ifelse(Results_round$KNN_round==Results_round$Rpart_round |                           Results_round$KNN_round==Results_round$GLM_round,
+        Results_round$RandomForest_round,
+        ifelse(Results_round$Rpart_round ==Results_round$GLM_round,
+               Results_round$Rpart_round,
+               Results_round$RandomForest_round)),
+                               ifelse(Results_round$KNN_round==Results_round$Rpart_round |                          Results_round$KNN_round==Results_round$GLM_round,
+        Results_round$KNN_round,
+        ifelse(Results_round$Rpart_round==Results_round$GLM_round,
+               Results_round$Rpart_round,
+               ifelse(Results_round$Rpart_round>Results_round$RandomForest_round,
+                      Results_round$Rpart_round, 
+                      Results_round$RandomForest_round))
+      )
+)
+                          
+sMost <- sum(Results_round$mostVoted==Results_round$IncreasingDaysThisCycle)
+lMost <- length(Results_round$IncreasingDaysThisCycle)-1
+accMost <- sMost/lMost
+
+```
+
+
+***
+
+Lets run these rounded models on the training set too, to then combine the predicted results of the training and testing models.
+
+```{r}
+predRF_round1 <- predict(rfMod, trainingSet)
+
+predRF_round1 <- ifelse(predRF_round1<0,0,round(predRF,0))
+
+predDF_round1 <- data.frame(predRF_round1, IncreasingDaysThisCycle=trainingSet$incrDaysThisCycle)
+predDF_round1
+
+sum <- sum(predRF_round1==trainingSet$incrDaysThisCycle) 
+length <- length(trainingSet$incrDaysThisCycle)
+accuracy_rfMod_round1 <- (sum/length) 
+accuracy_rfMod_round1
+
+```
+
+
+```{r}
+results_round1 <- c(round(accuracy_rfMod_round1,2), round(100,2))
+results_round1 <- as.factor(results_round1)
+results_round1 <- t(data.frame(results_round1))
+
+colnames(results_round1) <- colnames(predDF_round1)
+Results_round1 <- rbind(predDF_round1, results_round1) 
+
+Results_round1
+
+```
+
+
+```{r}
+knnMod_round1 <- train(incrDaysThisCycle ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+rpartMod_round1 <- train(incrDaysThisCycle ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+glmMod_round1 <- train(incrDaysThisCycle ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r}
+predKNN <- predict(knnMod_round1, trainingSet)
+predKNN_round1 <- ifelse(predKNN<0,0,round(predKNN,0))
+
+predRPART <- predict(rpartMod_round1, trainingSet)
+predRPART_round1 <- ifelse(predRPART<0,0,round(predRPART,0))
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predGLM <- predict(glmMod_round1, trainingSet)
+predGLM_round1 <- ifelse(predGLM<0,0,round(predGLM,0))
+```
+
+
+```{r}
+length=length(trainingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumKNN_round1 <- sum(predKNN_round1==trainingSet$incrDaysThisCycle)
+sumRPart_round1 <- sum(predRPART_round1==trainingSet$incrDaysThisCycle)
+```
+
+```{r}
+sumGLM_round1 <- sum(predGLM_round1==trainingSet$incrDaysThisCycle)
+
+```
+
+```{r}
+accuracy_KNN_round1 <- sumKNN_round1/length 
+accuracy_RPART_round1 <- sumRPart_round1/length 
+```
+
+```{r}
+accuracy_GLM_round1 <- sumGLM_round1/length 
+
+```
+
+
+```{r}
+predDF2_round1 <- data.frame(predRF_round1,predKNN_round1,predRPART_round1,predGLM_round1, 
+                      IncreasingDaysThisCycle=trainingSet$incrDaysThisCycle)
+colnames(predDF2_round1) <- c('RandomForest_round1','KNN_round1','Rpart_round1','GLM_round1','IncreasingDaysThisCycle')
+
+results_round1 <- c(round(accuracy_rfMod_round1,2),  
+             round(accuracy_KNN_round1,2), 
+             round(accuracy_RPART_round1,2),
+             round(accuracy_GLM_round1,2), 
+             round(100,2))
+
+results_round1 <- as.factor(results_round1)
+results_round1 <- t(data.frame(results_round1))
+colnames(results_round1) <- c('RandomForest_round1','KNN_round1','Rpart_round1','GLM_round1','IncreasingDaysThisCycle')
+Results_round1 <- rbind(predDF2_round1, results_round1) 
+Results_round1
+
+```
+
+
+
+We can align the rounded table by indices with our sAAL training set table to see what dates we can look at for clarity.
+```{r}
+sAAL_1$Date <- row.names(sAAL_1)
+trainingSet$Date <- row.names(trainingSet)
+Results_round1$Date <- row.names(Results_round1)
+
+AAL_1 <- merge(trainingSet,Results_round1, by.x='Date', by.y='Date')
+tbl <- rbind(head(AAL_1),tail(AAL_1))
+tbl
+```
+
+
+```{r}
+Results_round1$RandomForest_round1 <-
+  as.numeric(paste(Results_round1$RandomForest_round1))
+Results_round1$KNN_round1 <-
+  as.numeric(paste(Results_round1$KNN_round1))
+Results_round1$Rpart_round1 <-
+  as.numeric(paste(Results_round1$Rpart_round1))
+Results_round1$GLM_round1 <-
+  as.numeric(paste(Results_round1$GLM_round1))
+Results_round1$IncreasingDaysThisCycle <-
+  as.numeric(paste(Results_round1$IncreasingDaysThisCycle))
+
+
+Results_round1$mostVoted <- ifelse(
+                        (Results_round1$RandomForest_round1==Results_round1$KNN_round1 |                        Results_round1$RandomForest_round1==Results_round1$Rpart_round1 |                        Results_round1$RandomForest_round1==Results_round1$GLM_round1),
+                       
+ifelse(Results_round1$KNN_round1==Results_round1$Rpart_round1 |                           Results_round1$KNN_round1==Results_round1$GLM_round1,
+        Results_round1$RandomForest_round1,
+        ifelse(Results_round1$Rpart_round1 ==Results_round1$GLM_round1,
+               Results_round1$Rpart_round1,
+               Results_round1$RandomForest_round1)),
+                               ifelse(Results_round1$KNN_round1==Results_round1$Rpart_round1 |                          Results_round1$KNN_round1==Results_round1$GLM_round1,
+        Results_round1$KNN_round1,
+        ifelse(Results_round1$Rpart_round1==Results_round1$GLM_round1,
+               Results_round1$Rpart_round1,
+               ifelse(Results_round1$Rpart_round1>
+                        Results_round1$RandomForest_round1,
+                      Results_round1$Rpart_round1, 
+                      Results_round1$RandomForest_round1))
+      )
+)
+
+
+```
+
+It turns out that using the training set the model was built on to predict the number of days increasing is worse than using the set aside testing set. 
+
+The model trained on the training set and tested on the training set:
+```{r}
+tr_Results <- rbind(head(Results_round1),tail(Results_round1))
+tr_Results
+```
+The model trained on the training set and tested on the testing set:
+```{r}
+te_Results <- rbind(head(Results_round), tail(Results_round))
+te_Results
+```
+
+It is the same model that takes the best model results by most voted among the four algorithms used on the training and testing sets. When the testing set was used the best model in prediction accuracy for increasing days in that cycle was random forest. And when this model was used on the training set the best model was recursive partitioned trees. 
+
+***
+
+We can test out each of the 65 stocks we have records for. The stocks_65 table has the counts and groups of stock and daily stock values within the time period of that table. To modify the table to return the dates with respective counts and groups of counts within that report, the matrix_automateDateLagStocks2.Rmd file would have to have the date set in the beginning of the scipt, and ran with the number of lags or days in stock value pricing before each instance date within the time interval.It takes 10-20 minutes to produce the table csv ALL_65_stocks_countGroups_YYYY-MM-DD_YYYY_MM_DD_lagN.csv where the first ymd is the beginning of the time series and the 2nd is the date the script ran and lagN is the input number of days to lag behind each daily price ( the value N days earlier).
+
+```{r}
+head(stocks_65)
+```
+
+```{r}
+unique(stocks_65$stockName)
+```
+
+Go ahead and select one of the stocks in the list above and analyze where it is in a cycle of decreasing or increasing days as we did with the AAL stock. 
+
