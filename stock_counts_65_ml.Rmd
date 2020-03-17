@@ -1,7 +1,7 @@
 ---
 title: "Stock Counts 52 Machine Learning"
 author: "Janis Corona"
-date: "3/16/2020"
+date: "3/17/2020"
 output: html_document
 ---
 
@@ -13,6 +13,10 @@ library(caret)
 library(randomForest)
 library(MASS)
 library(gbm)
+
+library(dplyr)
+library(tidyr)
+library(lubridate)
 ```
 
 These are the lag1 entries to compare to the next day or today stock values where today is the instance date.
@@ -796,4 +800,887 @@ unique(stocks_65$stockName)
 ```
 
 Go ahead and select one of the stocks in the list above and analyze where it is in a cycle of decreasing or increasing days as we did with the AAL stock. 
+
+Lets select the YELP stock, it has a limited number of observations that start March 2, 2012 through Mar 13, 2020.
+```{r}
+sYELP <- subset(stocks_65, stocks_65$stockName=='YELP')
+head(sYELP)
+```
+
+
+```{r}
+str(sYELP)
+```
+
+Lets change the date column to date and the year to a factor.
+```{r}
+sYELP$Date <- as.Date(sYELP$Date)
+sYELP$Year <- as.factor(sYELP$Year)
+```
+
+
+Lets predict the number of decreasing days this cycle based on a select subset of the features displayed above.
+```{r}
+sYELP1 <- sYELP[,c(4,5,9,14,15,19,20,21,24,25)]
+colnames(sYELP1)
+```
+
+Lets also add a lead column that will give the next day stock value for YELP using the dplyr package. We can then see how it predicts the next day value.
+```{r}
+sYELP1$NextDayPrice <- lead(sYELP1$stockDayValue,1)
+sYELP1 <- sYELP1[complete.cases(sYELP1$NextDayPrice),]
+tail(sYELP1)
+```
+
+Since we used the next day price, the stock YELP doesn't have information for the 13th of March 2020 in this data set and the table now extends through 3/12/2020.
+Make the row names the date and then remove the date column.
+```{r}
+row.names(sYELP1) <- as.factor(sYELP1$Date)
+sYELP1 <- sYELP1[,-c(1)]
+head(sYELP1)
+```
+
+
+Now to predict the number of decreasing days, then to predict the accuracy in next day price of the stock.
+
+```{r}
+set.seed(12356789)
+
+inTrain <- createDataPartition(y=sYELP1$decrDaysThisCycle, p=0.7, list=FALSE)
+
+trainingSet <- sYELP1[inTrain,]
+testingSet <- sYELP1[-inTrain,]
+
+```
+
+
+
+```{r}
+rfMod <- train(decrDaysThisCycle ~ ., method='rf', data=(trainingSet), 
+               trControl=trainControl(method='cv'), number=5)
+```
+
+```{r}
+plot(rfMod)
+
+```
+
+
+
+
+```{r}
+predRF <- predict(rfMod, testingSet)
+
+predDF <- data.frame(predRF, type=testingSet$decrDaysThisCycle)
+predDF
+
+sum <- sum(predRF==testingSet$decrDaysThisCycle) 
+length <- length(testingSet$decrDaysThisCycle)
+accuracy_rfMod <- (sum/length) 
+accuracy_rfMod
+
+```
+
+
+```{r}
+results <- c(round(accuracy_rfMod,2), round(100,2))
+results <- as.factor(results)
+results <- t(data.frame(results))
+
+colnames(results) <- colnames(predDF)
+Results <- rbind(predDF, results) 
+Results
+
+```
+
+
+```{r}
+knnMod <- train(decrDaysThisCycle ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+```
+
+
+```{r}
+plot(knnMod)
+
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+rpartMod <- train(decrDaysThisCycle ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+glmMod <- train(decrDaysThisCycle ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predKNN <- predict(knnMod, testingSet)
+predRPART <- predict(rpartMod, testingSet)
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predGLM <- predict(glmMod, testingSet)
+```
+
+
+```{r}
+length=length(testingSet$decrDaysThisCycle)
+```
+
+```{r}
+sumKNN <- sum(predKNN==testingSet$decrDaysThisCycle)
+sumRPart <- sum(predRPART==testingSet$decrDaysThisCycle)
+```
+
+```{r}
+sumGLM <- sum(predGLM==testingSet$decrDaysThisCycle)
+
+```
+
+```{r}
+accuracy_KNN <- sumKNN/length 
+accuracy_RPART <- sumRPart/length 
+```
+
+```{r}
+accuracy_GLM <- sumGLM/length 
+
+```
+
+
+```{r}
+predDF2 <- data.frame(predRF,predKNN,predRPART,predGLM, 
+                      TYPE=testingSet$decrDaysThisCycle)
+colnames(predDF2) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+
+results <- c(round(accuracy_rfMod,2),  
+             round(accuracy_KNN,2), 
+             round(accuracy_RPART,2),
+             round(accuracy_GLM,2), 
+             round(100,2))
+
+results <- as.factor(results)
+results <- t(data.frame(results))
+colnames(results) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+Results <- rbind(predDF2, results) 
+Results
+
+
+```
+
+
+***
+
+When looking at the above table, the errors are based on an exact match, but the values you notice as I do, are rounded up to the true value if greater than zero and zero if less than zero will give very near perfect results for predicting the number of days the cycle will be increasing. Lets test this out.
+
+```{r}
+predRF_round <- predict(rfMod, testingSet)
+
+predRF_round <- ifelse(predRF_round<0,0,round(predRF,0))
+
+predDF_round <- data.frame(predRF_round, IncreasingDaysThisCycle=testingSet$decrDaysThisCycle)
+predDF_round
+
+sum <- sum(predRF_round==testingSet$decrDaysThisCycle) 
+length <- length(testingSet$decrDaysThisCycle)
+accuracy_rfMod_round <- (sum/length) 
+accuracy_rfMod_round
+
+```
+
+
+```{r}
+results_round <- c(round(accuracy_rfMod_round,2), round(100,2))
+results_round <- as.factor(results_round)
+results_round <- t(data.frame(results_round))
+
+colnames(results_round) <- colnames(predDF_round)
+Results_round <- rbind(predDF_round, results_round) 
+Results_round
+
+```
+
+
+```{r}
+knnMod_round <- train(decrDaysThisCycle ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+rpartMod_round <- train(decrDaysThisCycle ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+glmMod_round <- train(decrDaysThisCycle ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r}
+predKNN <- predict(knnMod_round, testingSet)
+predKNN_round <- ifelse(predKNN<0,0,round(predKNN,0))
+
+predRPART <- predict(rpartMod_round, testingSet)
+predRPART_round <- ifelse(predRPART<0,0,round(predRPART,0))
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predGLM <- predict(glmMod_round, testingSet)
+predGLM_round <- ifelse(predGLM<0,0,round(predGLM,0))
+```
+
+
+```{r}
+length=length(testingSet$decrDaysThisCycle)
+```
+
+```{r}
+sumKNN_round <- sum(predKNN_round==testingSet$decrDaysThisCycle)
+sumRPart_round <- sum(predRPART_round==testingSet$decrDaysThisCycle)
+```
+
+```{r}
+sumGLM_round <- sum(predGLM_round==testingSet$decrDaysThisCycle)
+
+```
+
+```{r}
+accuracy_KNN_round <- sumKNN_round/length 
+accuracy_RPART_round <- sumRPart_round/length 
+```
+
+```{r}
+accuracy_GLM_round <- sumGLM_round/length 
+
+```
+
+
+```{r}
+predDF2_round <- data.frame(predRF_round,predKNN_round,predRPART_round,predGLM_round, 
+                      DecreasingDaysThisCycle=testingSet$decrDaysThisCycle)
+colnames(predDF2_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','DecreasingDaysThisCycle')
+
+results_round <- c(round(accuracy_rfMod_round,2),  
+             round(accuracy_KNN_round,2), 
+             round(accuracy_RPART_round,2),
+             round(accuracy_GLM_round,2), 
+             round(100,2))
+
+results_round <- as.factor(results_round)
+results_round <- t(data.frame(results_round))
+colnames(results_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','DecreasingDaysThisCycle')
+Results_round <- rbind(predDF2_round, results_round) 
+Results_round
+
+```
+
+Lets compare this to the table we just saw earlier when the values weren't rounded or zero if less than zero.
+```{r}
+Results
+
+```
+
+This certainly confirms that these algorithms are great for predicting the number of days that will continue to decrease with the features we selected and the models used in R, random forest, recursive partitioned trees, generalized linear models, and K-nearest neighbors for numeric data. 
+
+We can align the rounded table by indices with our sAAL testing set table to see what dates we can look at for clarity.
+```{r}
+sYELP1$Date <- row.names(sYELP1)
+testingSet$Date <- row.names(testingSet)
+Results_round$Date <- row.names(Results_round)
+
+sYELP1 <- merge(testingSet,Results_round, by.x='Date', by.y='Date')
+tbl <- rbind(head(sYELP1),tail(sYELP1))
+tbl
+```
+
+
+```{r}
+Results_round$RandomForest_round <-
+  as.numeric(paste(Results_round$RandomForest_round))
+Results_round$KNN_round <-
+  as.numeric(paste(Results_round$KNN_round))
+Results_round$Rpart_round <-
+  as.numeric(paste(Results_round$Rpart_round))
+Results_round$GLM_round <-
+  as.numeric(paste(Results_round$GLM_round))
+Results_round$DecreasingDaysThisCycle <-
+  as.numeric(paste(Results_round$DecreasingDaysThisCycle))
+
+
+
+Results_round$mostVoted <- ifelse(
+                        (Results_round$RandomForest_round==Results_round$KNN_round |                        Results_round$RandomForest_round==Results_round$Rpart_round |                        Results_round$RandomForest_round==Results_round$GLM_round),
+                       
+ifelse(Results_round$KNN_round==Results_round$Rpart_round |                           Results_round$KNN_round==Results_round$GLM_round,
+        Results_round$RandomForest_round,
+        ifelse(Results_round$Rpart_round ==Results_round$GLM_round,
+               Results_round$Rpart_round,
+               Results_round$RandomForest_round)),
+                               ifelse(Results_round$KNN_round==Results_round$Rpart_round |                          Results_round$KNN_round==Results_round$GLM_round,
+        Results_round$KNN_round,
+        ifelse(Results_round$Rpart_round==Results_round$GLM_round,
+               Results_round$Rpart_round,
+               ifelse(Results_round$Rpart_round>Results_round$RandomForest_round,
+                      Results_round$Rpart_round, 
+                      Results_round$RandomForest_round))
+      )
+)
+                          
+sMost <- sum(Results_round$mostVoted==Results_round$DecreasingDaysThisCycle)
+lMost <- length(Results_round$DecreasingDaysThisCycle)-1
+accMost <- sMost/lMost
+accMost
+Results_round
+```
+
+The accuracy in prediction is about the same for decreasing days in the cycle as the target instead of the increasing days in the cycle that was the target when predicting the AAL stock increasing days by select features.
+
+Now, lets see how well these algorithms predict the NextDayPrice. But first remove the added predictive measures just done.
+```{r}
+sYELP1 <- sYELP[,c(4,5,9,14,15,19,20,21,24,25)]
+sYELP1$NextDayPrice <- lead(sYELP1$stockDayValue,1)
+sYELP1 <- sYELP1[complete.cases(sYELP1$NextDayPrice),]
+row.names(sYELP1) <- as.factor(sYELP1$Date)
+sYELP1 <- sYELP1[,-c(1)]
+```
+
+
+Now, we can see how well the next day price is predicted.
+```{r}
+set.seed(12356789)
+
+inTrain <- createDataPartition(y=sYELP1$NextDayPrice, p=0.7, list=FALSE)
+
+trainingSet <- sYELP1[inTrain,]
+testingSet <- sYELP1[-inTrain,]
+
+```
+
+
+
+```{r}
+rfMod <- train(NextDayPrice ~ ., method='rf', data=(trainingSet), 
+               trControl=trainControl(method='cv'), number=5)
+```
+
+```{r}
+plot(rfMod)
+
+```
+
+
+
+
+```{r}
+predRF <- predict(rfMod, testingSet)
+
+predDF <- data.frame(predRF, nextDayPrice=testingSet$NextDayPrice)
+predDF
+
+sum <- sum(predRF==testingSet$NextDayPrice) 
+length <- length(testingSet$NextDayPrice)
+accuracy_rfMod <- (sum/length) 
+accuracy_rfMod
+
+```
+
+
+```{r}
+results <- c(round(accuracy_rfMod,2), round(100,2))
+results <- as.factor(results)
+results <- t(data.frame(results))
+
+colnames(results) <- colnames(predDF)
+Results <- rbind(predDF, results) 
+Results
+
+```
+
+
+```{r}
+knnMod <- train(NextDayPrice ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+```
+
+
+```{r}
+plot(knnMod)
+
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+rpartMod <- train(NextDayPrice ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+glmMod <- train(NextDayPrice ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predKNN <- predict(knnMod, testingSet)
+predRPART <- predict(rpartMod, testingSet)
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predGLM <- predict(glmMod, testingSet)
+```
+
+
+```{r}
+length=length(testingSet$NextDayPrice)
+```
+
+```{r}
+sumKNN <- sum(predKNN==testingSet$NextDayPrice)
+sumRPart <- sum(predRPART==testingSet$NextDayPrice)
+```
+
+```{r}
+sumGLM <- sum(predGLM==testingSet$NextDayPrice)
+
+```
+
+```{r}
+accuracy_KNN <- sumKNN/length 
+accuracy_RPART <- sumRPart/length 
+```
+
+```{r}
+accuracy_GLM <- sumGLM/length 
+
+```
+
+
+```{r}
+predDF2 <- data.frame(predRF,predKNN,predRPART,predGLM, 
+                      TYPE=testingSet$NextDayPrice)
+colnames(predDF2) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+
+results <- c(round(accuracy_rfMod,2),  
+             round(accuracy_KNN,2), 
+             round(accuracy_RPART,2),
+             round(accuracy_GLM,2), 
+             round(100,2))
+
+results <- as.factor(results)
+results <- t(data.frame(results))
+colnames(results) <- c('RandomForest','KNN','Rpart','GLM','TrueValue')
+Results <- rbind(predDF2, results) 
+Results
+
+
+```
+
+
+***
+
+When looking at the above table, the errors are based on an exact match, but the values you notice as I do, are rounded up to the true value if greater than zero and zero if less than zero will give very near perfect results for predicting the number of days the cycle will be increasing. Lets test this out. Lets round the NextDayPrice column too, for better accuracy in the testing and training set only.
+```{r}
+sYELP1 <- sYELP[,c(4,5,9,14,15,19,20,21,24,25)]
+sYELP1$NextDayPrice <- lead(sYELP1$stockDayValue,1)
+sYELP1 <- sYELP1[complete.cases(sYELP1$NextDayPrice),]
+row.names(sYELP1) <- as.factor(sYELP1$Date)
+sYELP1 <- sYELP1[,-c(1)]
+```
+
+
+```{r}
+set.seed(12356789)
+
+inTrain <- createDataPartition(y=sYELP1$NextDayPrice, p=0.7, list=FALSE)
+
+trainingSet <- sYELP1[inTrain,]
+testingSet <- sYELP1[-inTrain,]
+
+trainingSet$NextDayPrice <- round(trainingSet$NextDayPrice,0)
+testingSet$NextDayPrice <- round(testingSet$NextDayPrice,0)
+```
+
+
+
+```{r}
+rfMod <- train(NextDayPrice ~ ., method='rf', data=(trainingSet), 
+               trControl=trainControl(method='cv'), number=5)
+```
+
+
+```{r}
+predRF_round <- predict(rfMod, testingSet)
+
+predRF_round <- ifelse(predRF_round<0,0,round(predRF,0))
+
+predDF_round <- data.frame(predRF_round, NextDayPrice=testingSet$NextDayPrice)
+predDF_round
+
+sum <- sum(predRF_round==testingSet$NextDayPrice) 
+length <- length(testingSet$NextDayPrice)
+accuracy_rfMod_round <- (sum/length) 
+accuracy_rfMod_round
+
+```
+
+
+```{r}
+results_round <- c(round(accuracy_rfMod_round,2), round(100,2))
+results_round <- as.factor(results_round)
+results_round <- t(data.frame(results_round))
+
+colnames(results_round) <- colnames(predDF_round)
+Results_round <- rbind(predDF_round, results_round) 
+Results_round
+
+```
+
+
+```{r}
+knnMod_round <- train(NextDayPrice ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+rpartMod_round <- train(NextDayPrice ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+glmMod_round <- train(NextDayPrice ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r}
+predKNN <- predict(knnMod_round, testingSet)
+predKNN_round <- ifelse(predKNN<0,0,round(predKNN,0))
+
+predRPART <- predict(rpartMod_round, testingSet)
+predRPART_round <- ifelse(predRPART<0,0,round(predRPART,0))
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predGLM <- predict(glmMod_round, testingSet)
+predGLM_round <- ifelse(predGLM<0,0,round(predGLM,0))
+```
+
+
+```{r}
+length=length(testingSet$NextDayPrice)
+```
+
+```{r}
+sumKNN_round <- sum(predKNN_round==testingSet$NextDayPrice)
+sumRPart_round <- sum(predRPART_round==testingSet$NextDayPrice)
+```
+
+```{r}
+sumGLM_round <- sum(predGLM_round==testingSet$NextDayPrice)
+
+```
+
+```{r}
+accuracy_KNN_round <- sumKNN_round/length 
+accuracy_RPART_round <- sumRPart_round/length 
+```
+
+```{r}
+accuracy_GLM_round <- sumGLM_round/length 
+
+```
+
+
+```{r}
+predDF2_round <- data.frame(predRF_round,predKNN_round,predRPART_round,predGLM_round, 
+                      NextDayPrice=testingSet$NextDayPrice)
+colnames(predDF2_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','NextDayPrice')
+
+results_round <- c(round(accuracy_rfMod_round,2),  
+             round(accuracy_KNN_round,2), 
+             round(accuracy_RPART_round,2),
+             round(accuracy_GLM_round,2), 
+             round(100,2))
+
+results_round <- as.factor(results_round)
+results_round <- t(data.frame(results_round))
+colnames(results_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','NextDayPrice')
+Results_round <- rbind(predDF2_round, results_round) 
+Results_round
+
+```
+
+Lets compare this to the table we just saw earlier when the values weren't rounded or zero if less than zero.
+```{r}
+Results
+
+```
+
+This certainly confirms that these algorithms are great for predicting the number of days that will continue to decrease with the features we selected and the models used in R, random forest, recursive partitioned trees, generalized linear models, and K-nearest neighbors for numeric data. 
+
+We can align the rounded table by indices with our sAAL testing set table to see what dates we can look at for clarity.
+```{r}
+sYELP1$Date <- row.names(sYELP1)
+testingSet$Date <- row.names(testingSet)
+Results_round$Date <- row.names(Results_round)
+
+sYELP1 <- merge(testingSet,Results_round, by.x='Date', by.y='Date')
+tbl <- rbind(head(sYELP1),tail(sYELP1))
+tbl
+```
+
+
+```{r}
+Results_round$RandomForest_round <-
+  as.numeric(paste(Results_round$RandomForest_round))
+Results_round$KNN_round <-
+  as.numeric(paste(Results_round$KNN_round))
+Results_round$Rpart_round <-
+  as.numeric(paste(Results_round$Rpart_round))
+Results_round$GLM_round <-
+  as.numeric(paste(Results_round$GLM_round))
+Results_round$NextDayPrice <-
+  as.numeric(paste(Results_round$NextDayPrice))
+
+
+
+Results_round$mostVoted <- ifelse(
+                        (Results_round$RandomForest_round==Results_round$KNN_round |                        Results_round$RandomForest_round==Results_round$Rpart_round |                        Results_round$RandomForest_round==Results_round$GLM_round),
+                       
+ifelse(Results_round$KNN_round==Results_round$Rpart_round |                           Results_round$KNN_round==Results_round$GLM_round,
+        Results_round$RandomForest_round,
+        ifelse(Results_round$Rpart_round ==Results_round$GLM_round,
+               Results_round$Rpart_round,
+               Results_round$RandomForest_round)),
+                               ifelse(Results_round$KNN_round==Results_round$Rpart_round |                          Results_round$KNN_round==Results_round$GLM_round,
+        Results_round$KNN_round,
+        ifelse(Results_round$Rpart_round==Results_round$GLM_round,
+               Results_round$Rpart_round,
+               ifelse(Results_round$Rpart_round>Results_round$RandomForest_round,
+                      Results_round$Rpart_round, 
+                      Results_round$RandomForest_round))
+      )
+)
+                          
+sMost <- sum(Results_round$mostVoted==Results_round$NextDayPrice)
+lMost <- length(Results_round$NextDayPrice)-1
+accMost <- sMost/lMost
+accMost
+Results_round
+```
+
+
+
+
+
+***
+***
+***
+
+Another modified machine could be to add a field that describes the increase or decrease the next day as whether or not the next day price increases by 2% and predict this as yes or no.
+```{r}
+sYELP1 <- sYELP[,c(4,5,9,14,15,19,20,21,24,25)]
+sYELP1$NextDayPrice <- lead(sYELP1$stockDayValue,1)
+sYELP1 <- sYELP1[complete.cases(sYELP1$NextDayPrice),]
+row.names(sYELP1) <- as.factor(sYELP1$Date)
+sYELP1 <- sYELP1[,-c(1)]
+sYELP1$NextDay2PercentIncrease <- ifelse(sYELP1$NextDayPrice/sYELP1$stockDayValue >1.02, 1,0)
+sYELP1 <- sYELP1[,-10]
+```
+
+
+```{r}
+set.seed(12356789)
+
+inTrain <- createDataPartition(y=sYELP1$NextDay2PercentIncrease, p=0.7, list=FALSE)
+
+trainingSet <- sYELP1[inTrain,]
+testingSet <- sYELP1[-inTrain,]
+
+trainingSet$NextDay2PercentIncrease <- round(trainingSet$NextDay2PercentIncrease,0)
+testingSet$NextDay2PercentIncrease <- round(testingSet$NextDay2PercentIncrease,0)
+```
+
+
+
+```{r}
+rfMod <- train(NextDay2PercentIncrease ~ ., method='rf', data=(trainingSet), 
+               trControl=trainControl(method='cv'), number=5)
+```
+
+
+```{r}
+predRF_round <- predict(rfMod, testingSet)
+
+predRF_round <- ifelse(predRF_round<0,0,round(predRF,0))
+
+predDF_round <- data.frame(predRF_round, NextDay2PercentIncrease=testingSet$NextDay2PercentIncrease)
+predDF_round
+
+sum <- sum(predRF_round==testingSet$NextDay2PercentIncrease) 
+length <- length(testingSet$NextDay2PercentIncrease)
+accuracy_rfMod_round <- (sum/length) 
+accuracy_rfMod_round
+
+```
+
+
+```{r}
+results_round <- c(round(accuracy_rfMod_round,2), round(100,2))
+results_round <- as.factor(results_round)
+results_round <- t(data.frame(results_round))
+
+colnames(results_round) <- colnames(predDF_round)
+Results_round <- rbind(predDF_round, results_round) 
+Results_round
+
+```
+
+
+```{r}
+knnMod_round <- train(NextDay2PercentIncrease ~ .,
+                method='knn', preProcess=c('center','scale'),
+                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+rpartMod_round <- train(NextDay2PercentIncrease ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+glmMod_round <- train(NextDay2PercentIncrease ~ ., 
+                method='glm', data=trainingSet) 
+```
+
+
+```{r}
+predKNN <- predict(knnMod_round, testingSet)
+predKNN_round <- ifelse(predKNN<0,0,round(predKNN,0))
+
+predRPART <- predict(rpartMod_round, testingSet)
+predRPART_round <- ifelse(predRPART<0,0,round(predRPART,0))
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+predGLM <- predict(glmMod_round, testingSet)
+predGLM_round <- ifelse(predGLM<0,0,round(predGLM,0))
+```
+
+
+```{r}
+length=length(testingSet$NextDay2PercentIncrease)
+```
+
+```{r}
+sumKNN_round <- sum(predKNN_round==testingSet$NextDay2PercentIncrease)
+sumRPart_round <- sum(predRPART_round==testingSet$NextDay2PercentIncrease)
+```
+
+```{r}
+sumGLM_round <- sum(predGLM_round==testingSet$NextDay2PercentIncrease)
+
+```
+
+```{r}
+accuracy_KNN_round <- sumKNN_round/length 
+accuracy_RPART_round <- sumRPart_round/length 
+```
+
+```{r}
+accuracy_GLM_round <- sumGLM_round/length 
+
+```
+
+
+```{r}
+predDF2_round <- data.frame(predRF_round,predKNN_round,predRPART_round,predGLM_round, 
+                      NextDay2PercentIncrease=testingSet$NextDay2PercentIncrease)
+colnames(predDF2_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','NextDay2PercentIncrease')
+
+results_round <- c(round(accuracy_rfMod_round,2),  
+             round(accuracy_KNN_round,2), 
+             round(accuracy_RPART_round,2),
+             round(accuracy_GLM_round,2), 
+             round(100,2))
+
+results_round <- as.factor(results_round)
+results_round <- t(data.frame(results_round))
+colnames(results_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','NextDay2PercentIncrease')
+Results_round <- rbind(predDF2_round, results_round) 
+Results_round
+
+```
+
+Lets compare this to the table we just saw earlier when the values weren't rounded or zero if less than zero.
+```{r}
+Results
+
+```
+
+This certainly confirms that these algorithms are great for predicting the number of days that will continue to decrease with the features we selected and the models used in R, random forest, recursive partitioned trees, generalized linear models, and K-nearest neighbors for numeric data. 
+
+We can align the rounded table by indices with our sAAL testing set table to see what dates we can look at for clarity.
+```{r}
+sYELP1$Date <- row.names(sYELP1)
+testingSet$Date <- row.names(testingSet)
+Results_round$Date <- row.names(Results_round)
+
+sYELP1 <- merge(testingSet,Results_round, by.x='Date', by.y='Date')
+tbl <- rbind(head(sYELP1),tail(sYELP1))
+tbl
+```
+
+
+```{r}
+Results_round$RandomForest_round <-
+  as.numeric(paste(Results_round$RandomForest_round))
+Results_round$KNN_round <-
+  as.numeric(paste(Results_round$KNN_round))
+Results_round$Rpart_round <-
+  as.numeric(paste(Results_round$Rpart_round))
+Results_round$GLM_round <-
+  as.numeric(paste(Results_round$GLM_round))
+Results_round$NextDay2PercentIncrease <-
+  as.numeric(paste(Results_round$NextDay2PercentIncrease))
+
+
+
+Results_round$mostVoted <- ifelse(
+                        (Results_round$RandomForest_round==Results_round$KNN_round |                        Results_round$RandomForest_round==Results_round$Rpart_round |                        Results_round$RandomForest_round==Results_round$GLM_round),
+                       
+ifelse(Results_round$KNN_round==Results_round$Rpart_round |                           Results_round$KNN_round==Results_round$GLM_round,
+        Results_round$RandomForest_round,
+        ifelse(Results_round$Rpart_round ==Results_round$GLM_round,
+               Results_round$Rpart_round,
+               Results_round$RandomForest_round)),
+                               ifelse(Results_round$KNN_round==Results_round$Rpart_round |                          Results_round$KNN_round==Results_round$GLM_round,
+        Results_round$KNN_round,
+        ifelse(Results_round$Rpart_round==Results_round$GLM_round,
+               Results_round$Rpart_round,
+               ifelse(Results_round$Rpart_round>Results_round$RandomForest_round,
+                      Results_round$Rpart_round, 
+                      Results_round$RandomForest_round))
+      )
+)
+                          
+sMost <- sum(Results_round$mostVoted==Results_round$NextDay2PercentIncrease)
+lMost <- length(Results_round$NextDay2PercentIncrease)-1
+accMost <- sMost/lMost
+accMost
+Results_round
+```
+
 
