@@ -2,7 +2,9 @@
 title: "Stock Counts 52 Machine Learning"
 author: "Janis Corona"
 date: "3/17/2020"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 This script takes the STOCK_COUNTS_52.csv table made in the matrix.Rmd script and runs known algorithms on it for machine learning results using the features in the table of counts from the time specified in making the table.
@@ -1496,7 +1498,8 @@ sYELP1 <- sYELP1[complete.cases(sYELP1$NextDayPrice),]
 row.names(sYELP1) <- as.factor(sYELP1$Date)
 sYELP1 <- sYELP1[,-c(1)]
 sYELP1$NextDay2PercentIncrease <- ifelse(sYELP1$NextDayPrice/sYELP1$stockDayValue >1.02, 1,0)
-sYELP1 <- sYELP1[,-10]
+#sYELP1 <- sYELP1[,-10]
+sYELP1$NextDay2PercentIncrease <- as.factor(sYELP1$NextDay2PercentIncrease)
 ```
 
 
@@ -1508,179 +1511,194 @@ inTrain <- createDataPartition(y=sYELP1$NextDay2PercentIncrease, p=0.7, list=FAL
 trainingSet <- sYELP1[inTrain,]
 testingSet <- sYELP1[-inTrain,]
 
-trainingSet$NextDay2PercentIncrease <- round(trainingSet$NextDay2PercentIncrease,0)
-testingSet$NextDay2PercentIncrease <- round(testingSet$NextDay2PercentIncrease,0)
+NextDayPrice <- testingSet$NextDayPrice
+
+trainingSet <- trainingSet[,-10]
+testingSet <- testingSet[,-10]
+
+
 ```
 
 
-
+Some modifications to the data as a factor instead of numeric when copy and 
+pasting the code above. The random forest is taking a tree approach to classification of the next day's value as 1 for increased by 2% or a 0 for didn't increase by 2%. Otherwise, the random forest would have done regression as done in previous two runs with the next day price value guess. Below is the caret random forest or you could use the random forest package. Make sure not to keep the round(,0) modification or all values will be NA. If you just run this, then no worries.
 ```{r}
 rfMod <- train(NextDay2PercentIncrease ~ ., method='rf', data=(trainingSet), 
                trControl=trainControl(method='cv'), number=5)
+
+
+#rfMod <- randomForest(NextDay2PercentIncrease ~ ., data=trainingSet, 
+ #                     importance=TRUE,
+  #                    proximity=TRUE,)
 ```
 
 
 ```{r}
-predRF_round <- predict(rfMod, testingSet)
+predRF <- predict(rfMod, testingSet)
 
-predRF_round <- ifelse(predRF_round<0,0,round(predRF,0))
+predDF <- data.frame(predRF, NextDay2PercentIncrease=testingSet$NextDay2PercentIncrease)
+predDF
+```
 
-predDF_round <- data.frame(predRF_round, NextDay2PercentIncrease=testingSet$NextDay2PercentIncrease)
-predDF_round
+```{r}
 
-sum <- sum(predRF_round==testingSet$NextDay2PercentIncrease) 
+sum <- sum(predRF==testingSet$NextDay2PercentIncrease) 
 length <- length(testingSet$NextDay2PercentIncrease)
-accuracy_rfMod_round <- (sum/length) 
-accuracy_rfMod_round
+accuracy_rfMod <- (sum/length) 
+accuracy_rfMod
 
 ```
 
 
 ```{r}
-results_round <- c(round(accuracy_rfMod_round,2), round(100,2))
-results_round <- as.factor(results_round)
-results_round <- t(data.frame(results_round))
+results <- c(round(accuracy_rfMod,2), round(100,2))
+results <- as.factor(results)
+results <- t(data.frame(results))
 
-colnames(results_round) <- colnames(predDF_round)
-Results_round <- rbind(predDF_round, results_round) 
-Results_round
+colnames(results) <- colnames(predDF)
+Results <- rbind(predDF, results) 
+Results
 
 ```
 
+From the above, 80% is not bad. You could run this program just using the random forest for if the next day value will increase by 2% and be right 4 out of 5 days. Lets see the rest using the caret package for the classification. The metric was changed to 'Accuracy' or 'Kappa' to use the train() of the caret package to classify instead of regress the features on the target as was done earlier.
 
 ```{r}
-knnMod_round <- train(NextDay2PercentIncrease ~ .,
+knnMod <- train(NextDay2PercentIncrease ~ .,
                 method='knn', preProcess=c('center','scale'),
-                tuneLength=10, trControl=trainControl(method='cv'), data=trainingSet)
+                tuneLength=10, metric='Accuracy',
+                trControl=trainControl(method='cv'), data=trainingSet)
 ```
 
 
 ```{r, error=FALSE, message=FALSE, warning=FALSE}
-rpartMod_round <- train(NextDay2PercentIncrease ~ ., method='rpart', tuneLength=9, data=trainingSet) 
+rpartMod <- train(NextDay2PercentIncrease ~ ., 
+                        method='rpart', tuneLength=9, metric='Accuracy',
+                        data=trainingSet) 
 
 ```
 
 ```{r, error=FALSE, message=FALSE, warning=FALSE}
-glmMod_round <- train(NextDay2PercentIncrease ~ ., 
+glmMod <- train(NextDay2PercentIncrease ~ ., metric='Kappa',
                 method='glm', data=trainingSet) 
 ```
 
 
 ```{r}
-predKNN <- predict(knnMod_round, testingSet)
-predKNN_round <- ifelse(predKNN<0,0,round(predKNN,0))
+predKNN <- predict(knnMod, testingSet)
+predKNN
+```
 
-predRPART <- predict(rpartMod_round, testingSet)
-predRPART_round <- ifelse(predRPART<0,0,round(predRPART,0))
+```{r}
+predRPART <- predict(rpartMod, testingSet)
+predRPART
 ```
 
 ```{r, error=FALSE, message=FALSE, warning=FALSE}
-predGLM <- predict(glmMod_round, testingSet)
-predGLM_round <- ifelse(predGLM<0,0,round(predGLM,0))
+predGLM <- predict(glmMod, testingSet)
+predGLM
 ```
 
 
 ```{r}
 length=length(testingSet$NextDay2PercentIncrease)
+length
 ```
 
 ```{r}
-sumKNN_round <- sum(predKNN_round==testingSet$NextDay2PercentIncrease)
-sumRPart_round <- sum(predRPART_round==testingSet$NextDay2PercentIncrease)
+sumKNN <- sum(predKNN==testingSet$NextDay2PercentIncrease)
+sumRPart <- sum(predRPART==testingSet$NextDay2PercentIncrease)
+sumKNN
+sumRPart
 ```
 
 ```{r}
-sumGLM_round <- sum(predGLM_round==testingSet$NextDay2PercentIncrease)
-
+sumGLM <- sum(predGLM==testingSet$NextDay2PercentIncrease)
+sumGLM
 ```
 
 ```{r}
-accuracy_KNN_round <- sumKNN_round/length 
-accuracy_RPART_round <- sumRPart_round/length 
+accuracy_KNN <- sumKNN/length 
+accuracy_RPART <- sumRPart/length 
+accuracy_KNN
+accuracy_RPART
 ```
 
 ```{r}
-accuracy_GLM_round <- sumGLM_round/length 
-
+accuracy_GLM <- sumGLM/length 
+accuracy_GLM
 ```
 
 
 ```{r}
-predDF2_round <- data.frame(predRF_round,predKNN_round,predRPART_round,predGLM_round, 
+predDF2 <- data.frame(predRF,predKNN,predRPART,predGLM, 
                       NextDay2PercentIncrease=testingSet$NextDay2PercentIncrease)
-colnames(predDF2_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','NextDay2PercentIncrease')
+colnames(predDF2) <- c('RandomForest','KNN','Rpart','GLM','NextDay2PercentIncrease')
 
-results_round <- c(round(accuracy_rfMod_round,2),  
-             round(accuracy_KNN_round,2), 
-             round(accuracy_RPART_round,2),
-             round(accuracy_GLM_round,2), 
+results <- c(round(accuracy_rfMod,2),  
+             round(accuracy_KNN,2), 
+             round(accuracy_RPART,2),
+             round(accuracy_GLM,2), 
              round(100,2))
 
-results_round <- as.factor(results_round)
-results_round <- t(data.frame(results_round))
-colnames(results_round) <- c('RandomForest_round','KNN_round','Rpart_round','GLM_round','NextDay2PercentIncrease')
-Results_round <- rbind(predDF2_round, results_round) 
-Results_round
-
-```
-
-Lets compare this to the table we just saw earlier when the values weren't rounded or zero if less than zero.
-```{r}
+results <- as.factor(results)
+results <- t(data.frame(results))
+colnames(results) <- c('RandomForest','KNN','Rpart','GLM',
+                       'NextDay2PercentIncrease')
+Results <- rbind(predDF2, results) 
 Results
 
 ```
 
-This certainly confirms that these algorithms are great for predicting the number of days that will continue to decrease with the features we selected and the models used in R, random forest, recursive partitioned trees, generalized linear models, and K-nearest neighbors for numeric data. 
 
-We can align the rounded table by indices with our sAAL testing set table to see what dates we can look at for clarity.
+Lets now align these predicted values to the subset for the stock YELP made earlier.
 ```{r}
 sYELP1$Date <- row.names(sYELP1)
 testingSet$Date <- row.names(testingSet)
-Results_round$Date <- row.names(Results_round)
+predDF2$Date <- row.names(testingSet)
 
-sYELP1 <- merge(testingSet,Results_round, by.x='Date', by.y='Date')
+sYELP1 <- merge(testingSet,predDF2, by.x='Date', by.y='Date')
 tbl <- rbind(head(sYELP1),tail(sYELP1))
 tbl
 ```
 
 
 ```{r}
-Results_round$RandomForest_round <-
-  as.numeric(paste(Results_round$RandomForest_round))
-Results_round$KNN_round <-
-  as.numeric(paste(Results_round$KNN_round))
-Results_round$Rpart_round <-
-  as.numeric(paste(Results_round$Rpart_round))
-Results_round$GLM_round <-
-  as.numeric(paste(Results_round$GLM_round))
-Results_round$NextDay2PercentIncrease <-
-  as.numeric(paste(Results_round$NextDay2PercentIncrease))
+sYELP2 <- sYELP1
 
+sYELP2$RandomForest <- as.numeric(paste(sYELP2$RandomForest))
+sYELP2$Rpart <- as.numeric(paste(sYELP2$Rpart))
+sYELP2$GLM <- as.numeric(paste(sYELP2$GLM))
+sYELP2$NextDay2PercentIncrease.y <-
+  as.numeric(paste(sYELP2$NextDay2PercentIncrease.y))
+sYELP2$KNN <- as.numeric(paste(sYELP2$KNN))
 
-
-Results_round$mostVoted <- ifelse(
-                        (Results_round$RandomForest_round==Results_round$KNN_round |                        Results_round$RandomForest_round==Results_round$Rpart_round |                        Results_round$RandomForest_round==Results_round$GLM_round),
-                       
-ifelse(Results_round$KNN_round==Results_round$Rpart_round |                           Results_round$KNN_round==Results_round$GLM_round,
-        Results_round$RandomForest_round,
-        ifelse(Results_round$Rpart_round ==Results_round$GLM_round,
-               Results_round$Rpart_round,
-               Results_round$RandomForest_round)),
-                               ifelse(Results_round$KNN_round==Results_round$Rpart_round |                          Results_round$KNN_round==Results_round$GLM_round,
-        Results_round$KNN_round,
-        ifelse(Results_round$Rpart_round==Results_round$GLM_round,
-               Results_round$Rpart_round,
-               ifelse(Results_round$Rpart_round>Results_round$RandomForest_round,
-                      Results_round$Rpart_round, 
-                      Results_round$RandomForest_round))
-      )
-)
+sYELP2$mostVoted <- ifelse(rowSums(sYELP2[,12:15])>=2,1,0)
                           
-sMost <- sum(Results_round$mostVoted==Results_round$NextDay2PercentIncrease)
-lMost <- length(Results_round$NextDay2PercentIncrease)-1
+sMost <- sum(sYELP2$mostVoted==sYELP2$NextDay2PercentIncrease.y)
+lMost <- length(sYELP2$NextDay2PercentIncrease.y)
 accMost <- sMost/lMost
-accMost
-Results_round
+results <- as.data.frame(c(round(accuracy_rfMod,2),  
+             round(accuracy_KNN,2), 
+             round(accuracy_RPART,2),
+             round(accuracy_GLM,2), 
+             round(accMost,2),
+             round(100,2)))
+colnames(results) <- 'Results'
+row.names(results) <- c('RandomForest','KNN','Rpart','GLM','mostVoted',
+                       'NextDay2PercentIncrease')
+
+results
 ```
 
+The above accuracy measures for random forest, recursive partitioning trees, k-nearest neighbors, and generalized linear models show that 78-80% of the time the next day can be predicted as either having a two percent increase or not. The following is the table of the first 30 predicted results on the testing set of 605 samples. Also, add back in the NextDayPrice extracted earlier so the results weren't dependent on the next day price when predicting whether the next day would be increased by 2%.
+```{r}
+sYELP2$NextDayPrice <- NextDayPrice
+head(sYELP2,30)
+```
 
+```{r}
+tail(sYELP2,30)
+```
+
+The above is the last 30 of the 605 testing set samples with the next day predictions in predicting whether the value would be 2% more than the previous day.
