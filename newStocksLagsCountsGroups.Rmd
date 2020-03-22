@@ -1,0 +1,482 @@
+---
+title: "New Stocks Lags Counts Groups"
+author: "Janis Corona"
+date: "3/20/2020"
+output: html_document
+---
+
+
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+library(lubridate)
+library(dplyr)
+library(quantmod)
+library(PerformanceAnalytics)
+library(tidyr)
+
+setDefaults(getSymbols, src='yahoo')
+
+```
+
+Enter a date and the number of days to go back for the stock value as the lag value.
+```{r}
+date="1999-01-01"
+lag = 5
+today = today()
+
+lagN = paste('lag',lag,sep='')
+
+```
+
+
+
+```{r}
+newStocks <- read.csv('StockSwingTradeBotCom.csv', header=TRUE, na.strings=c('',' ','NA'),
+                      sep=',')
+
+head(newStocks)
+
+```
+
+```{r}
+newStocks <- newStocks[,-c(4:5)]
+head(newStocks)
+```
+
+```{r}
+
+tail(newStocks)
+```
+
+Lets look at the stock symbols or tickers to pull up information on.
+```{r}
+dim(newStocks)
+newStocks$stockSymbol[1:25]
+newStocks$stockSymbol[5505:5530]
+```
+
+These are the stocks that we had built the previous lags, group counts, and other stats for of 65 total. 
+```{r}
+stockNames <- read.csv('yahooStockBasket.csv', header=TRUE, sep=',', 
+                       na.strings=c('',' ','NA'))
+```
+
+Get a list of those names of stocks that have the period in the names, recalling that SCE.PB was changed in this 65 stock list, stockNames, to SCE-PB in a previous script.
+```{r}
+a1 <- grep('[.]', stockNames$stock)
+a2 <- grep('[.]', newStocks$stockSymbol)
+
+stockNames[a1,2]
+```
+There aren't any periods in the stock names of the 65 stock list. List those stock names that are separated with a period in the 5530 stock list.
+```{r}
+newStocks[a2,1]
+```
+
+See if those stocks we hand picked and analyzed previously are in this larger set.
+```{r}
+stocksBothSets <- merge(stockNames, newStocks, by.x='stock', by.y='stockSymbol')
+```
+
+This combines all the 65 stocks and fills in as NAs for the missing stocks not in the 5530 stock set.
+```{r}
+stocksNotBothSets <- merge(stockNames, stocksBothSets, by.x='stock',by.y='stock',
+                           all.x=TRUE)
+```
+
+
+The stocks not in the 65 stock set and the 5530 other [stocks](https://swingtradebot.com).  
+```{r}
+stocksNotBoth <- stocksNotBothSets[is.na(stocksNotBothSets$stockInfo.y),]
+stocksNotBoth$stock
+```
+Lets add these stocks to the table, but replace the '-' with '.' in SCE-PB to the newStocks table.
+```{r}
+large <- newStocks[,1:2]
+small <- stockNames[,c(2,1)]
+
+colnames(large) <- c('stock','company')
+colnames(small) <- c('stock','company')
+
+all <- rbind(large,small)
+all$stock <- gsub('-','.',all$stock)
+
+```
+
+
+```{r}
+allStockTicks <- as.character(all$stock)
+length(allStockTicks)
+```
+There are duplicates in the stocks that need to be removed. This set is the original 5530 plus the six stocks that were not in the set originally but were in the 65 stock sets analyzed already.
+```{r}
+allStockTicks1 <- allStockTicks[!duplicated(allStockTicks)]
+length(allStockTicks1)
+```
+
+
+
+These are the stock tickers that aren't in the list of 5595 stock tickers. They produced errors when ran in a previous script for getSymbols(src='yahoo').
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+
+notFound <- as.data.frame(c("AAC","ACIW","AFGB","AGBAR","AGM.A","AKO.A","AKO.B",                 "ALGRR","ANDAR","AREX","AVDR","BF.A","BF.B","BH.A","BIO.B",
+              "BRK.A","BRK.B","BROGR","BWL.A","BXRXV","CBS.A","CCH.U","CCX.U",
+              "CIG.C","CJ","CMFNL","CRD.A","CRD.B","CTRP","CUR","CVRS",
+              "CWEN.A","DEST","DF","DFBHU","DFPHU","DHCNL","DISHR","DISHV",
+              "DNJR","EBR.B","ECOLW","FELP","FRAC","GEF.B","GHDX","GIG.U",
+              "GLACR","GLACU","GOODO","GOODP","GRP.U","GTN.A","HAIR",
+              "HCP","HEI.A","HES","HESM","HPJ","HVT.A","ISRL","JIH.U","JIH.W",
+              "JMPB","JW.A","JW.B","KOOL","LEN.B","LGF.A","LHC.U","LTXB",
+              "MKC.V","MOG.A","MOG.B","NEWM","NRCG","NVTR","NYNY",
+              "OAC.U","OIBR.C","OTIV","PBR.A","PIC.U","RDS.A","RDS.B",
+              "RMG.U","RTEC","RVEN","SBE.U","SDR","SDT","SHOS","SSFN",
+              "STNL","STNLU","STZ.B","SWJ","SYMC","TAP.A","TBLTU",
+              "TMCX","TMCXU","TPGH","TPGH.U","TTS","UBNK","WSO.B","SCE.PB"))
+
+colnames(notFound) <- 'stock'
+notFound$stock <- as.character(paste(notFound$stock))
+```
+
+This combines the 5536 stocks and creates a group to subset those stocks that aren't found in the getSymbols(src='yahoo') search results.
+```{r}
+allStockTicks2 <- as.data.frame(allStockTicks1)
+colnames(allStockTicks2) <- 'stock'
+allStockTicks2$stock <- as.factor(allStockTicks2$stock)
+
+notFound$avail <- 'notAvail'
+allStockTicks2$avail <- 'Avail'
+
+availStocks <- merge(allStockTicks2, notFound, by.x='stock',by.y='stock',
+                     all.x=TRUE)
+
+availStocks1 <- availStocks[with(availStocks, order(avail.y,avail.x)),]
+  
+available <- subset(availStocks, is.na(availStocks$avail.y) &
+                      availStocks$avail.x=='Avail')
+
+notavail <- subset(availStocks, availStocks$avail.y=='notAvail')
+```
+
+We are interested in the available stocks, of which there are 5,428 stock tickers that are available on yahoo.
+```{r,error=FALSE, message=FALSE,warning=FALSE}
+available1 <- as.character(available$stock)
+
+tickers1 <- available1[c(1:700)]
+tickers2 <- available1[c(701:1300)]
+tickers3 <- available1[c(1301:2000)]
+tickers4 <- available1[c(2001:2700)]
+tickers5 <- available1[c(2701:3300)]
+tickers6<- available1[c(3301:4000)]
+tickers7 <- available1[c(4001:4700)]
+tickers8 <- available1[c(4701:5428)]
+
+
+
+```
+
+
+
+```{r,error=FALSE, message=FALSE, warning=FALSE}
+
+All_portfolioPrices1 <- NULL
+
+for (ticker in tickers1){
+  All_portfolioPrices1 <- cbind(All_portfolioPrices1, getSymbols(ticker,
+  from = date, 
+  periodicity='daily', auto.assign=FALSE)[,4])
+}
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+All_portfolioPrices2 <- NULL
+
+for (ticker in tickers2){
+  All_portfolioPrices2 <- cbind(All_portfolioPrices2, getSymbols(ticker,
+  from = date, 
+  periodicity='daily', auto.assign=FALSE)[,4])
+}
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+
+All_portfolioPrices3 <- NULL
+
+for (ticker in tickers3){
+  All_portfolioPrices3 <- cbind(All_portfolioPrices3, getSymbols(ticker,
+  from = date, 
+  periodicity='daily', auto.assign=FALSE)[,4])
+}
+```
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+All_portfolioPrices4 <- NULL
+
+for (ticker in tickers4){
+  All_portfolioPrices4 <- cbind(All_portfolioPrices4, getSymbols(ticker,
+  from = date, 
+  periodicity='daily', auto.assign=FALSE)[,4])
+}
+
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+names <- as.data.frame(as.character(index(All_portfolioPrices1)))
+colnames(names) <- 'Date'
+
+p1 <- as.data.frame(All_portfolioPrices1)
+p2 <- as.data.frame(All_portfolioPrices2)
+p3 <- as.data.frame(All_portfolioPrices3)
+p4 <- as.data.frame(All_portfolioPrices4)
+
+val1 <- cbind(names,p1)
+val2 <- cbind(names,p2)
+val3 <- cbind(names,p3)
+val4 <- cbind(names,p4)
+
+colnames(val1) <- gsub('.Close','',colnames(val1))
+colnames(val2) <- gsub('.Close','',colnames(val2))
+colnames(val3) <- gsub('.Close','',colnames(val3))
+colnames(val4) <- gsub('.Close','',colnames(val4))
+     
+close1 <- gather(val1,'stockName','stockValue',2:701)
+close2 <- gather(val2,'stockName','stockValue',2:601)
+close3 <- gather(val3,'stockName','stockValue',2:701)
+close4 <- gather(val4,'stockName','stockValue',2:701)
+
+```
+
+
+```{r,error=FALSE, message=FALSE, warning=FALSE}
+
+All_portfolioPrices5 <- NULL
+
+
+for (ticker in tickers5){
+  All_portfolioPrices5 <- cbind(All_portfolioPrices5, getSymbols(ticker,
+  from = date, 
+  periodicity='daily', auto.assign=FALSE)[,4])
+}
+
+```
+
+
+```{r,error=FALSE, message=FALSE, warning=FALSE}
+All_portfolioPrices6 <- NULL
+
+for (ticker in tickers6){
+  All_portfolioPrices6 <- cbind(All_portfolioPrices6, getSymbols(ticker,
+  from = date, 
+  periodicity='daily', auto.assign=FALSE)[,4])
+}
+
+
+```
+
+
+```{r,error=FALSE, message=FALSE, warning=FALSE}
+All_portfolioPrices7 <- NULL
+
+for (ticker in tickers7){
+  All_portfolioPrices7 <- cbind(All_portfolioPrices7, getSymbols(ticker,
+  from = date, 
+  periodicity='daily', auto.assign=FALSE)[,4])
+}
+
+
+```
+
+
+```{r,error=FALSE, message=FALSE, warning=FALSE}
+All_portfolioPrices8 <- NULL
+
+for (ticker in tickers8){
+  All_portfolioPrices8 <- cbind(All_portfolioPrices8, getSymbols(ticker,
+  from = date, 
+  periodicity='daily', auto.assign=FALSE)[,4])
+}
+
+
+```
+
+
+```{r}
+p5 <- as.data.frame(All_portfolioPrices5)
+p6 <- as.data.frame(All_portfolioPrices6)
+p7 <- as.data.frame(All_portfolioPrices7)
+p8 <- as.data.frame(All_portfolioPrices8)
+
+```
+
+
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+names1 <- as.data.frame(as.character(index(All_portfolioPrices5)))
+colnames(names1) <- 'Date'
+
+val5 <- cbind(names1,p5)
+val6 <- cbind(names1,p6)
+val7 <- cbind(names1,p7)
+val8 <- cbind(names1,p8)
+
+colnames(val5) <- gsub('.Close','',colnames(val5))
+colnames(val6) <- gsub('.Close','',colnames(val6))
+colnames(val7) <- gsub('.Close','',colnames(val7))
+colnames(val8) <- gsub('.Close','',colnames(val8))
+```
+
+
+```{r}
+close5 <- gather(val5,'stockName','stockValue',2:601)
+close6 <- gather(val6,'stockName','stockValue',2:701)
+close7 <- gather(val7,'stockName','stockValue',2:701)
+close8 <- gather(val8,'stockName','stockValue',2:729)
+
+```
+
+
+```{r}
+allStocksGathered <- rbind(close1,close2,close3,close4,
+                                close5,close6,close7,close8)
+
+```
+
+Remove the NAs.
+```{r}
+allStocksGathered1 <-
+  allStocksGathered[complete.cases(allStocksGathered),]
+
+```
+
+
+
+Save this file to csv.
+```{r}
+write.csv(allStocksGathered1,'allStocksGathered1.csv',row.names=FALSE)
+```
+
+
+***
+***
+***
+
+%%%%%%%%%%%%%%%
+
+
+Lets create the lag and count/group by counts fields to analyze by each stock, using subsets of each stock.
+```{r}
+DF <- allStocksGathered1
+DF$Date <- as.Date(DF$Date)
+```
+
+What stock ticker are you interested in? And what lag are you interested in?
+```{r}
+stock_1 <- toupper("ubsi")
+lag <- 3
+lagN <- paste('lag',lag,sep='')
+
+```
+
+
+Generic automation of above stock to look up and the lag to use for generating the counts, group of counts, and lag values to get those counts.
+```{r}
+Lstock_1 <- subset(DF, DF$stockName==stock_1)
+Lstock_1$startDayValue <-Lstock_1$stockValue[1]
+Lstock_1$startDayDate <- Lstock_1$Date[1]
+Lstock_1$finalDayValue <-Lstock_1$stockValue[length(Lstock_1$stockValue)]
+Lstock_1$finalDayDate <- Lstock_1$Date[length(Lstock_1$Date)]
+
+stock_1LN <- lag(Lstock_1$stockValue, lag)
+Lstock_1$lagN <- stock_1LN
+Lstock_1$today2_lagN <- Lstock_1$stockValue/Lstock_1$lagN
+Lstock_1 <- Lstock_1[complete.cases(Lstock_1),]
+```
+
+Lets look at the data we will be adding counts of increasing and decreasing days, for the time interval dates and stock values at the beginning and end of the time interval available or requested.
+```{r}
+cat('\nThe lag for this table was for ',lag,'days.','\nThe stock to look up was ', stock_1,'.\nThe start date of this stock and starting value was ',as.character(paste(Lstock_1$startDayDate[1])),' and ','$',Lstock_1$startDayValue[1],'\nThe end date and end date price of this stock analysis is ',as.character(paste(Lstock_1$finalDayDate[1])),' and ','$',Lstock_1$finalDayValue[1])
+
+```
+
+
+Now, lets look at the counts and group counts of increasing and decreasing days for this stock and the time period available.
+```{r}
+#assign a 1 to increasing values
+Lstock_1$todayGrtrThan_lagN <- ifelse(Lstock_1$today2_lagN>1, 1,0)
+
+Lstock_1$cumulativeSumTodayGrtrThan_lagN <- cumsum(Lstock_1$todayGrtrThan_lagN)
+
+# get the count of how many instances repeat, 
+# those counts repeating are counts that measure the days cumulatively decreasing
+# those cumulative counts that don't repeat, are counting increasing days.
+# These are stock values for today's value to 7 days prior value.
+countstock_10 <- Lstock_1 %>% group_by(cumulativeSumTodayGrtrThan_lagN) %>% count(n=n())
+countstock_10 <- as.data.frame(countstock_10)
+countstock_10 <- countstock_10[,-3]
+colnames(countstock_10)[2] <- 'nRepeatsTodayGrtrThan_lagN'
+
+# Count the REPEATS of each number (minus the initial start) 
+countstock_10$decrDaysThisCycle <- countstock_10$n-1
+
+# Count the number of times the cycle count repeats in this time span exactly that many days
+countstock_10b <- countstock_10 %>% group_by(decrDaysThisCycle) %>% count(n=n())
+countstock_10b <- as.data.frame(countstock_10b)
+countstock_10b <- countstock_10b[,-3]
+colnames(countstock_10b)[2] <- 'nTimesDecrDayCountsOccurs'
+
+#combine these two count matrices of decreasing days
+countsstock_tableDecr <- merge(countstock_10, countstock_10b, by.x='decrDaysThisCycle',
+                             by.y='decrDaysThisCycle')
+
+#combine the counts to the stock subset
+stock_3 <- merge(Lstock_1, countsstock_tableDecr, by.x='cumulativeSumTodayGrtrThan_lagN',
+               by.y='cumulativeSumTodayGrtrThan_lagN')
+
+#assign a 1 to decreasing values
+stock_3$todayLessThan_lagN <- ifelse(stock_3$today2_lagN>1, 0,1)
+
+stock_3$cumulativeSumTodayLessThan_lagN <- cumsum(stock_3$todayLessThan_lagN)
+
+# get the count of how many instances repeat, 
+# those counts repeating are counts that measure the days cumulatively increasing
+# those cumulative counts that don't repeat, are counting decreasing days.
+# These are stock values for today's value to 7 days prior value.
+countstock_11 <- stock_3 %>% group_by(cumulativeSumTodayLessThan_lagN) %>% count(n=n())
+countstock_11 <- as.data.frame(countstock_11)
+countstock_11 <- countstock_11[,-3]
+colnames(countstock_11)[2] <- 'nRepeatsTodayLessThan_lagN'
+
+# Count the REPEATS of each number (minus the initial start) 
+countstock_11$incrDaysThisCycle <- countstock_11$n-1
+
+# Count the number of times the cycle count repeats in this time span exactly that many days
+countstock_11b <- countstock_11 %>% group_by(incrDaysThisCycle) %>% count(n=n())
+countstock_11b <- as.data.frame(countstock_11b)
+countstock_11b <- countstock_11b[,-3]
+colnames(countstock_11b)[2] <- 'nTimesIncrDayCountsOccurs'
+
+#combine these two count matrices of decreasing days
+countsstock_tableIncr <- merge(countstock_11, countstock_11b,
+                               by.x='incrDaysThisCycle',
+                             by.y='incrDaysThisCycle')
+
+#combine the counts to the stock subset
+stock_4 <- merge(stock_3, countsstock_tableIncr,
+                 by.x='cumulativeSumTodayLessThan_lagN',
+               by.y='cumulativeSumTodayLessThan_lagN')
+```
+
+```{r}
+colnames(stock_4)
+```
+
+```{r}
+stock_5 <- stock_4[,c(3:11,
+                      12,2,14,13,15,
+                      16,1,18,17,19)]
+colnames(stock_5) <- gsub('lagN',lagN,colnames(stock_5))
+colnames(stock_5)
+```
+
+
+
