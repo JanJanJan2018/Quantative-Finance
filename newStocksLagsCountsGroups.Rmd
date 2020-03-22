@@ -362,6 +362,11 @@ write.csv(allStocksGathered1,'allStocksGathered1.csv',row.names=FALSE)
 
 %%%%%%%%%%%%%%%
 
+Retrieve the large (approximately 442 mb file size) from [Kaggle](https://www.kaggle.com/janiscorona/stock-day-counts-increasing-and-decreasing-0720) called allStocksGathered1.csv for the large data processed in the last part of this script and to get the individual stock stats and counts of increasing and decreasing days.This script is in [github](https://github.com/JanJanJan2018/Quantative-Finance) as newStocksLagsCountsGroups.Rmd that made the csv large data file just mentioned.
+```{r}
+allStocksGathered1 <- read.csv('allStocksGathered1.csv',sep=',', header=TRUE,
+                               na.strings=c('',' ','NA'))
+```
 
 Lets create the lag and count/group by counts fields to analyze by each stock, using subsets of each stock.
 ```{r}
