@@ -374,24 +374,37 @@ DF <- allStocksGathered1
 DF$Date <- as.Date(DF$Date)
 ```
 
-What stock ticker are you interested in? And what lag are you interested in? You can keep the lag from the top of this script or these defaults or change them here. You need to enter the stock name in the chunk for Rmarkdown below.
+What stock ticker are you interested in? And what lag are you interested in? You can keep the lag from the top of this script or these defaults or change them here. You need to enter the stock name in the chunk for Rmarkdown below. Also, pick a start date and end date of the time you want to select for running the counts and groups of counts.
 ```{r}
 stock_1 <- toupper("ubsi")
 lag <- 3
+startDate <- '2005-01-22'
+endDate <- '2008-01-22'
+
+
 ```
 
+Lets subset our large table to get the dates requested.
+```{r}
+sDF <- subset(DF, DF$Date>=startDate & DF$Date<=endDate)
+
+```
 
 ```{r}
 lagN <- paste('lag',lag,sep='')
-cat('The number of days to retrieve the stock information is ',lag,'and the stock to look up this information for is ',stock_1)
+cat('The number of days to retrieve the stock value compared to each day value listed as an instance is ',lag,'and the stock to look up this information for is ',stock_1)
 stknme <- as.character(newStocks[newStocks$stockSymbol==stock_1,2])
 cat('\nThis stock is ',stknme)
+
+Lstock_1 <- subset(sDF, sDF$stockName==stock_1)
+
+cat('The number of days for trading that this time period will provide counts of increasing and decreasing days is ', length(Lstock_1$Date), ' trading days.')
+
 ```
 
 
 Generic automation of above stock to look up and the lag to use for generating the counts, group of counts, and lag values to get those counts.
 ```{r}
-Lstock_1 <- subset(DF, DF$stockName==stock_1)
 Lstock_1$startDayValue <-Lstock_1$stockValue[1]
 Lstock_1$startDayDate <- Lstock_1$Date[1]
 Lstock_1$finalDayValue <-Lstock_1$stockValue[length(Lstock_1$stockValue)]
@@ -406,6 +419,13 @@ Lstock_1 <- Lstock_1[complete.cases(Lstock_1),]
 Lets look at the data we will be adding counts of increasing and decreasing days, for the time interval dates and stock values at the beginning and end of the time interval available or requested.
 ```{r}
 cat('\nThe lag for this table was for ',lag,'days.','\nThe stock to look up was ', stock_1,'.\nThe start date of this stock and starting value was ',as.character(paste(Lstock_1$startDayDate[1])),' and ','$',Lstock_1$startDayValue[1],'\nThe end date and end date price of this stock analysis is ',as.character(paste(Lstock_1$finalDayDate[1])),' and ','$',Lstock_1$finalDayValue[1])
+
+roi <- Lstock_1$finalDayValue[1]/Lstock_1$startDayValue[1]
+cat('\nThe return on investment as a percentage of the amount invested for this time period is ',roi)
+
+cat('\n\nIn dollars initially invested your return  is $',Lstock_1$finalDayValue[1]-Lstock_1$startDayValue[1], 'for the dates:',
+   as.character(paste(Lstock_1$startDayDate[1])),'through ',
+   as.character(paste(Lstock_1$finalDayDate[1]))) 
 
 ```
 
@@ -489,5 +509,37 @@ colnames(stock_5) <- gsub('lagN',lagN,colnames(stock_5))
 colnames(stock_5)
 ```
 
+
+Using this information on one stock of the thousands available in our large csv file and table, lets return the count information and the number of times this stock has seen those exact days of counts.
+```{r}
+cat('\nThe number of times this stock has decreased in the current cycle from the start of this time period retrieved in price comparison of the number of days in lags retrieved prior to each instance dates\' stock value is ', stock_5$decrDaysThisCycle[length(stock_5$decrDaysThisCycle)],'\n')
+
+cat('\nThe number of times this stock has increased in the current cycle from the start of this time period retrieved in price comparison of the number of days in lags retrieved prior to each instance dates\' stock value is ', stock_5$incrDaysThisCycle[length(stock_5$incrDaysThisCycle)],'\n')
+
+cat('\nThe number of times this stock has decreased exactly this number of days compared to its price ', lag, ' days ago, is ', stock_5$nTimesDecrDayCountsOccurs[length(stock_5$nTimesDecrDayCountsOccurs)],'\n')
+
+cat('\nThe number of times this stock has increased exactly this number of days compared to its price ', lag, ' days ago, is ', stock_5$nTimesIncrDayCountsOccurs[length(stock_5$nTimesIncrDayCountsOccurs)],'\n')
+
+
+```
+
+The unique number of days this stock selected (for the time period retrieved) decreased is shown in the table below.
+```{r}
+stock_5[unique(stock_5$decrDaysThisCycle),c(1:3,8,9,13,14)]
+```
+
+The unique number of days this stock selected (for the time period retrieved) increased is shown in the table below.
+```{r}
+stock_5[unique(stock_5$incrDaysThisCycle),c(1:3,8,9,18,19)]
+
+
+```
+
+
+%%%%%%%%%%%%%%%%%
+
+***
+***
+***
 
 
