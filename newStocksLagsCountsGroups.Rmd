@@ -369,12 +369,18 @@ DF <- allStocksGathered1
 DF$Date <- as.Date(DF$Date)
 ```
 
-What stock ticker are you interested in? And what lag are you interested in?
+What stock ticker are you interested in? And what lag are you interested in? You can keep the lag from the top of this script or these defaults or change them here. You need to enter the stock name in the chunk for Rmarkdown below.
 ```{r}
 stock_1 <- toupper("ubsi")
 lag <- 3
-lagN <- paste('lag',lag,sep='')
+```
 
+
+```{r}
+lagN <- paste('lag',lag,sep='')
+cat('The number of days to retrieve the stock information is ',lag,'and the stock to look up this information for is ',stock_1)
+stknme <- as.character(newStocks[newStocks$stockSymbol==stock_1,2])
+cat('\nThis stock is ',stknme)
 ```
 
 
