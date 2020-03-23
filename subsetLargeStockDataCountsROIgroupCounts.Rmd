@@ -15,7 +15,7 @@ This file relies on all others made, but can be ran using the kaggle large data 
 ***
 ***
 ***
-```{r}
+```{r,error=FALSE,warning=FALSE, message=FALSE}
 library(lubridate)
 library(dplyr)
 ```
@@ -192,23 +192,374 @@ cat('\nThe number of times this stock has increased exactly this number of days 
 
 ```
 
-The unique number of days this stock selected (for the time period retrieved) decreased is shown in the table below.
+
+top and bottom ordered instances by descending value of increasing days and date this stock selected (for the time period retrieved) decreased is shown in the table below.
 ```{r}
-stock_5[unique(stock_5$decrDaysThisCycle),c(1:3,8,9,13,14)]
+sd5 <- stock_5[with(stock_5, order(stock_5$decrDaysThisCycle,
+                            stock_5$Date, decreasing = TRUE)),c(1:3,8,9,13,14)]
+sd5b <- rbind(head(sd5),tail(sd5))
+sd5b
 ```
 
-The unique number of days this stock selected (for the time period retrieved) increased is shown in the table below.
+The top and bottom ordered instances by descending value of increasing days and date this stock selected (for the time period retrieved) increased is shown in the table below.
 ```{r}
-stock_5[unique(stock_5$incrDaysThisCycle),c(1:3,8,9,18,19)]
+si5 <- stock_5[with(stock_5, order(stock_5$incrDaysThisCycle,
+                            stock_5$Date, decreasing = TRUE)),c(1:3,8,9,18,19)]
+si5b <- rbind(head(si5),tail(si5))
+si5b
+```
 
+***
+***
+***
+
+The following will automate for the subset stock chosen and the date provided above. It will produce answers to the following questions:
+
+- Was this date requested an available trading date?
+- If not, then what is the earliest date after the requested date?
+- What is the earliest date before the date requested for an available trading day?
+- After the user selects to know whether the day is in an increasing or decreasing cycle, the ROI based on the number of days earlier (lag) to the date selected will be provided, the value at lag days earler, the value of the current date requested of the stock, if the stock will increase of decrease the next day based on the lead for the next day.
+
+
+What date in this above time period would you like to find the number of increasing or decreasing days? And if the stock increased or decreased (put 1 for increasing or 0 for decreasing) compared to its value lag days earlier?
+```{r}
+findThisDate <- '2006-07-15'
+fd <- as.Date(findThisDate)
+incr <- 0
 
 ```
 
+```{r}
+interest <- ifelse(incr==1,'increasing','decreasing')
+
+cat('The date you want to search is ',findThisDate,' and you would like to know if it is ', interest,' on this date.\n' )
+```
+
+This first run will show you for the date closest to the date requested, but after that date for instances where the date requested is not available.
+```{r}
+t <- stock_5$Date==fd
+
+tt <- stock_5$Date==fd+1
+t1 <- ifelse(sum(t)==0, 
+                     ifelse(sum(tt)==0,as.character(paste(fd+2)),
+                            as.character(paste(fd+1))),
+                     as.character(paste(fd)))
+t1 <- as.Date(t1)
+
+cat('The closest available trading date after the date you entered of ',findThisDate, 'is ',as.character(paste(t1)),'\n\n')
+
+ttt <- stock_5$Date==fd-1
+
+
+t2 <- ifelse(sum(t)==0, 
+                     ifelse(sum(ttt)==0,as.character(paste(fd-2)),
+                            as.character(paste(fd-1))),
+                     as.character(paste(fd)))
+t2 <- as.Date(t2)
+
+cat('The closest available trading date before the date you entered of ',findThisDate, 'is ',as.character(paste(t2)),'\n\n')
+
+T1 <- subset(stock_5, stock_5$Date==t1 | stock_5$Date==t1+1 | stock_5$Date==t1+2 |
+               stock_5$Date==t1-1 | stock_5$Date==t1-2 | stock_5$Date==t1-3 )
+
+T1$nxtDayDecr <- lead(T1$decrDaysThisCycle,1)
+T1$nxtDayIncr <- lead(T1$incrDaysThisCycle,1)
+
+T1$nxtDayPrice <- lead(T1$stockValue,1)
+T1$nxtDayROI <- lead(T1$today2_lag3,1)
+
+t1ROI <- subset(T1, T1$Date==t1)
+t2ROI <- subset(T1, T1$Date==t2)
+
+nxtDecr <- ifelse(t1ROI$nxtDayDecr==0,0,1)
+nxtIncr <- ifelse(t1ROI$nxtDayIncr==0,0,1)
+plusMinus <- ifelse(nxtDecr==0, 'increase','decrease')
+
+nxtDecr1 <- ifelse(t2ROI$nxtDayDecr==0,0,1)
+nxtIncr1 <- ifelse(t2ROI$nxtDayIncr==0,0,1)
+plusMinus1 <- ifelse(nxtDecr1==0, 'increase','decrease')
+
+afterROI <- t1ROI$today2_lag3
+priceLag <- t1ROI$lag3
+nDaysIncr <- t1ROI$incrDaysThisCycle
+nDaysDecr <- t1ROI$decrDaysThisCycle
+price2day <- t1ROI$stockValue
+price2morrow <- t1ROI$nxtDayPrice
+nxtROI <- t1ROI$nxtDayROI
+  
+beforeROI <- t2ROI$today2_lag3
+priceLag2 <- t2ROI$lag3
+nDaysIncr2 <- t2ROI$incrDaysThisCycle
+nDaysDecr2 <- t2ROI$decrDaysThisCycle
+price2day2 <- t2ROI$stockValue
+price2morrow2 <- t2ROI$nxtDayPrice
+nxtROI2 <- t2ROI$nxtDayROI
+
+if (interest=='increasing'){
+    cat("This date is in a cycle that is in the date range ",as.character(paste(range(T1$Date))),' with ',length(T1$Date), ' trading days for these dates: ',as.character(paste(T1$Date)),'.\n\n','The earliest trading date of either the date requested or the nearest date after the date requested is ',as.character(paste(t1)), '. This stock has a return on investment from the price ', lag ,' days earlier of $',priceLag,' as ',afterROI,'.\n\nAnd the number of days including this date ',as.character(paste(t1)),' that the stock is or will be increasing ', ' is ',nDaysIncr, ' days compared to the price ', lag, ' trading days earlier.\n\n', 'The next trading day, this stock will have a price ',plusMinus,' from the price ',lag,' days earlier of ', price2day,' to the price the next trading day of ',price2morrow,' that gives a ',lag,' day ROI of ', nxtROI,'.\n\n')
+} else {
+    cat("This date is in a cycle that is in the date range ",as.character(paste(range(T1$Date))),' with ',length(T1$Date), ' trading days for these dates: ',as.character(paste(T1$Date)),'.\n\n','The earliest trading date after this trading date requested is',as.character(paste(t1)), ' and has a return on investment from the price ', lag ,' days earlier of $',priceLag,' as ',afterROI,'.\n\nAnd the number of days that this date ', as.character(paste(t1)), ' will decrease or is decreasing for this cycle of decreasing days is ',nDaysDecr, ' days compared to the price ', lag, ' trading days earlier.\n\nThe next trading day, this stock will have a price ', plusMinus, ' from the price ',lag,' days earlier of ', price2day,' to the price the next trading day of ',price2morrow,' that gives a ',lag,' day ROI of ',nxtROI,'.\n\n')
+}
+
+```
 
 %%%%%%%%%%%%%%%%%
 
+Here is an example when selecting increasing instead of decreasing for the information provided above for the date in this time period chosen.
+
+What date in this above time period would you like to find the number of increasing or decreasing days? And if the stock increased or decreased (put 1 for increasing or 0 for decreasing) compared to its value lag days earlier?
+```{r}
+findThisDate <- '2006-07-15'
+fd <- as.Date(findThisDate)
+incr <- 1
+
+```
+
+```{r}
+interest <- ifelse(incr==1,'increasing','decreasing')
+
+cat('The date you want to search is ',findThisDate,' and you would like to know if it is ', interest,' on this date.\n' )
+```
+
+This first run will show you for the date closest to the date requested, but after that date for instances where the date requested is not available.
+```{r}
+t <- stock_5$Date==fd
+
+tt <- stock_5$Date==fd+1
+t1 <- ifelse(sum(t)==0, 
+                     ifelse(sum(tt)==0,as.character(paste(fd+2)),
+                            as.character(paste(fd+1))),
+                     as.character(paste(fd)))
+t1 <- as.Date(t1)
+
+cat('The closest available trading date after the date you entered of ',findThisDate, 'is ',as.character(paste(t1)),'\n\n')
+
+ttt <- stock_5$Date==fd-1
+t2 <- ifelse(sum(t)==0, 
+                     ifelse(sum(ttt)==0,as.character(paste(fd-2)),
+                            as.character(paste(fd-1))),
+                     as.character(paste(fd)))
+t2 <- as.Date(t2)
+
+cat('The closest available trading date before the date you entered of ',findThisDate, 'is ',as.character(paste(t2)),'\n\n')
+
+T1 <- subset(stock_5, stock_5$Date==t1 | stock_5$Date==t1+1 | stock_5$Date==t1+2 |
+               stock_5$Date==t1-1 | stock_5$Date==t1-2 | stock_5$Date==t1-3 )
+
+T1$nxtDayDecr <- lead(T1$decrDaysThisCycle,1)
+T1$nxtDayIncr <- lead(T1$incrDaysThisCycle,1)
+
+T1$nxtDayPrice <- lead(T1$stockValue,1)
+T1$nxtDayROI <- lead(T1$today2_lag3,1)
+
+t1ROI <- subset(T1, T1$Date==t1)
+t2ROI <- subset(T1, T1$Date==t2)
+
+nxtDecr <- ifelse(t1ROI$nxtDayDecr==0,0,1)
+nxtIncr <- ifelse(t1ROI$nxtDayIncr==0,0,1)
+plusMinus <- ifelse(nxtDecr==0, 'increase','decrease')
+
+nxtDecr1 <- ifelse(t2ROI$nxtDayDecr==0,0,1)
+nxtIncr1 <- ifelse(t2ROI$nxtDayIncr==0,0,1)
+plusMinus1 <- ifelse(nxtDecr1==0, 'increase','decrease')
+
+afterROI <- t1ROI$today2_lag3
+priceLag <- t1ROI$lag3
+nDaysIncr <- t1ROI$incrDaysThisCycle
+nDaysDecr <- t1ROI$decrDaysThisCycle
+price2day <- t1ROI$stockValue
+price2morrow <- t1ROI$nxtDayPrice
+nxtROI <- t1ROI$nxtDayROI
+  
+beforeROI <- t2ROI$today2_lag3
+priceLag2 <- t2ROI$lag3
+nDaysIncr2 <- t2ROI$incrDaysThisCycle
+nDaysDecr2 <- t2ROI$decrDaysThisCycle
+price2day2 <- t2ROI$stockValue
+price2morrow2 <- t2ROI$nxtDayPrice
+nxtROI2 <- t2ROI$nxtDayROI
+
+if (interest=='increasing'){
+    cat("This date is in a cycle that is in the date range ",as.character(paste(range(T1$Date))),' with ',length(T1$Date), ' trading days for these dates: ',as.character(paste(T1$Date)),'.\n\n','The earliest trading date of either the date requested or the nearest date after the date requested is ',as.character(paste(t1)), '. This stock has a return on investment from the price ', lag ,' days earlier of $',priceLag,' as ',afterROI,'.\n\nAnd the number of days including this date ',as.character(paste(t1)),' that the stock is or will be increasing ', ' is ',nDaysIncr, ' days compared to the price ', lag, ' trading days earlier.\n\n', 'The next trading day, this stock will have a price ',plusMinus,' from the price ',lag,' days earlier of ', price2day,' to the price the next trading day of ',price2morrow,' that gives a ',lag,' day ROI of ', nxtROI,'.\n\n')
+} else {
+    cat("This date is in a cycle that is in the date range ",as.character(paste(range(T1$Date))),' with ',length(T1$Date), ' trading days for these dates: ',as.character(paste(T1$Date)),'.\n\n','The earliest trading date after this trading date requested is',as.character(paste(t1)), ' and has a return on investment from the price ', lag ,' days earlier of $',priceLag,' as ',afterROI,'.\n\nAnd the number of days that this date ', as.character(paste(t1)), ' will decrease or is decreasing for this cycle of decreasing days is ',nDaysDecr, ' days compared to the price ', lag, ' trading days earlier.\n\nThe next trading day, this stock will have a price ', plusMinus, ' from the price ',lag,' days earlier of ', price2day,' to the price the next trading day of ',price2morrow,' that gives a ',lag,' day ROI of ',nxtROI,'.\n\n')
+}
+
+```
+
+***
+***
+***
+
+The next section will show an increasing number of days interested in or decreasing number of days interested in, but with the earliest date closest to the date requested if the date requested is not available.
+
+What date in this above time period would you like to find the number of increasing or decreasing days? And if the stock increased or decreased (put 1 for increasing or 0 for decreasing) compared to its value lag days earlier?
+```{r}
+findThisDate <- '2006-07-15'
+fd <- as.Date(findThisDate)
+incr <- 0
+
+```
+
+```{r}
+interest <- ifelse(incr==1,'increasing','decreasing')
+
+cat('The date you want to search is ',findThisDate,' and you would like to know if it is ', interest,' on this date.\n' )
+```
+
+```{r}
+t <- stock_5$Date==fd
+
+tt <- stock_5$Date==fd+1
+t1 <- ifelse(sum(t)==0, 
+                     ifelse(sum(tt)==0,as.character(paste(fd+2)),
+                            as.character(paste(fd+1))),
+                     as.character(paste(fd)))
+t1 <- as.Date(t1)
+
+cat('The closest available trading date after the date you entered of ',findThisDate, 'is ',as.character(paste(t1)),'\n\n')
+
+ttt <- stock_5$Date==fd-1
+t2 <- ifelse(sum(t)==0, 
+                     ifelse(sum(ttt)==0,as.character(paste(fd-2)),
+                            as.character(paste(fd-1))),
+                     as.character(paste(fd)))
+t2 <- as.Date(t2)
+
+cat('The closest available trading date before the date you entered of ',findThisDate, 'is ',as.character(paste(t2)),'\n\n')
+
+T1 <- subset(stock_5, stock_5$Date==t1 | stock_5$Date==t1+1 | stock_5$Date==t1+2 |
+               stock_5$Date==t1-1 | stock_5$Date==t1-2 | stock_5$Date==t1-3 )
+
+T1$nxtDayDecr <- lead(T1$decrDaysThisCycle,1)
+T1$nxtDayIncr <- lead(T1$incrDaysThisCycle,1)
+
+T1$nxtDayPrice <- lead(T1$stockValue,1)
+T1$nxtDayROI <- lead(T1$today2_lag3,1)
+
+t1ROI <- subset(T1, T1$Date==t1)
+t2ROI <- subset(T1, T1$Date==t2)
+
+nxtDecr <- ifelse(t1ROI$nxtDayDecr==0,0,1)
+nxtIncr <- ifelse(t1ROI$nxtDayIncr==0,0,1)
+plusMinus <- ifelse(nxtDecr==0, 'increase','decrease')
+
+nxtDecr1 <- ifelse(t2ROI$nxtDayDecr==0,0,1)
+nxtIncr1 <- ifelse(t2ROI$nxtDayIncr==0,0,1)
+plusMinus1 <- ifelse(nxtDecr1==0, 'increase','decrease')
+
+afterROI <- t1ROI$today2_lag3
+priceLag <- t1ROI$lag3
+nDaysIncr <- t1ROI$incrDaysThisCycle
+nDaysDecr <- t1ROI$decrDaysThisCycle
+price2day <- t1ROI$stockValue
+price2morrow <- t1ROI$nxtDayPrice
+nxtROI <- t1ROI$nxtDayROI
+  
+beforeROI <- t2ROI$today2_lag3
+priceLag2 <- t2ROI$lag3
+nDaysIncr2 <- t2ROI$incrDaysThisCycle
+nDaysDecr2 <- t2ROI$decrDaysThisCycle
+price2day2 <- t2ROI$stockValue
+price2morrow2 <- t2ROI$nxtDayPrice
+nxtROI2 <- t2ROI$nxtDayROI
+
+if (interest=='increasing'){
+    cat("This date is in a cycle that is in the date range ",as.character(paste(range(T1$Date))),' with ',length(T1$Date), ' trading days for these dates: ',as.character(paste(T1$Date)),'.\n\n','The earliest trading date of either the date requested or the nearest date after the date requested is ',as.character(paste(t1)), '. This stock has a return on investment from the price ', lag ,' days earlier of $',priceLag2,' as ',beforeROI,'.\n\nAnd the number of days including this date ',as.character(paste(t2)),' that the stock is or will be increasing ', ' is ',nDaysIncr2, ' days compared to the price ', lag, ' trading days earlier.\n\n', 'The next trading day, this stock will have a price ',plusMinus1,' from the price ',lag,' days earlier of ', price2day2,' to the price the next trading day of ',price2morrow2,' that gives a ',lag,' day ROI of ', nxtROI2,'.\n\n')
+} else {
+    cat("This date is in a cycle that is in the date range ",as.character(paste(range(T1$Date))),' with ',length(T1$Date), ' trading days for these dates: ',as.character(paste(T1$Date)),'.\n\n','The earliest trading date after this trading date requested is',as.character(paste(t2)), ' and has a return on investment from the price ', lag ,' days earlier of $',priceLag2,' as ',beforeROI,'.\n\nAnd the number of days that this date ', as.character(paste(t2)), ' will decrease or is decreasing for this cycle of decreasing days is ',nDaysDecr2, ' days compared to the price ', lag, ' trading days earlier.\n\nThe next trading day, this stock will have a price ', plusMinus1, ' from the price ',lag,' days earlier of ', price2day2,' to the price the next trading day of ',price2morrow2,' that gives a ',lag,' day ROI of ',nxtROI2,'.\n\n')
+}
+
+```
+
+%%%%%%%%%%%%%%%%%
+
+Here is an example when selecting increasing instead of decreasing for the information provided above for the date in this time period chosen.
+
+What date in this above time period would you like to find the number of increasing or decreasing days? And if the stock increased or decreased (put 1 for increasing or 0 for decreasing) compared to its value lag days earlier?
+```{r}
+findThisDate <- '2006-07-15'
+fd <- as.Date(findThisDate)
+incr <- 1
+
+```
+
+```{r}
+interest <- ifelse(incr==1,'increasing','decreasing')
+
+cat('The date you want to search is ',findThisDate,' and you would like to know if it is ', interest,' on this date.\n' )
+```
+
+```{r}
+t <- stock_5$Date==fd
+
+tt <- stock_5$Date==fd+1
+t1 <- ifelse(sum(t)==0, 
+                     ifelse(sum(tt)==0,as.character(paste(fd+2)),
+                            as.character(paste(fd+1))),
+                     as.character(paste(fd)))
+t1 <- as.Date(t1)
+
+cat('The closest available trading date after the date you entered of ',findThisDate, 'is ',as.character(paste(t1)),'\n\n')
+
+ttt <- stock_5$Date==fd-1
+t2 <- ifelse(sum(t)==0, 
+                     ifelse(sum(ttt)==0,as.character(paste(fd-2)),
+                            as.character(paste(fd-1))),
+                     as.character(paste(fd)))
+t2 <- as.Date(t2)
+
+cat('The closest available trading date before the date you entered of ',findThisDate, 'is ',as.character(paste(t2)),'\n\n')
+
+T1 <- subset(stock_5, stock_5$Date==t1 | stock_5$Date==t1+1 | stock_5$Date==t1+2 |
+               stock_5$Date==t1-1 | stock_5$Date==t1-2 | stock_5$Date==t1-3 )
+
+T1$nxtDayDecr <- lead(T1$decrDaysThisCycle,1)
+T1$nxtDayIncr <- lead(T1$incrDaysThisCycle,1)
+
+T1$nxtDayPrice <- lead(T1$stockValue,1)
+T1$nxtDayROI <- lead(T1$today2_lag3,1)
+
+t1ROI <- subset(T1, T1$Date==t1)
+t2ROI <- subset(T1, T1$Date==t2)
+
+nxtDecr <- ifelse(t1ROI$nxtDayDecr==0,0,1)
+nxtIncr <- ifelse(t1ROI$nxtDayIncr==0,0,1)
+plusMinus <- ifelse(nxtDecr==0, 'increase','decrease')
+
+nxtDecr1 <- ifelse(t2ROI$nxtDayDecr==0,0,1)
+nxtIncr1 <- ifelse(t2ROI$nxtDayIncr==0,0,1)
+plusMinus1 <- ifelse(nxtDecr1==0, 'increase','decrease')
+
+afterROI <- t1ROI$today2_lag3
+priceLag <- t1ROI$lag3
+nDaysIncr <- t1ROI$incrDaysThisCycle
+nDaysDecr <- t1ROI$decrDaysThisCycle
+price2day <- t1ROI$stockValue
+price2morrow <- t1ROI$nxtDayPrice
+nxtROI <- t1ROI$nxtDayROI
+  
+beforeROI <- t2ROI$today2_lag3
+priceLag2 <- t2ROI$lag3
+nDaysIncr2 <- t2ROI$incrDaysThisCycle
+nDaysDecr2 <- t2ROI$decrDaysThisCycle
+price2day2 <- t2ROI$stockValue
+price2morrow2 <- t2ROI$nxtDayPrice
+nxtROI2 <- t2ROI$nxtDayROI
+
+if (interest=='increasing'){
+    cat("This date is in a cycle that is in the date range ",as.character(paste(range(T1$Date))),' with ',length(T1$Date), ' trading days for these dates: ',as.character(paste(T1$Date)),'.\n\n','The earliest trading date of either the date requested or the nearest date after the date requested is ',as.character(paste(t1)), '. This stock has a return on investment from the price ', lag ,' days earlier of $',priceLag2,' as ',beforeROI,'.\n\nAnd the number of days including this date ',as.character(paste(t2)),' that the stock is or will be increasing ', ' is ',nDaysIncr2, ' days compared to the price ', lag, ' trading days earlier.\n\n', 'The next trading day, this stock will have a price ',plusMinus1,' from the price ',lag,' days earlier of ', price2day2,' to the price the next trading day of ',price2morrow2,' that gives a ',lag,' day ROI of ', nxtROI2,'.\n\n')
+} else {
+    cat("This date is in a cycle that is in the date range ",as.character(paste(range(T1$Date))),' with ',length(T1$Date), ' trading days for these dates: ',as.character(paste(T1$Date)),'.\n\n','The earliest trading date after this trading date requested is',as.character(paste(t2)), ' and has a return on investment from the price ', lag ,' days earlier of $',priceLag2,' as ',beforeROI,'.\n\nAnd the number of days that this date ', as.character(paste(t2)), ' will decrease or is decreasing for this cycle of decreasing days is ',nDaysDecr2, ' days compared to the price ', lag, ' trading days earlier.\n\nThe next trading day, this stock will have a price ', plusMinus1, ' from the price ',lag,' days earlier of ', price2day2,' to the price the next trading day of ',price2morrow2,' that gives a ',lag,' day ROI of ',nxtROI2,'.\n\n')
+}
+
+```
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 ***
 ***
 ***
 
 
+S
